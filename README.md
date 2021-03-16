@@ -1,7 +1,7 @@
 # EDMA
 Effective Data Model Abstraction
 
-**There is a user manual on the language in the report.**
+**There is a user manual on the language in the report appendix A.**
 
 1. Create a new IntelliJ Project.
 1. Import the EDMA_Runtime.jar in your project.
