@@ -8,7 +8,7 @@ Effective Data Model Abstraction
 1. Create a folder in the root dir of the project named \"edmasrc\".
 1. Put your EDMA source files into the \"edmasrc\" dir.
 1. Copy EDMA_Generator.jar into the project folder.
-1. Run: "Java -jar EDMA_Generator `<ProjectName>` `<package>´" in the project dir.
+1. Run: "Java -jar EDMA_Generator '<ProjectName>' '<package>'" in the project dir.
 1. Build the project in IntelliJ.
 1. Implement your views and actions in the generated user files.
 1. You can update your EDMA source files and rerun the generator at any time.
