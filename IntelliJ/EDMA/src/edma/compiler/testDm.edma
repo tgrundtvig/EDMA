@@ -1,0 +1,140 @@
+
+ValueDomain Year : Integer[0..MAX]
+ValueDomain Month : Integer[1..12]
+ValueDomain Day : Integer[1..31]
+
+ValueDomain Date : Struct
+< 	
+	year : Year,
+	month : Month,
+	day : Day
+>
+Constraints 
+[
+	february, 
+	workDay 
+]
+
+
+/*ValueDomain Holiday : 
+Date*/
+
+ValueDomain Hour : Integer[0..12]
+ValueDomain Minute : Integer[0..59]
+ValueDomain Second : Integer[0..59]
+
+ValueDomain Time : Struct
+<
+	hour : Hour,
+	minute : Minute,
+	second : Second
+>
+
+ValueDomain NegativeInt : Integer[-100..-20]
+ValueDomain PositiveInt : Integer[0..MAX]
+ValueDomain PersonName : String[1..100]["[A-Z][a-z]*"]
+
+ValueDomain PersonFullName : Struct 
+<
+	firstName : PersonName,
+	middleName? : PersonName,
+	lastName : PersonName
+>
+
+ValueDomain Age : Integer[0..MAX]
+ValueDomain SemesterType : Enum [Spring,Autumn]
+ValueDomain CourseName : String[0..127]
+ValueDomain CourseAbbreviation : String[3..4]
+
+ValueDomain CoursePeriod : Struct
+<
+	semesterType : SemesterType,
+	courseYear : Year
+>
+
+ValueDomain DanishGrade : Enum [Twelve,Ten,Seven,Four,Two,MinusThree]
+ValueDomain AmericanGrade : Enum [A,B,C,D,F,I]
+ValueDomain ECTS : Double[0.0..1024.0]
+ValueDomain UserName : String[3..4]
+ValueDomain PasswordHash : String[32]
+ValueDomain BadStudents : List<PersonName>[10..MAX]
+ValueDomain DepartmentName : String[1..20]
+ValueDomain Name : String[1..48]
+ValueDomain Email : String[5..256]
+
+ValueDomain SomeGrade : OneOf <DanishGrade, AmericanGrade>
+
+DataModel MyDataModel
+{
+	ValueDomain Bit : Boolean
+	ValueDomain Byte : List<Bit>[8]
+
+	Singleton Data Publish
+	{
+		schoolName : Name
+		someDate : Date
+	}
+	Kind Course
+	{
+		name : CourseName
+		period? : CoursePeriod
+		minStudents : PositiveInt
+		maxStudents : PositiveInt
+		email : Email
+		Unique(name, period)
+	}
+	Kind Person Publish
+	{
+		name : PersonFullName Default[("Martin",null,"Vestergaard")]
+		birthDate : Date
+		userName+ : UserName
+		password+ : PasswordHash
+		
+		Compare(birthDate)
+		Equals(name)
+	}
+	
+	Kind Staff extends Person
+	{
+		salary : PositiveInt
+	}
+	Kind Department
+	{
+		name : DepartmentName
+	}
+	Kind Student extends Person
+	{
+		ectsPointsPassed : ECTS
+	}
+	Kind Exam
+	{
+		date : Date
+		grade : DanishGrade
+	}
+	Kind Semester
+	{
+		type : SemesterType Default[Spring]
+		year : Year
+	}
+	Relation Enrollment Student >-< Course
+	Relation Teaching Course >-- Person : teacher
+	Relation TAs Person : ta >-< Course
+	Relation Examination Exam >-- Student
+	Relation ExaminationTeacher Exam >-- Person : teacher
+	Relation ExaminationCensor Exam >-- Person : censor
+	Relation CourseOfferings Course >-- Department
+	
+	"Get a list of graduates from a given year"
+	View graduatesFromYear(Year -> PersonList)
+	
+	"Get a list of un-enrolled students"
+	View getUnenrolledStudents(void -> PersonList)
+	
+	"Delete all un-enrolled students from the datamodel"
+	Action deleteUnenrolledStudents(void -> void)
+	
+	"Delete a student with the given e-mail address from the datamodel"
+	Action deleteStudentFromEmail(Email -> void)
+	
+	
+}
