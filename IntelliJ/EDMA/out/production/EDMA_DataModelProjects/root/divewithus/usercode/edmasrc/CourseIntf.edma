@@ -1,0 +1,239 @@
+DataModel CourseReg
+{
+	ValueDomain StudentInfo : Struct
+	{
+		name : Name,
+		email : Email,
+		mobile : Mobile,
+		wetsuitSize : WetsuitSize,
+		bootSize : BootSize
+	}
+	
+	ValueDomain TeacherInfo : Struct
+	{
+		name : Name,
+		email : Email,
+		mobile : Mobile
+	}
+	
+	ValueDomain StudentInfoList : List<StudentInfo>
+	ValueDomain CourseInfo : Struct
+	{
+		id : CourseID,
+		start : DateAndTime,
+		type : CourseName,
+		status : CourseStatus, 
+		students : StudentInfoList,
+		teacher? : TeacherInfo 
+	}
+	
+	ValueDomain CourseInfoList : List<CourseInfo>
+	
+	ValueDomain CourseProcessResult : Struct
+	{
+		canceled : CourseInfoList,
+		running : CourseInfoList
+	}
+	
+	//Set school name
+	Action setSchoolName
+	{
+		Input: name : Name
+	}
+	
+	//Create a new person
+	//Status codes:
+	Action createPerson
+	{
+		Description:
+			"snip"
+		Input: 
+			name : Name,
+			email : Email,
+			mobile : Mobile
+		Output:
+			id : PersonID
+		ErrorCodes:
+			1 - "Email already exists",
+			2 - "Mobile already exists"
+	}
+						
+	//Create a new student from person	 	
+	Action createStudent
+	{
+		Input:
+			personID : PersonID,
+			wetsuitSize : WetsuitSize,
+			bootSize : BootSize
+		Output:
+			id : StudentID
+		ErrorCodes:
+			1 - "Person does not exist",
+			2 - "Person is already a student"
+	}
+
+    //Create a new teacher from person
+	Action createTeacher
+	{
+		Input: 
+			personID : PersonID,
+			salary : PosInt
+		Output:
+			id : TeacherID
+		ErrorCodes:
+			1 - "Person does not exist",
+			2 - "Person is already a teacher"
+	}
+
+	//Add course type to teacher
+	Action addCourseTypeToTeacher
+	{
+		Input:
+			courseTypeID : CourseTypeID,
+			teacherID : TeacherID
+		ErrorCodes:
+			1 - "Course type does not exist",
+			2 - "Teacher does not exist",
+			3 - "Teacher already has course type"
+	}								
+
+	//Create new course type
+	Action createCourseType
+	{
+		Input:
+			name : CourseName,
+			size : CourseSize,
+			price : PosInt
+		Output:
+			id : CourseTypeID
+		ErrorCodes:
+			1 - "Course type already exists"
+	}
+
+	//Add a requirement to a course type
+	Action addCourseTypeRequirement
+	{
+		Input:
+			courseTypeID : CourseTypeID,
+			requiredID : CourseTypeID
+		ErrorCodes:
+			1 - "Course type does not exist",
+			2 - "Required does not exist",
+			3 - "Dependency already exists",
+			4 - "Circular dependency"
+	}
+	
+	//Create new course
+	Action createCourse
+	{
+		Input: 
+			start : DateAndTime,
+			courseTypeID : CourseTypeID
+		Output:
+			id : CourseID
+		ErrorCodes:
+			1 - "Course type does not exist"
+	}
+
+	Action addStudentToCourse
+	{
+		Input:
+			studentID : StudentID,
+			courseID : CourseID
+		ErrorCodes:
+			1 - "Student does not exist",
+			2 - "Course does not exist",
+			3 - "Course has wrong status",
+			4 - "Student is already on course",
+			5 - "Course is full",
+			6 - "Student has not passed required course",
+			7 - "Student does not have enough credit"
+	}
+
+ 	Action setTeacherOnCourse
+ 	{
+ 		Input:
+ 			teacherID : TeacherID,
+ 			courseID : CourseID
+		ErrorCodes:
+			1 - "Teacher does not exist",
+			2 - "Course does not exist",
+			3 - "Course has wrong status",
+			4 - "Course already has a teacher",
+			5 - "Teacher already on this course",
+			6 - "Teacher can not teach this course"
+	}
+
+	// Add a course type to the list of passed courses for a student
+	Action addPassedCourseToStudent
+	{
+		Input:
+			studentID : StudentID,
+			courseTypeID : CourseTypeID
+		ErrorCodes:
+			1 - "Student does not exist",
+			2 - "Course type does not exist",
+			3 - "Student has not passed required courses",
+			4 - "Student already passed course type"
+	}
+		
+	// This view should find the courses that are scheduled to start between the given start
+	// and end date and has the given type. If the course type id is null, the course type
+	// should be ignored.					
+	View seachCourses
+	{
+		Input: 
+			courseType? : CourseTypeID,
+			start : Date, 
+			end : Date
+		Output:
+			courseList : CourseInfoList
+		ErrorCodes:
+			1 - "Course type does not exist"
+	}
+	
+	// This view should find the courses that a specific student are enrolled on.
+	View getStudentEnrollments
+	{
+		Input: 
+			studentID : StudentID
+		Output:
+			courseList : CourseInfoList
+		ErrorCodes:
+			1 - "Student does not exist"
+	}
+	
+	View getAllCourseTypes
+	{
+		Output:
+			courseTypeList : CourseTypeList
+	}
+	
+	View getAllPersons
+	{
+		Output:
+			personList : PersonList
+	}
+	
+	View getSchoolName
+	{
+		Output:
+			schoolName : Name
+	}
+	
+	View getCourseType
+	{
+		Input:
+			courseID : CourseID
+		Output:
+			courseType? : CourseType 
+	}
+	
+	View vdSalg
+	{
+		Input:
+			str : WetsuitSize
+		Output:
+			list : PersonList
+	}
+}

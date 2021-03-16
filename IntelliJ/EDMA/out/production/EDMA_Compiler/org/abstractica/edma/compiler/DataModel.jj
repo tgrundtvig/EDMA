@@ -1,0 +1,1096 @@
+ // For quick changes in the data model def language, search for OPTION.
+options
+{
+  STATIC = false;
+}
+
+PARSER_BEGIN(DataModelParser)
+package org.abstractica.edma.compiler;
+import java.util.ArrayList;
+import org.abstractica.edma.compiler.ast.*;
+import IndexNode.IndexType;
+import ActionViewNode;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import ValueDomainSingle.VdSingleType;
+
+public class DataModelParser
+{
+  static String fileName; 
+  public WorldNode newWorld(String fileName)
+  {
+    DataModelParser.fileName = fileName;
+    return new WorldNode(fileName);
+  }
+
+  public static void main(String args []) throws ParseException, TokenMgrError
+  {
+    //System.out.println(System.getProperty("user.dir"));
+    String file = "src/testDm.dm";
+    InputStream is = System.in;
+    try
+    {
+      is = new FileInputStream(file);
+    }
+    catch (FileNotFoundException fnfex)
+    {
+      is = System.in;
+      System.out.println("Could not load file \"" + file + "\". " + "Reading from standard in.");
+    }
+    DataModelParser p = new DataModelParser(is);
+    WorldNode world = p.newWorld(file);
+    p.Input(world);
+    world.print("");
+  }
+}
+
+PARSER_END(DataModelParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+| "\n"
+| < "//" (~[ "\n", "\r" ])*
+    (
+      "\n"
+    | "\r"
+    | "\r\n"
+    ) >
+| < "/*" >: INSIDE_COMMENT 
+}
+
+< INSIDE_COMMENT >SKIP :
+{
+  < "*/" >: DEFAULT
+| < ~[] >
+}
+
+
+TOKEN :
+{
+  < DECIMAL : < NUMBER > "." < DIGITS > >
+| < NUMBER : ("-")?<DIGITS> >
+| < DIGITS : ([ "0"-"9" ])+ >
+//| < NUMBER : < DIGITS > >
+| < MIN : "MIN" >
+| < MAX : "MAX" >
+| < KEYWORD_NULL : "null" >
+| < KEYWORD_VALUEDOMAIN : "ValueDomain" >
+| < KEYWORD_DATAMODEL : "DataModel" >
+| < KEYWORD_KIND : "Kind" >
+| < KEYWORD_EXTENDS : ("e"|"E")"xtends" > // OPTION: Extends or extends?
+| < KEYWORD_RELATION : "Relation" >
+| < KEYWORD_SINGLETON : "Singleton" >
+| < KEYWORD_UNIQUE : "Unique" >
+| < KEYWORD_COMPARE : "Compare" >
+| < KEYWORD_EQUALS : "Equals" >
+| < KEYWORD_VOID  : "void" >
+| < KEYWORD_ACTION : "Action" >
+| < KEYWORD_INTERFACE : "Interface" >
+| < KEYWORD_VIEW : "View" >
+| < KEYWORD_DEFAULT : "Default" >
+| < KEYWORD_TRUE : "true" >
+| < KEYWORD_FALSE : "false" >
+| < KEYWORD_LISTOF : "List" >
+| < KEYWORD_ENUM : "Enum" >
+| < KEYWORD_MAP : "Map" >
+| < KEYWORD_ONEOF : "OneOf" >
+| < KEYWORD_STRUCT : "Struct" >
+| < KEYWORD_CONSTRAINTS : "Constraints" >
+| < KEYWORD_PUBLISH : "Publish" >
+| < KEYWORD_AS : "As" >
+| < KEYWORD_PUBLISHAS : "PublishAs" >
+| < KEYWORD_ON  : "On" >
+| < KEYWORD_INPUT : "Input" >
+| < KEYWORD_OUTPUT : "Output" >
+| < KEYWORD_ERRORCODES : "ErrorCodes" >
+| < KEYWORD_DESCRIPTION : "Description" >
+| < BOOLEAN_DOMAIN : "Boolean" >
+| < STRING_DOMAIN : "String" >
+| < FLOAT_DOMAIN : "Float" >
+| < DOUBLE_DOMAIN : "Double" >
+| < INTEGER_DOMAIN : "Integer" >
+| < LONG_DOMAIN : "Long" >
+//| < NUMBER_DOMAIN :
+//    (
+//      "Float"
+//    | "Integer"
+//    | "Double"
+//    | "Long"
+//    ) >
+
+| < REGEX_RANGE : "[\"" ~[ "\"", "\n", "\r" ] "\"]" >
+| < CAMELCASE_WORD : [ "a"-"z" ] ([ "a"-"z", "A"-"Z", "0"-"9" ])* >
+| < IDENTIFIER : [ "a"-"z","A"-"Z" ] ([ "a"-"z", "A"-"Z","0"-"9" ])* >
+
+| < ARROW : "->" >
+| < L_PAR : "(" >
+| < R_PAR : ")" >
+| < L_BR : "{" >
+| < R_BR : "}" >
+| < L_SQBR : "[" >
+| < R_SQBR : "]" >
+| < COLON : ":" >
+| < COMMA : "," >
+| < RELATION_SYMBOL :
+    "---"
+  | ">--"
+  | ">-<" >
+| < QUESTION_MARK : "?" >
+| < PLUS : "+" >
+| < MINUS : "-" >
+| < LT : "<" >
+| < GT : ">" >
+}
+
+TOKEN :
+{
+  < Q_STRING : "\""  (< ALLOWABLE_CHARACTERS >)* "\"" >
+| < ALLOWABLE_CHARACTERS: ( (~["\\","\""]) | ("\\" ( ["u"] ["0"-"9", "a"-"f", "A"-"F"]
+														   ["0"-"9", "a"-"f", "A"-"F"]
+														   ["0"-"9", "a"-"f", "A"-"F"]
+														   ["0"-"9", "a"-"f", "A"-"F"]
+      											     | ["\"", "\\", "b", "f", "n", "r", "t"]
+      											   )
+      										  )
+      					  )> 
+}
+
+/** Productions */
+void Input(WorldNode world) :
+{
+  AValueDomainNode vd;
+  DataModelNode dm;
+}
+{
+  (
+    vd = ValueDomain(null)
+    {
+      world.addValueDomain(vd);
+    }
+  )*
+  (
+    dm = DataModel()
+    {
+      world.addDataModel(dm);
+    }
+  )*
+  < EOF >
+}
+
+/*
+ValueDomain Year Integer[0..MAX]
+ValueDomain Month Integer[1..12]
+ValueDomain Day Integer[1..31]
+
+ValueDomain Date
+{
+  year : Year,
+  month : Month,
+  day : Day
+}
+*/
+AValueDomainNode ValueDomain(String scope) :
+{
+  Token t;
+  AValueDomainNode e;
+  String name;
+  int lineNum;
+  ArrayList<ConstraintNode > cList;
+}
+{
+  t = < KEYWORD_VALUEDOMAIN >  { lineNum = t.beginLine; }
+  t = < IDENTIFIER >
+  { name = t.image; }
+  < COLON >
+  (
+    
+    e = ValueDomainEnum(lineNum, name, scope)
+  |
+    e = ValueDomainList(lineNum, name, scope)
+  |
+    e = ValueDomainMap(lineNum, name, scope)
+  | 
+    e = ValueDomainStruct(lineNum, name, scope)
+  | 
+    e = ValueDomainSingle(lineNum, name, scope)
+  |
+    e = ValueDomainOneOf(lineNum, name, scope)
+  
+  )
+  
+  // Constraints
+  [
+	cList = ConstraintNodeList(name)
+	{
+    	for (ConstraintNode c : cList)
+		{
+			e.addConstraint(c);
+		}
+	}
+  ]
+  {
+    return e;
+  }
+}
+
+ArrayList<ConstraintNode > ConstraintNodeList(String typeName) :
+{
+  Token t;
+  ArrayList<ConstraintNode > list = new ArrayList<ConstraintNode >();
+  ConstraintNode c;
+}
+{
+  < KEYWORD_CONSTRAINTS ><L_SQBR >
+  c=ConstraintNode(typeName)
+  {
+    list.add(c);
+  }
+  (  
+  	<COMMA >
+  	c=ConstraintNode(typeName)
+  	{
+  	  list.add(c);
+  	}
+  )*
+  < R_SQBR >
+  {
+    return list;
+  }
+}
+
+ConstraintNode ConstraintNode(String typeName) :
+{
+  Token t;
+  String constraintName, description="No description given";
+  int line;
+}
+{
+  t=< CAMELCASE_WORD >
+  {
+    constraintName = t.image;
+    line = t.beginLine; 
+  }
+  [ t=< Q_STRING >{ description=t.image; } ]
+  {
+    return new ConstraintNode(fileName, line, typeName, constraintName, description);
+  }
+}
+
+/*
+ValueDomain Animal Enum [Cat, Dog, Horse]
+                   ^^^^^^^^^^^^^^^^^^^^^^
+*/
+AValueDomainNode ValueDomainEnum(int lineNum, String name, String scope):
+{
+  Token t;
+  ValueDomainEnum vd;
+}
+{
+  < KEYWORD_ENUM >
+  < L_SQBR >
+  t=< IDENTIFIER >
+  {
+    vd = new ValueDomainEnum(fileName, lineNum, name, scope);
+    vd.addElement(t.image);
+  }
+  (
+    <COMMA > // OPTION: Comma between enum elements
+    t=< IDENTIFIER >
+    {
+      vd.addElement(t.image);
+    }
+  )*
+  < R_SQBR >
+  {
+    return vd;
+  }
+}
+
+AValueDomainNode ValueDomainList(int lineNum, String name, String scope) :
+{
+  Token t;
+  String type;
+  String range[] = new String[] {null,null};
+}
+{
+  < KEYWORD_LISTOF ><LT >
+  t=< IDENTIFIER ><GT >
+  {
+    type = t.image;
+  }
+  [ range = Range() ]
+  {
+    return new ValueDomainList(fileName, lineNum, name, type, range[0], range[1], scope);
+  }
+}
+
+String[] Range() :
+{
+  Token t;
+  String min, max;
+}
+{
+  "["
+  (
+    < MIN > { min="MIN"; }
+  |
+  	(
+  	  t=< DECIMAL >{ min=t.image; }
+  	| t=< NUMBER >{ min=t.image; }
+  	) 
+  )
+  (
+    "]" { max=min; }
+  |
+    ".."
+    (
+      t=< DECIMAL >
+  	| t=< NUMBER >
+  	| t=< MAX > 
+    )
+    {
+      max = t.image;
+    }
+    "]"
+  )
+  {
+    return new String[] { min,max };
+  }
+}
+
+AValueDomainNode ValueDomainMap(int lineNum, String name, String scope):
+{
+  Token t;
+  String key, value;
+}
+{
+  < KEYWORD_MAP ><LT >
+  t=< IDENTIFIER >
+  { key = t.image;
+  }
+  < COMMA >
+  t=< IDENTIFIER >
+  { value = t.image;
+  }
+  < GT >
+  {
+    return new ValueDomainMap(fileName, lineNum, name, key, value, scope);
+  }
+}
+
+/*
+ValueDomain Date
+{                    <
+  year : Year,       <
+  month : Month,     <
+  day : Day          <
+}                    <
+*/
+AValueDomainNode ValueDomainStruct(int lineNum, String name, String scope):
+{
+  Token t;
+  ValueDomainStruct vd = new ValueDomainStruct(fileName, lineNum, name, scope);
+  String attName,attType;
+  boolean optional = false;
+}
+{
+  
+  < KEYWORD_STRUCT >
+  < L_BR >
+  [
+  t=< CAMELCASE_WORD > { attName = t.image; }
+  [ <QUESTION_MARK >
+    {
+      optional=true;
+    }
+  ]
+  < COLON >
+  t=< IDENTIFIER >
+  {
+    attType = t.image;
+    vd.addElement(t.beginLine, attName, attType, optional);
+  }
+  (
+    { optional = false;
+    }
+    //[<COMMA >] // OPTION: Comma between struct elements
+    < COMMA >
+    t=< CAMELCASE_WORD > { attName = t.image; }
+    [ <QUESTION_MARK >
+      {
+        optional = true;
+      }
+    ]
+    < COLON >
+    t=< IDENTIFIER >
+    {
+      attType = t.image;
+      vd.addElement(t.beginLine, attName, attType, optional);
+    }
+  )*
+  ]
+  
+  < R_BR >
+  {
+    return vd;
+  }
+}
+
+/*
+ValueDomain Name String[MIN..MAX]["regex"]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+*/
+AValueDomainNode ValueDomainSingle(int lineNum, String name, String scope) :
+{
+  Token t;
+  String lims [ ] = new String[]{ null, null };
+  String regex = null;
+  VdSingleType sgType;
+}
+{
+  < BOOLEAN_DOMAIN >
+  {
+    return new ValueDomainSingle(fileName, lineNum, name, ValueDomainSingle.VdSingleType.Boolean, null, null, null, scope);
+  }
+| < STRING_DOMAIN > lims = Range()
+  [
+    regex = RegexRange()
+  ]
+  {
+    if (regex != null)
+    	regex = regex.substring(1, regex.length()-1); // cut off the "'s 
+    return new ValueDomainSingle(fileName, lineNum, name, ValueDomainSingle.VdSingleType.String, lims[0], lims[1], regex, scope);
+  }
+| (
+	< FLOAT_DOMAIN > { sgType=ValueDomainSingle.VdSingleType.Float; }
+  | < DOUBLE_DOMAIN > { sgType=ValueDomainSingle.VdSingleType.Double; }
+  | < INTEGER_DOMAIN > { sgType=ValueDomainSingle.VdSingleType.Integer; }
+  | < LONG_DOMAIN > { sgType=ValueDomainSingle.VdSingleType.Long; }
+  )
+  lims = Range()
+  {
+    return new ValueDomainSingle(fileName, lineNum, name, sgType, lims[0], lims[1], null, scope); 
+  }
+}
+
+String RegexRange():
+{
+  Token t;
+}
+{
+  < L_SQBR >
+  t=< Q_STRING >
+  < R_SQBR >
+  {
+    return t.image;
+  }
+}
+
+AValueDomainNode ValueDomainOneOf(int lineNum, String name, String scope) :
+{
+  Token t;
+  ValueDomainOneOf vd = new ValueDomainOneOf(fileName, lineNum, name, scope);
+}
+{
+  < KEYWORD_ONEOF >< LT >
+  t=< IDENTIFIER >
+  {
+    vd.addType(t.image, t.beginLine);
+  }
+  (
+    < COMMA >
+    t=< IDENTIFIER >
+    {
+      vd.addType(t.image, t.beginLine);
+    }
+  )*
+  < GT >
+  {
+    return vd;
+  }
+}
+
+DataModelNode DataModel() :
+{
+  String dmName;
+  DataModelNode dm;
+  KindNode k;
+  RelationNode r;
+  SingletonNode s;
+  ActionViewNode a;
+  AValueDomainNode vd;
+  InterfaceNode i;
+  Token t;
+  ArrayList<ConstraintNode > cList;
+}
+{
+  < KEYWORD_DATAMODEL > t = < IDENTIFIER >
+  {
+    dmName = t.image;
+    dm = new DataModelNode(fileName, t.beginLine, dmName);
+  }
+  < L_BR >
+  (
+    k = Kind()
+    {
+      dm.addKind(k);
+    }
+  | r = Relation()
+    {
+      dm.addRelation(r);
+    }
+  | s = Singleton()
+    {
+      dm.addSingleton(s);
+    }
+  | a = ActionView()
+    {
+      if (a.getType()==ActionViewNode.Type.Action)
+        dm.addAction(a);
+      else
+        dm.addView(a);
+    }
+  | i = Interface()
+  	{
+  	  dm.addInterface(i);
+  	}
+  | vd = ValueDomain(dmName)
+    {
+      dm.addValueDomain(vd);
+    }
+  )*
+
+  // Constraints
+  [
+	cList = ConstraintNodeList(dmName)
+  	{
+		for (ConstraintNode c : cList)
+		{
+			dm.addConstraint(c);
+		}
+	}
+  ]
+  < R_BR >
+  {
+    return dm;
+  }
+}
+
+IndexNode Index(String kind) :
+{
+  Token t;
+  IndexNode idx;
+}
+{
+  (
+    t=< KEYWORD_UNIQUE >
+    {
+      idx = new IndexNode(fileName, t.beginLine, IndexType.Unique, kind, null);
+    }
+  | t=< KEYWORD_EQUALS >
+    {
+      idx = new IndexNode(fileName, t.beginLine, IndexType.Equals, kind, null);
+    }
+  | t=< KEYWORD_COMPARE >
+    {
+      idx = new IndexNode(fileName, t.beginLine, IndexType.Compare, kind, null);
+    }
+  )
+  < L_PAR > t = < CAMELCASE_WORD >
+  {
+    idx.addAttribute(t.image);
+  }
+  (
+    [ < COMMA > ] t = < CAMELCASE_WORD > // OPTION: comma between index elements
+    {
+      idx.addAttribute(t.image);
+    }
+  )*
+  < R_PAR >
+  {
+    return idx;
+  }
+}
+
+IndexNode RelationIndex() :
+{
+  Token t;
+  IndexNode idx;
+  String kind="";
+  String role="";
+  IndexType type = IndexType.Unique;
+}
+{
+  (
+	  t=< KEYWORD_UNIQUE >
+	  {
+	    type = IndexType.Unique;
+	  }
+	| 
+	  t=< KEYWORD_EQUALS >
+	  {
+	    type = IndexType.Equals;
+	  }
+	| 
+	  t=< KEYWORD_COMPARE >
+	  {
+	    type = IndexType.Compare;
+	  }
+  )
+  < KEYWORD_ON >
+  t=< IDENTIFIER >
+  {
+    kind=t.image;
+    role=t.image.substring(0,1).toLowerCase()+t.image.substring(1);
+  }
+  [
+    < COLON >
+	t=< CAMELCASE_WORD >
+	{
+	  role=t.image;
+	}
+  ] 
+  
+  {
+	idx = new IndexNode(fileName, t.beginLine, type, kind, role);
+  }
+    
+  < L_PAR >
+  t=< CAMELCASE_WORD >
+  {
+    idx.addAttribute(t.image);
+  }
+  (
+    [< COMMA >] t = < CAMELCASE_WORD > // OPTION: comma between index elements
+    {
+      idx.addAttribute(t.image);
+    }
+  )*
+  < R_PAR >
+  {
+    return idx;
+  }
+}
+
+KindNode Kind() :
+{
+  Token t;
+  KindNode kind;
+  AttributeNode att;
+  IndexNode idx;
+  String kindName;
+  String baseType = null;
+  String valueDomain = null;
+  boolean publish = false;
+  ArrayList<ConstraintNode > cList;
+}
+{
+  < KEYWORD_KIND > t = < IDENTIFIER > { kindName = t.image; valueDomain = kindName; }
+  [ < KEYWORD_EXTENDS > t = < IDENTIFIER > { baseType = t.image; }  ]
+
+  [ <KEYWORD_PUBLISH > { publish = true; }
+	[ <KEYWORD_AS > t=< IDENTIFIER > { valueDomain = t.image; } ]
+  ]
+  {
+    kind = new KindNode(fileName, t.beginLine, kindName, baseType, (publish?valueDomain:null));
+  }
+  < L_BR >
+  [
+  	(  att = Attribute() { kind.addAttribute(att); }
+  	|  idx = Index(kindName) { kind.addIndex(idx); }
+  	|  cList = ConstraintNodeList(kindName) { for(ConstraintNode c : cList) kind.addConstraint(c); }
+  	)
+  	(
+	    < COMMA >
+	    (  att = Attribute() { kind.addAttribute(att); }
+	    |  idx = Index(kindName) { kind.addIndex(idx); }
+	    |  cList = ConstraintNodeList(kindName) { for(ConstraintNode c : cList) kind.addConstraint(c); }
+	    )
+  	)*
+  ]
+  < R_BR >
+  { return kind; }
+}
+
+AttributeNode Attribute() :
+{
+  Token t;
+  String name;
+  String valueDomain;
+  String defaultValue=null;
+  boolean optional = false;
+  boolean modifiable = false;
+}
+{
+  (t = < CAMELCASE_WORD >
+  {
+    name = t.image;
+  }
+  [
+    < QUESTION_MARK > { optional = true; }
+    [ <PLUS > { modifiable = true; } ]
+  | 
+    <PLUS > { modifiable = true; }
+    [ <QUESTION_MARK > { optional = true; } ]
+  ]
+  ) < COLON > t = < IDENTIFIER >
+  {
+    valueDomain = t.image;
+  }
+  [
+  	< KEYWORD_DEFAULT >
+  	< L_SQBR >
+    defaultValue = BasicValue() 
+  	< R_SQBR >
+  ]
+  {
+    return new AttributeNode(fileName, t.beginLine, name, valueDomain, optional, modifiable, defaultValue);
+  }
+}
+
+String BasicValue() :
+{
+  Token t;
+  String result;
+}
+{
+  t = < Q_STRING >  { return t.image; }
+| t = < MIN > { return t.image; }
+| t = < MAX > { return t.image; }
+| t = < NUMBER > { return t.image; }
+| t = < DECIMAL > { return t.image; }
+| t = < KEYWORD_TRUE > { return t.image; }
+| t = < KEYWORD_FALSE > { return t.image; }
+| t = < IDENTIFIER > { return t.image; }
+| t = < KEYWORD_NULL >  { return "null"; }
+| result = ListOfBasicValues() { return result; }
+ { return null; }
+}
+
+String ListOfBasicValues() :
+{
+  String s = "";
+  String result = "";
+}
+{
+  < L_PAR >
+  s = BasicValue()
+  {
+    result = s;
+  }
+  (
+    < COMMA >
+    s = BasicValue()
+    {
+      result += ", "+s;
+    }
+  )*
+  < R_PAR >
+  {
+    return "(" + result + ")";
+  }
+}
+
+RelationNode Relation() :
+{
+  Token t;
+  String kindA, roleA = "", kindB, roleB = "";
+  String relName;
+  int type;
+  RelationNode relation;
+  ArrayList<ConstraintNode > cList;
+  IndexNode in;
+}
+{
+  < KEYWORD_RELATION > t = < IDENTIFIER >
+  {
+    relName = t.image;
+  }
+  t = < IDENTIFIER >
+  {
+    kindA = t.image;
+    roleA = t.image.substring(0,1).toLowerCase()+t.image.substring(1);
+  }
+  [
+    < COLON > t = < CAMELCASE_WORD >
+    {
+      roleA = t.image;
+    }
+  ]
+  type = RelationType()
+  t = < IDENTIFIER >
+  {
+    kindB = t.image;
+    roleB = t.image.substring(0,1).toLowerCase()+t.image.substring(1);
+  }
+  [
+    < COLON > t = < CAMELCASE_WORD >
+    {
+      roleB = t.image;
+    }
+  ]
+
+  {
+    relation = new RelationNode(fileName, t.beginLine, relName, kindA, roleA, kindB, roleB, type);
+  }
+
+  [
+  	< L_BR >
+  	(
+	  // Indexes
+	  in = RelationIndex() { relation.addIndex(in); }
+	|
+	  // Constraints
+	  cList = ConstraintNodeList(relName) { for (ConstraintNode c : cList) relation.addConstraint(c); }
+	)
+	(
+	  < COMMA >
+	  (
+	  	// Indexes
+	  	in = RelationIndex() { relation.addIndex(in); }
+	  |
+	  	// Constraints
+	  	cList = ConstraintNodeList(relName) { for (ConstraintNode c : cList) relation.addConstraint(c); }
+	  )
+	)*
+	
+	< R_BR >
+  ]
+  {  
+    return relation;
+  }
+}
+
+int RelationType() :
+{
+  Token t;
+  String r;
+}
+{
+  t = < RELATION_SYMBOL >
+  {
+    r = t.image;
+    if (r.equals("---")) return 0;
+    else if (r.equals(">--")) return 1;
+    else if (r.equals(">-<")) return 2;
+  }
+}
+
+SingletonNode Singleton() :
+{
+  Token t;
+  SingletonNode singleton;
+  String singletonName;
+  String valueDomain=null;
+  AttributeNode att;
+  boolean publish = false;
+  ArrayList<ConstraintNode > cList;
+}
+{
+  < KEYWORD_SINGLETON > t = < IDENTIFIER > { singletonName = t.image; valueDomain = singletonName; }
+  //[ <KEYWORD_VALUEDOMAIN > t = < IDENTIFIER > { valueDomain = t.image; } ]
+  [ <KEYWORD_PUBLISH > { publish = true; }
+	[ < KEYWORD_AS > t=< IDENTIFIER > { valueDomain = t.image; } ]
+  ]
+  {
+    singleton = new SingletonNode(fileName, t.beginLine, singletonName, (publish?valueDomain:null));
+  }
+  < L_BR >
+  (  att = Attribute() { singleton.addAttribute(att); }  )
+  ( < COMMA > att = Attribute() { singleton.addAttribute(att); }  )*
+
+  // Constraints
+  [
+	cList = ConstraintNodeList(singletonName)
+  	{
+		for (ConstraintNode c : cList)
+		{
+			singleton.addConstraint(c);
+		}
+	}
+  ]
+  
+  < R_BR >
+  { return singleton; }
+}
+
+ActionViewNode ActionViewOld() :
+{
+  Token t;
+  ActionViewNode.Type type;
+  String name;
+  ArrayList<NameAndTypeNode > inputs = null, outputs = null;
+  String description="";
+}
+{
+  [ t=<Q_STRING >
+    {
+      description = t.image;
+    }
+  ]
+  (
+    < KEYWORD_ACTION >
+    {
+      type = ActionViewNode.Type.Action;
+    }
+  |
+    < KEYWORD_VIEW >
+    {
+      type = ActionViewNode.Type.View;
+    }
+  )
+  t=< CAMELCASE_WORD >
+  {
+    name = t.image;
+  }
+  < L_PAR >
+  ( inputs = NameAndTypeList()
+  )?
+  < R_PAR >
+  < ARROW >
+  < L_PAR >
+  ( outputs = NameAndTypeList()
+  )?
+  < R_PAR >
+  {
+    return new ActionViewNode(fileName, t.beginLine, name, inputs, outputs, description, type, null);
+  }
+}
+
+ActionViewNode ActionView() :
+{
+  Token t;
+  ActionViewNode.Type type;
+  String name;
+  ArrayList<NameAndTypeNode > inputs = null, outputs = null;
+  ArrayList<ErrorCode > errorCodes = null;
+  String description="";
+}
+{
+  (  
+    < KEYWORD_ACTION > { type = ActionViewNode.Type.Action; }
+  |
+    < KEYWORD_VIEW > { type = ActionViewNode.Type.View; }
+  )
+  t = < CAMELCASE_WORD > { name = t.image; }
+  < L_BR >
+	( < KEYWORD_INPUT >      <COLON > inputs = NameAndTypeList()
+    | < KEYWORD_OUTPUT >     <COLON > outputs = NameAndTypeList()
+    | < KEYWORD_ERRORCODES > <COLON > errorCodes = ErrorCodeList()
+    | < KEYWORD_DESCRIPTION ><COLON > t = < Q_STRING > { description = t.image.substring(1, t.image.length()-1); } )*
+
+  < R_BR >
+  
+  {
+    return new ActionViewNode(fileName, t.beginLine, name, inputs, outputs, description, type, errorCodes);
+  }
+}
+
+ArrayList<ErrorCode > ErrorCodeList():
+{
+  ArrayList<ErrorCode > errorCodes = new ArrayList<ErrorCode >();
+  ErrorCode c = null;
+}
+{
+  (
+    c = ErrorCode() { errorCodes.add(c); }
+    (
+      < COMMA >
+         c = ErrorCode() { errorCodes.add(c); }
+    )*
+  )?
+  {
+    return errorCodes;
+  }    
+}
+
+ErrorCode ErrorCode() :
+{
+  Token t;
+  int i;
+  String s;
+}
+{
+  (
+    t=< DIGITS > | t=< NUMBER >
+  )
+  { i = Integer.parseInt(t.image); } <MINUS > t=<Q_STRING > { s = t.image.substring(1, t.image.length()-1); }
+  {
+    return new ErrorCode(fileName, t.beginLine, i, s);
+  }
+}
+
+ArrayList<NameAndTypeNode > NameAndTypeList() :
+{
+  ArrayList<NameAndTypeNode > list = new ArrayList<NameAndTypeNode >();
+  NameAndTypeNode node;
+}
+{
+  node = NameAndType()
+  {
+    list.add(node);
+  }
+  (
+    < COMMA >
+    node = NameAndType()
+    {
+      list.add(node);
+    }
+  )*
+  {
+    return list;
+  }
+}
+
+NameAndTypeNode NameAndType() :
+{
+  Token t;
+  String name, type;
+  boolean canBeNull = false;
+}
+{
+  t=< CAMELCASE_WORD >
+  {
+    name = t.image;
+  }
+  [<QUESTION_MARK > {canBeNull = true;} ]
+  < COLON >
+  t=< IDENTIFIER>
+  {
+    type = t.image;
+    return new NameAndTypeNode(fileName, t.beginLine, name, type, canBeNull);
+  }
+  
+}
+
+InterfaceNode Interface() :
+{
+  Token t;
+  InterfaceNode iNode;
+  String name;
+  ArrayList<String > methods = new ArrayList<String >();
+}
+{
+  < KEYWORD_INTERFACE >
+  t=< CAMELCASE_WORD >
+  {
+    name = t.image;
+  }
+  < L_BR >
+  t=< CAMELCASE_WORD >  { methods.add(t.image); }
+  (
+    < COMMA >
+  	t=< CAMELCASE_WORD > { methods.add(t.image); }
+  )*
+  < R_BR >
+  {
+    iNode = new InterfaceNode(fileName, t.beginLine, name);
+    for (String m : methods)
+    	iNode.addActionViewNodeName(m);
+    return iNode;
+  }
+}

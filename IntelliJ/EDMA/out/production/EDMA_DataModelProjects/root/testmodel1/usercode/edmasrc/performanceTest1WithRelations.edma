@@ -1,0 +1,91 @@
+/*
+DataModel TestModelR
+{
+	Kind TestKindANoAttributes { }
+	
+	Kind TestKindBNoAttributes { }
+	
+	Relation A0B0 TestKindANoAttributes >-< TestKindBNoAttributes
+	
+	Action addANoAttributes {
+		Description: "Adds an entity of TestKindANoAttributes"
+	}
+	
+	Action addBNoAttributes {
+		Description: "Adds an entity of TestKindBNoAttributes"
+	}
+	
+	///////////////////////////////
+	
+	Kind TestKindAOneAttribute 
+	{
+		attr1: PosInt
+	}
+	
+	Kind TestKindBOneAttribute
+	{
+		attr1: PosInt
+	}
+	
+	Relation A1B1 TestKindAOneAttribute >-< TestKindBOneAttribute
+	
+	
+	
+	///////////////////////////////
+	
+	Kind TestKindATwoAttributes
+	{
+		attr1: PosInt,
+		attr2: PosInt
+	}
+	
+	Kind TestKindBTwoAttributes
+	{
+		attr1: PosInt,
+		attr2: PosInt
+	}
+	
+	Relation A2B2 TestKindATwoAttributes >-< TestKindBTwoAttributes
+	
+	///////////////////////////////
+	
+	Kind TestKindATenAttributes
+	{
+		attr1: PosInt,
+		attr2: PosInt,
+		attr3: PosInt,
+		attr4: PosInt,
+		attr5: PosInt,
+		attr6: PosInt,
+		attr7: PosInt,
+		attr8: PosInt,
+		attr9: PosInt,
+		attr10:PosInt
+	}
+	
+	Kind TestKindBTenAttributes
+	{
+		attr1: PosInt,
+		attr2: PosInt,
+		attr3: PosInt,
+		attr4: PosInt,
+		attr5: PosInt,
+		attr6: PosInt,
+		attr7: PosInt,
+		attr8: PosInt,
+		attr9: PosInt,
+		attr10:PosInt
+	}
+	
+	Relation A10B10 TestKindATenAttributes >-< TestKindBTenAttributes
+	
+	Relation A10B10Index TestKindATenAttributes >-< TestKindBTenAttributes
+	{
+		Compare On TestKindATenAttributes(attr1,attr2,attr3,attr4,attr5,attr6,attr7,attr8,attr9,attr10)
+	}
+	
+	///////////////////////////////
+	
+	
+	
+}*/

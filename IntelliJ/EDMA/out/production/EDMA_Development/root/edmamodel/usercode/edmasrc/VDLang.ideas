@@ -1,0 +1,106 @@
+ValueDomain FieldList : List<Field>
+ValueDomain MethodList : List<Method>
+ValueDomain ClassList : List<Class>
+ValueDomain RelationShipList : List<RelationShip>
+ValueDomain SignatureList : List<Signature>
+
+ValueDomain Class : Struct
+{
+	name : ClassName,
+	description : ClassDescription,
+	fields : FieldList,
+	methods : MethodList,
+	subClasses : ClassList,
+	relationsShips : RelationShipList
+}
+
+ValueDomain Interface : Struct
+{
+	name : InterfaceName,
+	description : InterfaceDescription,
+	signatures : SignatureList
+}
+
+ValueDomain Field : Struct
+{
+	name : FieldName,
+	description : FieldDescription,
+	type : Type,
+	optional : Boolean,
+	immutable : Boolean
+}
+
+ValueDomain Signature : Struct
+{
+	name : SignatureName,
+	description : SignatureDescription,
+	input : FieldList,
+	output : FieldList
+}
+
+ValueDomain Type : OneOf[List, Interface, DataType, Signature, Type]
+
+ValueDomain DataType : OneOf[Struct, Array, Choice/OneOf, Boolean, Char, Integer, Float, Enum] //With constraints....
+
+DataType
+{
+	name : String
+	fields : Array<Field>[0..MaxInt]
+} 
+
+ValueDomain String : Array[Char]
+
+Expressions
+Statements
+operators
+block
+variable definition
+variable assignment
+en reference til et interface er object ID + methodID for hver metode
+ingen nedarvning, kun composition. Men interfaces kan sammensættes vilkårligt
+implementation af et interface er en mapping fra interface signatures til object signatures
+interfaces indeholder også protocoller som state machines
+Med præcise interface kan vi få automatisk test af koden....
+protocol....
+
+Protocol(Integer n)
+Et program er en task....
+atomic
+{
+	throw Exception(); //rollback
+	catch(Exception)
+}
+
+parallel
+{
+
+}
+
+3 typer: Object, interface, DataType
+
+ValueDomain List : Struct
+{
+	type : Type
+}	
+
+
+/*
+
+ValueDomain Object : Struct
+{
+	owner? : Owner, //If null it is the root object
+	created : TimeStamp
+	class : Class
+}
+
+/*
+Objects can be running or stopped. Man snakker med objecter gennem interfaces.
+Alle metode kaldes gennem interfaces. Interfaces er samlinger af actions, views og funktioner.
+Implementationen er også data objecter kan startes og stoppes og persisteres og loades. Når et
+objekt er stoppet kan ejeren stadig kalde metoderne som på et gammeldags dødt object, men dog
+kun når det object der kalder er i samme VM. ValueDomains er "døde" fastfrosede objecter.  
+Vi har stadig brug for value domains som rene immutable værdier. Der er aldrig tvivl om ejerskab
+af objekter for det altid er præcis eet objekt der er ejer. En ejer kan slukke for et object og
+bruge det som
+*/	
+	

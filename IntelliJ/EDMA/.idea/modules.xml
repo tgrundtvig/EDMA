@@ -3,6 +3,13 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/EDMA.iml" filepath="$PROJECT_DIR$/EDMA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDMA_Compiler/EDMA_Compiler.iml" filepath="$PROJECT_DIR$/EDMA_Compiler/EDMA_Compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDMA_DiveWithUs/EDMA_DiveWithUs.iml" filepath="$PROJECT_DIR$/EDMA_DiveWithUs/EDMA_DiveWithUs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDMA_Generator/EDMA_Generator.iml" filepath="$PROJECT_DIR$/EDMA_Generator/EDMA_Generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDMA_MetaModel/EDMA_MetaModel.iml" filepath="$PROJECT_DIR$/EDMA_MetaModel/EDMA_MetaModel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDMA_Runtime/EDMA_Runtime.iml" filepath="$PROJECT_DIR$/EDMA_Runtime/EDMA_Runtime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDMA_Util/EDMA_Util.iml" filepath="$PROJECT_DIR$/EDMA_Util/EDMA_Util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDMA_ValueDomains/EDMA_ValueDomains.iml" filepath="$PROJECT_DIR$/EDMA_ValueDomains/EDMA_ValueDomains.iml" />
     </modules>
   </component>
 </project>

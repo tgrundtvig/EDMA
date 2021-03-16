@@ -1,0 +1,166 @@
+ValueDomain PosInt : Integer[0..MAX]
+
+
+DataModel TestModel
+{
+	Kind TestKind
+	{
+		attr1: PosInt
+	}
+	
+	Kind TestKindNoAttributes { }
+	
+	Kind TestKindTwoAttributes
+	{
+		attr1: PosInt,
+		attr2: PosInt
+	}
+	
+	Kind TestKindTenAttributes
+	{
+		attr1: PosInt,
+		attr2: PosInt,
+		attr3: PosInt,
+		attr4: PosInt,
+		attr5: PosInt,
+		attr6: PosInt,
+		attr7: PosInt,
+		attr8: PosInt,
+		attr9: PosInt,
+		attr10:PosInt
+	}
+	
+	Kind TestKindWithIndex
+	{
+		attr1: PosInt,
+		Compare(attr1)
+	}
+	
+	Kind TestKindTwoAttributesWithIndex
+	{
+		attr1: PosInt,
+		attr2: PosInt,
+		Compare(attr1, attr2)
+	}
+	
+	Kind TestKindTenAttributesWithIndex
+	{
+		attr1: PosInt,
+		attr2: PosInt,
+		attr3: PosInt,
+		attr4: PosInt,
+		attr5: PosInt,
+		attr6: PosInt,
+		attr7: PosInt,
+		attr8: PosInt,
+		attr9: PosInt,
+		attr10:PosInt,
+		Compare(attr1, attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9, attr10)
+	}
+
+	Action addOne
+	{
+		Description:
+			"Adds one TestKind"
+		Input:
+			attr: PosInt
+		Output:
+			id : TestKindID
+	}
+	
+	View getAll
+	{
+		Description:
+			"Returns a list of all TestKinds"
+		Output:
+			testKindList: TestKindList
+	}
+	
+	View getAllOneAttGreaterThan
+	{
+		Description: 
+			"Gets all entities of TestKind with one attribute, where the attribute is greater than the input."
+		Input: 
+			inAttr: PosInt
+		Output: 
+			testKindList: TestKindList
+	}
+	
+	Action removeOne
+	{
+		Description: 
+			"Removes one TestKind value"
+		Input: 
+			id: TestKindID
+	}
+	
+	Action addZero
+	{
+		Description: "Adds an element to the kind with zero attributes"
+	}
+	
+	Action addTwo
+	{
+		Description: "Adds an element to the kind with two attributes"
+		Input: 
+			attr1: PosInt,
+			attr2: PosInt
+		Output:
+			id: TestKindTwoAttributesID
+	}
+	
+	Action addTen
+	{
+		Description: "Adds an element to the kind with ten attributes"
+		Input:
+			attr1: PosInt,
+			attr2: PosInt,
+			attr3: PosInt,
+			attr4: PosInt,
+			attr5: PosInt,
+			attr6: PosInt,
+			attr7: PosInt,
+			attr8: PosInt,
+			attr9: PosInt,
+			attr10:PosInt
+		Output:
+			id: TestKindTenAttributesID
+	}
+	
+	Action addOneWithIndex
+	{
+		Description: "Adds one entity to the kind with one attribute and an index."
+		Input:
+			attr1: PosInt
+		Output:
+			id: TestKindWithIndexID
+	}
+	
+	Action addTwoWithIndex
+	{
+		Description: "Adds one entity to the kind with two attributes and an index."
+		Input:
+			attr1: PosInt,
+			attr2: PosInt
+		Output:
+			id: TestKindTwoAttributesWithIndexID
+	}
+	
+	Action addTenWithIndex
+	{
+		Description: "Adds one entity to the kind with ten attributes and an index."
+		Input:
+			attr1: PosInt,
+			attr2: PosInt,
+			attr3: PosInt,
+			attr4: PosInt,
+			attr5: PosInt,
+			attr6: PosInt,
+			attr7: PosInt,
+			attr8: PosInt,
+			attr9: PosInt,
+			attr10:PosInt
+		Output:
+			id: TestKindTenAttributesWithIndexID
+	}
+}

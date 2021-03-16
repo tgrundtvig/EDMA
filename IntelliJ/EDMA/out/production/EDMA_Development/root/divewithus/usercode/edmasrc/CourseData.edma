@@ -1,0 +1,64 @@
+DataModel CourseReg
+{
+	ValueDomain WetsuitSize : Enum [XS, S, M, L, XL, XXL]
+	ValueDomain BootSize : Integer[25..48]
+	
+	ValueDomain CourseName : String[1..MAX]
+	ValueDomain CourseSize : Struct{min : PosInt, max : PosInt} Constraints[minLTEMax]
+	ValueDomain CourseStatus : Enum[Created, Ready, Running, Cancelled, Completed]
+	
+	Singleton SchoolInfo
+	{
+		name+ : Name
+	}
+	
+	Kind Person
+	{
+		name : Name,
+		email+ : Email,
+		mobile : Mobile,
+		balance+ : NotNegInt,
+		Unique(email),
+		Unique(mobile)
+	}
+	
+	Kind Teacher extends Person
+	{
+		salary : PosInt	
+	}
+	
+	Kind Student extends Person
+	{
+		wetsuitSize : WetsuitSize,
+		bootSize : BootSize
+	}
+	
+	Kind CourseType
+	{
+		name : CourseName,
+		size : CourseSize,
+		price : PosInt,
+		Unique(name)
+	}
+	
+	Kind Course
+	{
+		start : DateAndTime,
+		status+ : CourseStatus,
+		Compare(start),
+		Compare(status, start)
+	}
+	
+	Relation CourseDependency CourseType >-< CourseType:required
+	Relation CourseTypes Course >-- CourseType
+	{
+		Compare On Course (start),
+		Compare On Course (status, start)
+	}
+	
+	Relation PassedCourses Student >-< CourseType:passedCourse
+	Relation StudentEnrollment Course >-< Student
+	
+	Relation TeachingAbility Teacher >-< CourseType
+	Relation TeacherEnrollment Course >-- Teacher
+}

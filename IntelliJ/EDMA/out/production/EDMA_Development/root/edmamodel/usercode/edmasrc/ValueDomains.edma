@@ -1,0 +1,6 @@
+ValueDomain TypeName : String[1..MAX]
+ValueDomain VarName : String[1..MAX]
+ValueDomain Index : Integer[0..MAX]
+ValueDomain Optional : Boolean
+ValueDomain Modifiable : Boolean
+ValueDomain DomainType : Enum[VDString, VDInteger, VDLong, VDFloat, VDDouble, VDBoolean, VDEnum, VDStruct, VDList, VDMap, VDOneOf]

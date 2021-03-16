@@ -1,0 +1,46 @@
+DataModel MetaEnvironment
+{
+	Action newDataModel
+	{
+		Description:
+			"Creates a new meta data model"
+		Input: 
+			name : TypeName
+		Output:
+			id : MetaDataModelID
+		ErrorCodes:
+			1 - "Model exists"
+	}
+	
+	Action newKind
+	{
+		Description:
+			"Creates a new meta kind"
+		Input: 
+			id : MetaDataModelID,
+			name : TypeName
+		Output:
+			id : MetaKindID
+		ErrorCodes:
+			1 - "Model do not exist",
+			2 - "Kind exists"
+	}
+	
+	Action newAttribute
+	{
+		Description:
+			"Creates a new meta kind attribute"
+		Input:
+			kindID : MetaKindID,
+			name : VarName,
+			valueDomain : TypeName,
+			optional : Optional,
+			modifiable : Modifiable
+		Output:
+			id : MetaAttributeID
+		ErrorCodes:
+			1 - "Kind do not exist",
+			2 - "Attribute exists"
+	}
+	
+}

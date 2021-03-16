@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="EDMA_Runtime:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/EDMA_Runtime_jar</output-path>
+    <root id="archive" name="EDMA_Runtime.jar">
+      <element id="module-output" name="EDMA_Runtime" />
+      <element id="module-output" name="EDMA_MetaModel" />
+      <element id="module-output" name="EDMA_ValueDomains" />
+      <element id="module-output" name="EDMA_Util" />
+    </root>
+  </artifact>
+</component>

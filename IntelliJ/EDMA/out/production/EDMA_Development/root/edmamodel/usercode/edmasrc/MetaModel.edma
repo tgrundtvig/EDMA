@@ -1,0 +1,85 @@
+DataModel MetaEnvironment
+{
+	Singleton EnvironmentInfo
+	{
+		name : TypeName,
+		nextMetamodelIndex+ : Index,
+		nextValueDomainIndex+ : Index
+	}
+	
+	Kind MetaDataModel
+	{
+		name : TypeName,
+		index : Index,
+		nextKindIndex+ : Index,
+		nextSingletonIndex+ : Index,
+		Unique(name),
+		Unique(index)
+	}
+	
+	Kind MetaSingleton
+	{
+		name : TypeName,
+		index : Index,
+		nextAttributeIndex+ : Index
+	}
+	
+	Relation SingletonOwner MetaSingleton >-- MetaDataModel
+	{
+		Unique On MetaSingleton(name),
+		Unique On MetaSingleton(index)
+	}
+	
+	Kind MetaKind
+	{
+		name : TypeName,
+		index : Index,
+		nextAttributeIndex+ : Index
+	}
+	
+	Relation KindOwner MetaKind >-- MetaDataModel
+	{
+		Unique On MetaKind(name),
+		Unique On MetaKind(index)
+	}
+	
+	Kind MetaAttribute
+	{
+		name : VarName,
+		valueDomainName : TypeName,
+		index : Index,
+		optional : Optional,
+		modifiable : Modifiable
+	}
+	
+	Relation AttributeOwner MetaAttribute >-- MetaKind
+	{
+		Unique On MetaAttribute(name)
+	}
+	
+	Kind MetaValueDomain
+	{
+		name : TypeName,
+		index : Index,
+		type : DomainType,
+		Unique(index)
+	}
+	
+	Relation AttributeType MetaAttribute >-- MetaValueDomain
+	
+	Kind MetaRelation
+	{
+		name : TypeName,
+		roleA : VarName,
+		roleB : VarName
+	}
+	
+	Relation RelationOwner MetaRelation >-- MetaDataModel
+	{
+		Unique On MetaRelation(name)
+	}
+	
+	Relation RelationKindA MetaRelation >-- MetaKind : a
+	Relation RelationKindB MetaRelation >-- MetaKind : b
+	
+}
