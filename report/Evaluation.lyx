@@ -1,0 +1,272 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphicx}
+
+\lstdefinelanguage{edma}%
+  {
+morekeywords={[0]ValueDomain, on, Kind, DataModel, Relation, Singleton, Action, View, Unique, Equals, Compare, Integer, Long, Double, Float, String, Struct, Enum, OneOf, ListOf, Map, As, Publish, true, false, MIN, MAX, extends, Extends, Constraints, Boolean, ?, +, >-<, >--, ---},
+    sensitive=true,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/},
+morestring=[b]"
+}%
+\definecolor{keywordBlue}{rgb}{0,0,0.75}%
+\definecolor{commentGreen}{rgb}{0,0.4,0}%
+\definecolor{identifier}{rgb}{0.2,0.2,0.2}%
+\lstset{xleftmargin=0.5cm,basicstyle=\small}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman palatino
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Evaluation"
+
+\end_inset
+
+Evaluation
+\end_layout
+
+\begin_layout Standard
+In this section, we address the issue of evaluating the EDMA system, both
+ with respect to its functional usability, and with respect to a few performance
+ parameters.
+ Since one of the main points with EDMA is to make it easy for the user
+ to come from an idea of a data model, to working implemented code reflecting
+ that model, we briefly discuss the steps that are required for doing so.
+\end_layout
+
+\begin_layout Standard
+Although performance hasn't been the main focus of this project, we have
+ created a few simple performance tests.
+ These are presented and briefly discussed in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:PerformanceEvaluation"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Workflow
+\end_layout
+
+\begin_layout Standard
+The flow of creating a data model implementation can be divided into 4 phases:
+\end_layout
+
+\begin_layout Itemize
+1 -- Model definition
+\end_layout
+
+\begin_layout Itemize
+2 -- Code generation (run the EDMA compiler)
+\end_layout
+
+\begin_layout Itemize
+3 -- action and view implementation (create the necessary code in the action
+ and view stub classes)
+\end_layout
+
+\begin_layout Itemize
+4 -- data model instantiation (create an instance of the data model to use
+ in the external application)
+\end_layout
+
+\begin_layout Standard
+Designing and implementing a concrete data model can be seen as an iterative
+ process.
+ In a prototyping process, where not all business requirements may be strictly
+ given, the user might switch between phase 1, 2 and 3 for a number of iteration
+s.
+ New requirements or ideas may continually influence and change the design
+ for a number of iterations.
+ Therefore, it is important that the user can easily go back and update
+ the definition files, re-generate the code, and fill out stub code of newly
+ created actions and views.
+ And if the latest change to a definition file has resulted in broken code,
+ it must be easy to find and correct the files in question.
+ In the following, we evaluate the four steps that make up the process of
+ using EDMA.
+\end_layout
+
+\begin_layout Paragraph
+Data Definition
+\end_layout
+
+\begin_layout Standard
+Data definition is done by creating one, or many, data definition files,
+ adhering to the syntax of the EDMA definition language.
+ The definition of the kinds will itself result in a number of iterations,
+ where the user realizes the need for value domains, relations and actions
+ and views.
+ For example, when creating the Person, the user realizes the need for the
+ attribute value domains Name, Date, PhoneNumber and Balance.
+ The following is noticed.
+\end_layout
+
+\begin_layout Itemize
+Each value domain and each relation takes up one line of code.
+ Each kind takes up one line for the declaration, plus one line for each
+ attribute.
+ Actions and views take up one line for the declaration, one line for the
+ description, one for the error code, and one line for each input and output.
+\end_layout
+
+\begin_layout Itemize
+The number of relations will rarely diverge significantly from the number
+ of kinds.
+\end_layout
+
+\begin_layout Itemize
+The number of actions will often be significantly larger than the number
+ of kinds and relations (the user can have creation and deletion actions
+ for each kind and for each relation, and additional views and actions.)
+\end_layout
+
+\begin_layout Itemize
+Value domain files with definitions for common value domains (Date, Time,
+ Email, URL, etc.) can be reused, significantly reducing the time it takes
+ to create the data model definition.
+\end_layout
+
+\begin_layout Standard
+Because of the number, and line-span, of actions and views, we reason that
+ writing the action and views is the most time consuming process, when writing
+ the edma-files.
+\end_layout
+
+\begin_layout Paragraph
+Running the EDMA Compiler
+\end_layout
+
+\begin_layout Standard
+Running the EDMA compiler is a question of running a Java program.
+ If there are errors in any of the edma-files, the compiler gives the user
+ a message stating the error type, and the location of the error.
+ After the compiler has been run, the user should make sure that the IDE
+ shows the newest version of the directory listing (in Eclipse, this is
+ done by right clicking on the project folder, and choosing Refresh.)
+\end_layout
+
+\begin_layout Paragraph
+Implementing Actions and Views
+\end_layout
+
+\begin_layout Standard
+The stub code that is generated for actions and views purposefully contains
+ a syntax error.
+ Because the Java compiler will refuse to compile, and show the problematic
+ files, the user can quickly find the action and view stub classes that
+ need to be filled out.
+ This is an extremely useful feature when working iteratively.
+\end_layout
+
+\begin_layout Paragraph
+Instantiation
+\end_layout
+
+\begin_layout Standard
+Instantiating the created data model is done in very few steps, by calling
+ a static method to retrieve a meta model instance, and creating a runtime
+ factory by which to obtain a model instance.
+ Calling the actions and views is easy, since the user knows which names
+ he gave the actions and views.
+ The external data model interface contains methods with names identical
+ to the actions and views.
+\end_layout
+
+\begin_layout Subsection
+Implementing the Diving School
+\end_layout
+
+\begin_layout Standard
+We have implemented the Diving School data model using EDMA.
+ Through implementing it, several observations have been done.
+\end_layout
+
+\begin_layout Itemize
+The EDMA system works.
+ We are able to create data definition files, generate Java code, and start
+ an instance of the data model.
+ We are able to insert, change and remove entities and connections.
+\end_layout
+
+\begin_layout Itemize
+The EDMA system is well suited for a prototyping workflow.
+ Adding, changing and removing kinds or relations breaks the code only in
+ the implementation in the stub-code sections that depend on the changes.
+ 
+\end_layout
+
+\begin_layout Itemize
+The value domain system has proven to be an extremely helpful feature.
+ Calling an action or a view requires specific value domains, which types
+ of values are given as arguments or returned.
+\end_layout
+
+\end_body
+\end_document

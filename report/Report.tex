@@ -1,0 +1,96 @@
+%% LyX 2.0.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage{mathpazo}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{listings}
+\lstset{captionpos=b,
+frame=lrtb}
+\usepackage{float}
+\usepackage{nomencl}
+% the following is useful when we have the old nomencl.sty package
+\providecommand{\printnomenclature}{\printglossary}
+\providecommand{\makenomenclature}{\makeglossary}
+\makenomenclature
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}
+\providecommand{\algorithmname}{Algorithm}
+\floatname{algorithm}{\protect\algorithmname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newenvironment{lyxlist}[1]
+{\begin{list}{}
+{\settowidth{\labelwidth}{#1}
+ \setlength{\leftmargin}{\labelwidth}
+ \addtolength{\leftmargin}{\labelsep}
+ \renewcommand{\makelabel}[1]{##1\hfil}}}
+{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{wrapfig}
+\usepackage{nameref}
+\usepackage{todonotes}
+\usepackage{url}
+\usepackage{listings}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title{EDMA (Effective Data Model Abstraction)}
+
+
+\author{Tobias Grundtvig \& Martin Vestergaard\\
+Supervisor: Philippe Bonnet}
+
+
+\date{June 1st 2012}
+
+\maketitle
+\input{Abstract.tex}
+
+\pagebreak{}
+
+\tableofcontents{}
+
+\pagebreak{}
+
+\input{Introduction.tex}
+
+\input{ProblemAnalysis.tex}
+
+\input{SystemDesign.tex}
+
+\input{Evaluation.tex}
+
+\input{Conclusion.tex}
+
+\input{FutureWork.tex}
+
+\input{Tutorial.tex}
+
+\input{Grammar.tex}
+
+\input{PerformanceEvaluation.tex}
+
+
+
+\printnomenclature{}
+
+\bibliographystyle{plain}
+\addcontentsline{toc}{section}{\refname}\nocite{*}
+\bibliography{reportBib}
+
+\end{document}

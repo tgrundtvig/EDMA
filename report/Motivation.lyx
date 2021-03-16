@@ -1,0 +1,133 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Motivation
+\end_layout
+
+\begin_layout Standard
+An important goal for EDMA, is to 
+\emph on
+shorten the path from idea to functional prototype
+\emph default
+ of projects that involves structured conceptual data models.
+ The user should benefit seamlessly from concurrency control and persistence,
+ without having to write any additional code or annotations, install a third
+ party database system, issue SQL queries, or worry about transactions and
+ locking.
+\end_layout
+
+\begin_layout Standard
+We have chosen a model driven approach where the majority of the code is
+ auto-generated from an instance of a meta model.
+ We have also applied an object oriented approach where we treat data models
+ as classes.
+ This implies that the structure and state of the data models are encapsulated
+ and only can be accessed through a public interface and that there can
+ be many instances of each data model.
+\end_layout
+
+\begin_layout Standard
+We have coupled this with a simple fine grained data type system for immutable
+ data values, where the user can define semantically unique data types with
+ build-in validation for a specific domain.
+ We call this the value domain system.
+ The value domain system has several advantages:
+\end_layout
+
+\begin_layout Itemize
+It can be used as an infrastructure for moving data between different applicatio
+ns and data model instances.
+ In this way all mutable state can be contained inside data model instances
+ and everything outside is immutable.
+ This makes it simple to distribute data model instances seamlessly in a
+ distributed system.
+\end_layout
+
+\begin_layout Itemize
+It lets the java compiler find a new category of semantic errors for example
+ if an email is used in the place of a name, because even though they are
+ both strings, they will have different types in the value domain system.
+\end_layout
+
+\begin_layout Itemize
+It adds useful domain specific semantic information to the interfaces of
+ the data models.
+\end_layout
+
+\begin_layout Itemize
+It adds useful domain specific semantic information to the meta model, that
+ a code generator can use to auto generate utility programs that are specialized
+ to work on a specific data model within a specific domain.
+\end_layout
+
+\begin_layout Standard
+Based on our experience with the Eclipse Modeling Framework, we will try
+ to keep the generated and the user written code as separated as possible
+ and when there is a need to embed user written code into a generated file,
+ that file should be kept to a minimum size so it merely functions as a
+ container for the user written code.
+ We will also strive to generate code that look and feel close to well-written,
+ handmade code including javadoc.
+\end_layout
+
+\end_body
+\end_document

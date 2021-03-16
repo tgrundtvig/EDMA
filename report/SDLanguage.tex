@@ -1,0 +1,417 @@
+
+\subsection{EDMA Data Definition Language\label{sec:DataDefLanguage}}
+
+In designing the syntax for the EDMA language, we have striven to
+create a comfortable and easily learned language, for data and interface
+definition. In this section we describe the textual syntax through
+of the language through the use of examples. The complete EBNF grammar
+is found in Appendix \ref{sec:EDMALanguageGrammar}.
+
+The EDMA language is used to define both data and interfaces, using
+the following structure:
+\begin{itemize}
+\item Value Domains (global value domains)
+\item Data Models
+
+\begin{itemize}
+\item Local Value Domains
+\item Singletons
+\item Kinds
+\item Relations
+\item Actions
+\item Views
+\end{itemize}
+\end{itemize}
+Since value domains can be shared by several data models, they can
+be defined outside the context of data models. Data models are defined
+with a block-structure (delimited by curly brackets), containing local
+value domains, singletons, kinds, relations, actions and views inside
+the block. White spaces and newline-characters are ignored, meaning
+that blocks can be written on a single line.
+
+It is possible to divide the definition into different files. For
+example, the user might want to have all the global value domains
+in one file, kinds, relations and singletons in a second file, and
+actions and views in a third file. 
+
+The syntax makes use of a set of reserved keywords, partly to make
+the language easy to read and understand for the user, partly to make
+it easier to parse. In the following, examples of each element type
+are used to explain the syntax.
+
+
+\paragraph{Value Domains}
+
+Value domains are defined by a keyword \textbf{ValueDomain} followed
+by an identifier, the name of the value domain. The name of the value
+domain is written in camel case, and may contain numbers, although
+the first character of a value domain name must be an uppercase letter.
+After the identifier, a colon is written, followed by a type of primitive.
+There are 9 types of primitives, represented by the following keywords:
+\textbf{Integer}, \textbf{Long}, \textbf{Boolean}, \textbf{Float},
+\textbf{Double}, \textbf{Struct}, \textbf{Enum}, \textbf{OneOf} and
+\textbf{List}. The colon serves to represent a type declaration, and
+can be read as ``of type''. After the primitive type has been given,
+the user can optionally declare a constraint on the value domain.
+An example of a value domain declaration is shown in the following
+listing. 
+
+\begin{lstlisting}[language=edma]
+ValueDomain Month : Integer[1..12]
+\end{lstlisting}
+
+In the example given, the Month value domain is constrained to be
+in the range 1 to 12, both inclusive. For the number types, the constraint
+is always considering the range of values. The constraint is written
+in the form \texttt{{[}a..b{]}}, where \texttt{a} and \texttt{b} are
+numbers, and where \texttt{b} $\geq$ \texttt{a}. Alternatively, the
+user can use the keywords \textbf{MIN} and \textbf{MAX} to represent
+the smallest or largest possible number. 
+
+For the String primitive type, the constraint considers the length
+of the string. The user can also specify a regular expression in a
+quoted string between \textbf{{[}} and \textbf{{]}}. Values matching
+the given regular expression are considered valid.
+
+The \textbf{Long}, \textbf{Float} and \textbf{Double} value domains
+are written in the same way as the Integer value domain, using the
+respective keywords.
+
+The List value domain is written with the contained value domain given
+between a pair of angle brackets. Optionally, the user can declare
+a length constraint on the list on the form \texttt{{[}a..b{]}}, as
+the range constraint on number value domains. An example of a List
+definition is shown in the following listing.
+
+\begin{lstlisting}[language=edma]
+ValueDomain StudentList : List< Student > [0..99]
+\end{lstlisting}
+
+The Enum value domain is written with the possible enumeration values
+in square brackets, as shown in the example in the following listing.
+
+\begin{lstlisting}[language=edma]
+ValueDomain Animal : Enum[Cat, Dog, Horse]
+\end{lstlisting}
+
+Like the numerical constraint is written in square brackets, we can
+see the enum values as being the constraint of the enum type, i.e.
+the value of an Animal type must be one of the given enumeration types.
+
+The OneOf value domain is defined almost like the Enum value domain,
+but with angle brackets, as shown in the following example.
+
+\begin{lstlisting}[language=edma]
+ValueDomain Person : OneOf<Teacher, Pupil>
+\end{lstlisting}
+
+This bears resemblance to the notion of parametrized types in Java,
+generics, which is written as for example \texttt{ArrayList<Point>}.
+
+Structs are defined by declaring the primitive type \textbf{Struct},
+followed by a block delimited by curly brackets. Inside the block
+is written a comma separated list of attributes. The following example
+shows the definition of a struct.
+
+\begin{lstlisting}[language=edma]
+ValueDomain Person : Struct
+{
+	name : Name,
+	age? : PositiveInteger,
+	phone : PhoneNumber
+}
+\end{lstlisting}
+
+Each attribute consists of a name, a colon (again, to declare that
+the type, or value domain, is following), and a value domain. Attributes
+may be declared optional, by writing a question mark after the attribute
+name. The attribute type must be a non-primitive value domain. 
+
+Since white spaces are ignored, it is possible to write structs in
+a more compact style, like shown in the following example.
+
+\begin{lstlisting}[language=edma]
+ValueDomain Date : Struct { y:Year, m:Month, d:Day }
+\end{lstlisting}
+
+Because the attributes are separated by comma, the compact style is
+still readable. In contrast, the user can also add extra white space,
+as to impose a structure to make it more readable. This is shown in
+the following example.
+
+\begin{lstlisting}[language=edma]
+ValueDomain Person : Struct
+{
+	firstName : Name,
+	lastName  : Name,
+	age       : Age
+}
+\end{lstlisting}
+
+
+\subparagraph{Custom Constraints}
+
+The user can write custom constraints on value domains. Custom constraints
+are implemented manually by the user (in generated stub-files), and
+thus can be arbitrarily complex. The custom constraints are written
+immediately after the value domain definition, starting with the keyword
+\textbf{Constraints}, following a square bracket enclosed, comma separated
+list of constraints. Each constraint is a camel case word with a lower-case
+first character, and optionally, a double quoted string describing
+the constraint. The following listing shown an example of a value
+domain Date with constraints for disallowing non-work days.
+
+\begin{lstlisting}[language=edma]
+ValueDomain Date : Struct
+{
+	year : Year,
+	month : Month,
+	day : Day
+} 
+Constraints[leapYearCheck "Checks for leap year correctness",
+ workDays "Checks that the date represents a work day"]
+\end{lstlisting}
+
+Another example of a custom constraint is shown in the following listing.
+The example shows a definition of the value domain OddNumber with
+a constraint declaration.
+
+\begin{lstlisting}[language=edma]
+ValueDomain OddNumber : Integer 
+Constraints[oddNumber "Checks that the number is odd"]
+\end{lstlisting}
+
+As the user can omit the quoted descriptions, constraints can be written
+in a more compact form, as shown in the following listing.
+
+\begin{lstlisting}[language=edma]
+ValueDomain WorkDate : Struct { y:Year,m:Month,d:Day }
+Constraints[leapYear, notWeekend, notHoliday, notMothersDay]
+\end{lstlisting}
+
+
+\paragraph{Data Models}
+
+Data models are defined using the keyword \textbf{DataModel}, followed
+by an identifier making up the name of the data model. The name of
+the data model must be written with a capital first letter, like the
+name of value domains. After the name, a curly-bracket delimited block
+follows, containing definitions of local value domains, singletons,
+kinds, relations and actions and views. An example of an empty data
+model is shown in the following listing.
+
+\begin{lstlisting}[language=edma]
+DataModel DivingSchool
+{
+
+}
+\end{lstlisting}
+
+Data model definitions can be split up into several blocks. In that
+way, the user might create different parts of the data model in different
+files. The following example shows one single data model, defined
+over two files. Each of the two partial definitions of the single
+model contains a local value domain definition. Thus, the DivingSchool
+data model will contain two local value domains.
+
+\begin{lstlisting}[language=edma]
+DataModel DivingSchool
+{
+	ValueDomain WetsuitSize : Enum[XS, S, M, L, XL, XXL]
+}
+\end{lstlisting}
+\hrule
+\vspace{8pt}
+\begin{lstlisting}[language=edma]
+DataModel DivingSchool
+{
+	ValueDomain BootSize : Integer[25..48]
+}
+\end{lstlisting}
+
+
+\paragraph{Kinds}
+
+The definition of kinds follows the same style as the definition of
+data models. First, the keyword \textbf{Kind} is given, followed by
+the name of the kind. The name of the kind must start with a capital
+letter. Like structs value domains, kinds have a comma separated list
+of attributes. The following example shows a definition of a kind
+inside a data model.
+
+\begin{lstlisting}[language=edma]
+DataModel DivingSchool
+{
+	Kind Person
+	{
+		firstName     : Name,
+		middleName ?  : Name,
+		lastName      : Name,
+		phoneNumber + : Phone,
+		email     ? + : Email
+	}
+}
+\end{lstlisting}Like in structs, attributes can be declared optional by adding a question
+mark after the name. Further more, attributes in kinds may be declared
+mutable with a plus-sign after the name (this is not possible in value
+domains, as they are immutable.)
+
+When defining a kind, EDMA automatically defines a local value domain
+resembling the entities of that kind. The local value domain corresponding
+to the one generated from the previous listing, is shown in the following
+listing.
+
+\begin{lstlisting}[language=edma]
+ValueDomain Person : Struct
+{
+	firstName    : Name,
+	middleName ? : Name,
+	lastName     : Name,
+	phoneNumber  : Phone,
+	email      ? : Email
+}
+\end{lstlisting}
+
+In some cases, the user might want to make the generated local value
+domain visible outside the data model. This can be done by declaring
+the kind public, and optionally, declaring it public under a certain
+name. This can be done with the \textbf{Publish} and \textbf{Publish
+As} keywords respectively. If no name is given, the local value domain
+will be published under its own name. In the following example, a
+Person kind is published as DivingSchoolPerson (omitting the details.)
+
+\begin{lstlisting}[language=edma]
+Kind Person Publish As DivingSchoolPerson { ... }
+\end{lstlisting}
+
+Further more, a kind can extend another kind. Kind extension is declared
+with the keyword \textbf{extends}, as shown in the following example
+(omitting the details.)
+
+\begin{lstlisting}[language=edma]
+Kind Student extends Person { ... }
+\end{lstlisting}
+
+A kind can have indexes defined on any of its attributes, or list
+of attributes. An index is declared on one or many attributes by writing
+one of the three keywords, representing the three kinds of indexes,
+\textbf{Unique}, \textbf{Compare} and \textbf{Equals}. The keyword
+is followed by a comma separated list of attribute names, enclosed
+in parenthesis. An example of a Person kind with a compare index is
+shown in the following listing.
+
+\begin{lstlisting}[language=edma]
+Kind Person
+{
+	firstName : Name,
+	lastName  : Name,
+	Compare(firstName, lastName)
+}
+\end{lstlisting}
+
+The index follows the natural order of the value domains.
+
+
+\paragraph{Singletons}
+
+Singletons are defined in the same style as kinds, but with the \textbf{Singleton}
+keyword used instead of the \textbf{Kind} keyword.
+
+
+\paragraph{Relations}
+
+A relation is defined by its name, the type of relation, and the two
+kinds that participate in the relation, and their roles. A relation
+definition starts with the \textbf{Relation} keyword, followed by
+the name of the relation. The relation name must start with a capital
+letter. After the relation name comes the first relation participant,
+the relation type, and the second participant. Each participant is
+written as two colon-separated parts, the name of a kind, and the
+lowercase role name. The user can leave out the colon and role, in
+which case the role will be the same as the kind. An example of two
+relation definitions are showed in the following listing.
+
+\begin{lstlisting}[language=edma]
+Relation StudentEnrolled Course >-< Person : student
+Relation TeacherEnrolled Course >-- Person : teacher
+\end{lstlisting}
+
+The relation type is shown with the \texttt{\textbf{>-<}} symbol,
+to mimic crows-feet notation. The three relation types available are
+\texttt{\textbf{>-<}}, \texttt{\textbf{>-{}-}} and \texttt{\textbf{-{}-{}-}}.
+The ``many'' part of a many-to-one or one-to-many relation is always
+written on the left side.
+
+Indexes can be defined on relations, as well as on indexes. When defined
+on a relation, the user must choose on which of the participants the
+index is placed, with the \textbf{On} keyword. The index declaration
+is placed inside a block delimited by curly brackets. The following
+example shows a relation with a unique index.
+
+\begin{lstlisting}[language=edma]
+Relation Enrollment Course >-< Person : student
+{
+	Unique On Person(firstName, lastName)
+}
+\end{lstlisting}
+
+If the relation is between two of the same kinds, a colon and role
+name can be supplied after the kind name.
+
+Constraints can be declared on relations, by using the same syntax
+as constraints in value domains. The constraints must be written inside
+the block, where also the relation indexes are written.
+
+
+\paragraph{Actions and Views}
+
+Actions and views are defined inside a data model block, starting
+with either of the keywords \textbf{Action} or \textbf{View}. The
+syntax of actions and views are similar, besides the keyword. After
+the keyword follows the name, which must start with a lowercase letter.
+The name is followed by a block delimited by curly braces. Inside
+the block, four keywords are recognized: \textbf{Input}, \textbf{Output},
+\textbf{ErrorCodes} and \textbf{Description}. The input and output
+declarations are followed by colon, and a comma separated list of
+attributes, given either as inputs or outputs. An error code is written
+as a number (the error code), a hyphen for separation, and quoted
+error text. The description keyword lets the user write a quoted string,
+acting as a description. The following example shows the definition
+of a view and an action.
+
+\begin{lstlisting}[language=edma]
+Action createTeacher
+{
+	Description: "Create a new teacher from a person."
+	Input: 
+		personID : PersonID,
+		salary : PosInt
+	Output:
+		id : TeacherID
+	ErrorCodes:
+		1 - "Person does not exist",
+		2 - "Person is already a teacher"
+}
+
+View getCoursesFromStudent
+{
+	Description:
+		"Returns a list of courses, 
+		given a student id"
+	Input:
+		sid : StudentID
+	Output:
+		courses : CourseList
+	ErrorCodes:
+		1 - "Non-existing student"
+	
+}
+\end{lstlisting}The input, output, description, and error code sections can be written
+in any order.
+
+
+\paragraph{Comments}
+
+The syntax for comments is like that of Java, \textbf{//} denounces
+a line comment, while \textbf{/{*}} and \textbf{{*}/} is used for
+block-commenting.

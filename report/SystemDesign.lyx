@@ -1,0 +1,439 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{wrapfig}
+\usepackage{nameref}
+\usepackage{todonotes}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman palatino
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "captionpos=b,frame=lrtb"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstdefinelanguage{edma}%
+\end_layout
+
+\begin_layout Plain Layout
+
+  {
+\end_layout
+
+\begin_layout Plain Layout
+
+	morekeywords={[0]ValueDomain, on, Kind, DataModel, Relation, Singleton,
+ Action, View, Unique, Equals, Compare, Integer, Long, Double, Float, String,
+ Struct, Enum, OneOf, ListOf, Map, As, Publish, true, false, MIN, MAX, extends,
+ Struct, Enum, OneOf, ListOf, Map, As, Publish, true, false, MIN, MAX, extends, Struct, Enum, OneOf, List, Map, As, Publish, true, false, MIN, MAX, extends,
+ Extends, Constraints, Boolean, ?, +, >-<, >--, ---},
+\end_layout
+
+\begin_layout Plain Layout
+
+    sensitive=true,
+\end_layout
+
+\begin_layout Plain Layout
+
+	morecomment=[l]{//},
+\end_layout
+
+\begin_layout Plain Layout
+
+	morecomment=[s]{/*}{*/},
+\end_layout
+
+\begin_layout Plain Layout
+
+	morestring=[b]",
+\end_layout
+
+\begin_layout Plain Layout
+
+	showstringspaces=false
+\end_layout
+
+\begin_layout Plain Layout
+
+}%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+definecolor{keywordBlue}{rgb}{0,0,0.75}%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+definecolor{commentGreen}{rgb}{0,0.4,0}%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+definecolor{identifier}{rgb}{0.2,0.2,0.2}%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstset{xleftmargin=0.5cm,basicstyle=
+\backslash
+small, tabsize=3}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+EDMA System Design
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+The EDMA system consists of the following main components:
+\end_layout
+
+\begin_layout Itemize
+A simple 
+\emph on
+domain specific language
+\emph default
+ for defining value domains, the structure of the data model and the interface
+ for the data model
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "data model definition"
+symbol "Data model definition"
+description "A definition of a data model, ie. the elements that can be contained in a data model. A data model definition is often written in a Data Definition Language (DDL), opposed to a Data Manipulation Language (DML)."
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+A 
+\emph on
+compiler
+\emph default
+ to transform the definition files into an instance of a 
+\emph on
+meta model.
+\end_layout
+
+\begin_layout Itemize
+A 
+\emph on
+generator
+\emph default
+ that uses the 
+\emph on
+meta model
+\emph default
+ instance to create: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+An internal Java API for the data model that reflects the structure of the
+ data model.
+ This API functions as an embedded DSL in java.
+\end_layout
+
+\begin_layout Itemize
+An external interface to the data model that applications can use to communicate
+ with the data model through.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+A 
+\emph on
+runtime system
+\emph default
+ used by the internal API to handle transaction control and persistence.
+\end_layout
+
+\begin_layout Standard
+The interface to the runtime system has been designed to allow flexibility
+ in the concrete implementations of the runtime system.
+\end_layout
+
+\begin_layout Standard
+This means that different runtime systems can deploy different strategies
+ for transaction control, data storage and persistence and the user can
+ switch between different runtime systems without making any changes to
+ his code.
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:tobiasBilledeAfEdma}
+\end_layout
+
+\end_inset
+
+ shows an overview of the EDMA system.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+clearpage
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{-1.5cm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=
+\backslash
+textwidth]{img/tobiasBilledeAfEdma.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Overview of the EDMA system.
+ Definitions of value domains, data model external interface and data model
+ structure are compiled into an instance of the meta model.
+ The generator takes the meta model instance and generates model specific
+ code including: Value domains, external data model interface and stub classes
+ for implementing the methods in the external interface, an internal data
+ model API that binds to the runtime system and various utility programs
+ specialized to operate on the specific data model.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:tobiasBilledeAfEdma}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+clearpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We have taken an object oriented approach where the data model can be seen
+ as a class where the structure of the data model is encapsulated from the
+ outside world.
+ The external interface of the data model is the public part that external
+ applications can use.
+ As with classes in object oriented languages, there can be several independent
+ instances of the same data model.
+\end_layout
+
+\begin_layout Standard
+Each method in the external interface represents a transaction on the data
+ model.
+ The semantic of the external interface is as if each of these methods where
+ synchronized on the same object.
+ The individual runtime system implementations may use more clever algorithms
+ for concurrency control, as long as the illusion of complete mutual exclusion
+ is kept intact.
+ This analogy is used in order to keep focus on the object oriented approach,
+ instead of a traditional database approach.
+\end_layout
+
+\begin_layout Standard
+The methods of the external interface are divided in two groups, 
+\emph on
+views
+\emph default
+ and 
+\emph on
+actions
+\emph default
+.
+ Views cannot change the state of the data model instance, only read it
+ (this resembles const methods in C++).
+ Actions can both read and change the state of the instance.
+\end_layout
+
+\begin_layout Standard
+In the following, we will describe the four main components in further detail,
+ starting with the meta model -- a very central element in the EDMA system.
+ Thereafter, we describe the compiler and the generator, followed by a descripti
+on of the example runtime system.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "SDMetaModel.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "SDLanguage.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "SDCompiler.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "SDGenerator.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+preview true
+filename "SDRuntimeSystem.lyx"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

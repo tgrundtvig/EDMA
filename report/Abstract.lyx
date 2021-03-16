@@ -1,0 +1,95 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Abstract
+In this thesis work, we design and implement a software tool to assist the
+ process of getting from an abstract data model defined in an arbitrary
+ domain to a thread safe, implementation in java that supports automated
+ durable persistence and seamless remote access without the need of an external
+ database.
+ We provide a convenient method to create domain specific fine grained data
+ types that can be used in the definition of the abstract model.
+ By using model driven development techniques we automatically gdefinition
+ and a java code generation tool that automatically generates an object
+ oriented representation of the defined model.
+ The generated object oriented model binds to a general runtime interface
+\end_layout
+
+\begin_layout Abstract
+We do this by designing and implementing a Java-based runtime, consisting
+ of a transaction module, a persistence module and an execution module,
+ all operating on a run-time meta-model, representing the user's data model.
+ The user's data model is defined in a data definition language designed
+ for the purpose, and compiled to object oriented Java-code, utilizing the
+ runtime.
+\end_layout
+
+\begin_layout Abstract
+By doing this, we have created a viable alternative to using relational
+ databases from an object-oriented language.
+ The solution is different from traditional object-relational mapping solutions,
+ in that it keeps the whole data model centralized.
+ 
+\end_layout
+
+\end_body
+\end_document

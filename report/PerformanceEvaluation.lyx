@@ -1,0 +1,1524 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphicx}
+
+\lstdefinelanguage{edma}%
+  {
+morekeywords={[0]ValueDomain, on, Kind, DataModel, Relation, Singleton, Action, View, Unique, Equals, Compare, Integer, Long, Double, Float, String, Struct, Enum, OneOf, ListOf, Map, As, Publish, true, false, MIN, MAX, extends, Extends, Constraints, Boolean, ?, +, >-<, >--, ---},
+    sensitive=true,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/},
+morestring=[b]"
+}%
+\definecolor{keywordBlue}{rgb}{0,0,0.75}%
+\definecolor{commentGreen}{rgb}{0,0.4,0}%
+\definecolor{identifier}{rgb}{0.2,0.2,0.2}%
+\lstset{xleftmargin=0.5cm,basicstyle=\small}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman palatino
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:PerformanceEvaluation"
+
+\end_inset
+
+Performance Evaluation
+\end_layout
+
+\begin_layout Standard
+There are at least three main reasons for having performance evaluations:
+\end_layout
+
+\begin_layout Itemize
+To review the system with respect to its performance goals
+\end_layout
+
+\begin_layout Itemize
+To compare the performance of two or more similar systems
+\end_layout
+
+\begin_layout Itemize
+To find bottlenecks
+\end_layout
+
+\begin_layout Standard
+The investigations are implemented in more details, as described in this
+ section.
+ In order to get a good balance between testing systematically, and testing
+ with realistic data, we have used two data models in the testing phase.
+\end_layout
+
+\begin_layout Itemize
+The 
+\emph on
+Diving School
+\emph default
+ model.
+ This data model represents a realistic data model, i.e.
+ a model that would realistically appear in a small business setting.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Defines the kinds: Person, Student (extending Person), Teacher (extending
+ Person), CourseType and Course.
+\end_layout
+
+\begin_layout Itemize
+Defines relations for describing course dependency, student enrollment on
+ courses, passed courses for students, assigned teachers on courses, and
+ teaching abilities on course types.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The 
+\emph on
+Test Model
+\emph default
+: This data model is a more systematically build data model.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Defines the kinds: TestKindNoAttributes, TestKindOneAttribute, TestKindTwoAttrib
+utes, TestKindThreeAttributes, etc.
+ Each kind has the number of attributes that its name describes -- the attribute
+ is of type PosInt (a positive integer).
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Having the diving school model means that we can come up with tests that
+ are realistic, which can be easier to design than systematically and comprehens
+ively testing a long series of possible data model compositions.
+\end_layout
+
+\begin_layout Standard
+However, it is also interesting to systematically measure how much data
+ can actually be stored given a certain JVM heap size.
+ Having the systematic 
+\emph on
+test model
+\emph default
+ means that we can create some systematical tests, knowing exactly what
+ what is stored.
+\end_layout
+
+\begin_layout Subsection
+Memory Consumption
+\end_layout
+
+\begin_layout Standard
+In order to find out the memory consumption of stored entities, we instantiate
+ a Test Data model, and fill it with entities of type TestKindOneAttribute
+ -- an entity containing only one attribute, an integer, and the mandatory
+ entity ID -- a Long.
+ Before and after each insertion, the memory usage of the virtual machine
+ is found, and the difference is calculated.
+\end_layout
+
+\begin_layout Itemize
+Precondition: An instance of the Test Data Model is running.
+\end_layout
+
+\begin_layout Itemize
+Flow of events:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Run garbage collection.
+\end_layout
+
+\begin_layout Enumerate
+Stop the current thread for a short time (to let the garbage collection
+ finish.)
+\end_layout
+
+\begin_layout Enumerate
+Run finalization.
+\end_layout
+
+\begin_layout Enumerate
+Stop the current thread for a short time.
+\end_layout
+
+\begin_layout Enumerate
+Get the amount of free memory in the runtime.
+\end_layout
+
+\begin_layout Enumerate
+Insert a new unique integer into the data model instance.
+\end_layout
+
+\begin_layout Enumerate
+Get the amount of free memory in the runtime.
+\end_layout
+
+\begin_layout Enumerate
+Calculate the amount of used memory (write it to a file) and go back to
+ step 1.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Since we cannot force the JVM to run the garbage collector, it can be difficult
+ to determine the exact amount of memory used, and the result might not
+ be reliable.
+ However, by experiments we have found that running the garbage collector
+ and the finalization, and letting the main thread sleep while they run
+ (i.e.
+ letting them resume after garbage collection and finalization is finished)
+ often gives results as expected.
+\end_layout
+
+\begin_layout Subsubsection
+Results
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:memUsageInsertionPosInt}
+\end_layout
+
+\end_inset
+
+ shows the memory usage of a number of insertions of entities with one attribute
+ each.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width = 0.8
+\backslash
+textwidth, trim = 0 15cm 0 0] {img/memoryConsumption_posint.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{The memory usage}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:memUsageInsertionPosInt}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Discussion
+\end_layout
+
+\begin_layout Standard
+Ideally, each insertion would take up the same amount of memory, but figure
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:memUsageInsertionPosInt}
+\end_layout
+
+\end_inset
+
+ suggests otherwise.
+ The very first insertion is shown to cost 49128 bytes.
+ The excessive size can be attributed to class loading, which is performed
+ at the first initialization of a given object.
+ After the first insertion, the memory usage for each inserted integer is
+ 296 bytes, then dropping to 64 bytes after 100 insertions.
+ At the 128th insertion, the memory usage for each insertion increases to
+ 96 bytes, and it stays at this level for the rest of the insertions.
+ It is, however, difficult to conclude what causes these memory changes,
+ at these exact points in time.
+\end_layout
+
+\begin_layout Standard
+The spikes that are seen at insertion number 12, 24, 48, 96, 192 and 384
+ are related to the expansion of hash maps.
+\end_layout
+
+\begin_layout Standard
+96 bytes for storing an integer is a significant memory overhead, caused
+ by storing the data in our Entry objects.
+ It can be explained by the many levels of wrapping of values into objects,
+ that occurs in EDMA.
+ The diagram shown in figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:valueStorageOverhead}
+\end_layout
+
+\end_inset
+
+ shows the wrapping that occurs when storing an integer value in EDMA.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=
+\backslash
+textwidth]{img/valueStorage.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{This diagram shows the wrapping that occurs when storing data values
+ in EDMA.
+ A Map.Entry object holds a key reference and a value reference to the Entity
+ object, wrapping the array containing the data value (the bold box).}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:valueStorageOverhead}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The diagram shows several contributions to the excessive memory use -- object
+ headers take up 8 or 16 bytes (on 32 bit and 64 bit platforms respectively),
+ and the JVM performs 8 byte alignment 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cite{dieckmann1999study}
+\end_layout
+
+\end_inset
+
+, contributing to unnecessary allocation.
+ This is further enhanced when having many instances of small objects.
+ The storage of the bold-boxed integer in figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:valueStorageOverhead}
+\end_layout
+
+\end_inset
+
+ adds up to a total of 96 bytes, like the graph in figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:memUsageInsertionPosInt}
+\end_layout
+
+\end_inset
+
+ suggests.
+\end_layout
+
+\begin_layout Subsection
+Data Insertion Response Time
+\end_layout
+
+\begin_layout Standard
+The response time for inserting data is measured in the following procedure.
+\end_layout
+
+\begin_layout Itemize
+Precondition: An empty data model instance must be started.
+\end_layout
+
+\begin_layout Itemize
+Flow of events:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Prepare an entity to insert.
+\end_layout
+
+\begin_layout Enumerate
+Record the current time.
+\end_layout
+
+\begin_layout Enumerate
+Insert the prepared entity.
+\end_layout
+
+\begin_layout Enumerate
+Record the current time, and calculate the time difference.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The reason for the entity value to be prepared before the time taking starts,
+ is that we want to measure only the response time of inserting data --
+ not including creating the data values.
+\end_layout
+
+\begin_layout Subsubsection
+Results
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:insertionDvuResponse}
+\end_layout
+
+\end_inset
+
+ shows the response time of inserting entities.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width = 0.8
+\backslash
+textwidth, trim = 0 15cm 0 1cm] {img/insertionDvuResponse.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{This figure shows the response time of inserting new Person entities.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:insertionDvuResponse}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Discussion
+\end_layout
+
+\begin_layout Standard
+The response time for the very first insertion is rather high (31 ms), because
+ it includes class loading.
+ After classes have been loaded, the response time drops to around 0.3 ms.
+ After about 1200 insertions, the response time finds a stable level at
+ around 0.1 ms per insertion.
+\end_layout
+
+\begin_layout Subsection
+Data Insertion Throughput
+\end_layout
+
+\begin_layout Standard
+In order to measure the throughput when inserting data, the following procedure
+ is executed.
+\end_layout
+
+\begin_layout Itemize
+Precondition: An empty data model instance must be started.
+\end_layout
+
+\begin_layout Itemize
+Flow of events:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Create a number of worker threads, with the job of inserting a certain number
+ of entities.
+\end_layout
+
+\begin_layout Enumerate
+Record the current time.
+\end_layout
+
+\begin_layout Enumerate
+Start all the worker threads.
+\end_layout
+
+\begin_layout Enumerate
+Join all the worker threads (wait for their finish.)
+\end_layout
+
+\begin_layout Enumerate
+Record the current time, calculate the time difference and throughput.
+\end_layout
+
+\begin_layout Enumerate
+Clear the data model instance -- remove all entities.
+\end_layout
+
+\begin_layout Enumerate
+Increase the number of worker threads, and go back to step 1.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The test has been run, inserting 32768 Person entities, divided between
+ the number of worker threads.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Results
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:insertionDvuThroughput}
+\end_layout
+
+\end_inset
+
+ shows the insertion throughput, varied by the number of concurrent worker
+ threads.
+ It is seen that the single-threaded throughput measure is at the lowest,
+ running at 12 insertions/ms.
+ Running with two threads increases the throughput to 22 insertions/ms,
+ and with four threads the throughput is 44.
+ Running with up to 100 threads, the throughput varies between 46 and 57
+ insertions/ms.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width = 0.8
+\backslash
+textwidth, trim = 0 15cm 0 1cm] {img/insertionDvuThroughput.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{This figure shows the throughput (insertions per ms), as a function
+ of the number of concurrent threads.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:insertionDvuThroughput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+Running with more than 100 threads shows a decreasing tendency in the throughput.
+ This might be because either the execution buffer, or the persistence buffer,
+ is occasionally full -- they are both set to a maximum size of 100, in
+ the current implementation.
+ Using 200 or more threads, shows a drastic decrease in the throughput,
+ because both of the buffers are filled, causing blocking of the worker
+ threads.
+ Here, the throughput falls to about the same level as when using 2 threads
+ (around 20 insertions/ms.)
+\end_layout
+
+\begin_layout Subsubsection
+Discussion
+\end_layout
+
+\begin_layout Standard
+It is not obvious, why the graph looks like it does.
+ Going from one to two threads doubles the throughput as expected, but we
+ wouldn't expect much more throughput by using more than two threads.
+ A plausible explanation would be the overhead that is involved in changing
+ the state of threads, by calling wait and notify.
+ The two running units in our two step pipeline utilize two synchronized
+ buffers, causing many calls to wait and notify.
+ Using two threads, we keep the slowest of the two execution units (often
+ the persistence unit) busy However, when using 3 or more threads, both
+ the executor and the persist are kept busy most of the time, causing fewer
+ thread state changes.
+ This could explain why extra performance is gained using more than 2 threads.
+\end_layout
+
+\begin_layout Subsection
+Data Retrieval Response Time
+\end_layout
+
+\begin_layout Standard
+In order to measure the response time of retrieving data, we insert a large
+ number of Person entities into a running data model instance.
+ We then search for persons, that we know have been put into the data model
+ instance.
+\end_layout
+
+\begin_layout Itemize
+Precondition: A data model instance has been started, and 10000 Person entities
+ has been inserted.
+ The first and last name of each Person entity has additionally been stored
+ in a list.
+\end_layout
+
+\begin_layout Itemize
+Flow of events:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Get a random first name and last name from the list of inserted names.
+\end_layout
+
+\begin_layout Enumerate
+Record the current time.
+\end_layout
+
+\begin_layout Enumerate
+Run the view that retrieves Persons from the chosen first name and last
+ name.
+\end_layout
+
+\begin_layout Enumerate
+Record the current time, calculate the time difference, and go back to step
+ 1.
+\end_layout
+
+\end_deeper
+\begin_layout Subsubsection
+Results
+\end_layout
+
+\begin_layout Standard
+The response time when using two different indexes (a compare index and
+ an equals index) is shown in figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:retrievalDvuResponse}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width = 0.8
+\backslash
+textwidth, trim = 0 15cm 0 1cm]{img/retrievalDvuResponse.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{This figure shows the response time for searching for Persons with
+ a randomly chosen name (guaranteed to find at least 1), using two different
+ types of indexes.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:retrievalDvuResponse}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Discussion
+\end_layout
+
+\begin_layout Standard
+The response time lies around 0.16 ms to 0.30 ms when using the compare index
+ (which is based on a tree map), while the equals index (based on a hash
+ map) is slightly faster, ranging from 0.12 ms to 0.22 ms.
+\end_layout
+
+\begin_layout Subsection
+Data Retrieval Throughput
+\end_layout
+
+\begin_layout Standard
+Measuring the throughput of retrieving data is done by creating a variable
+ amount of worker threads, each retrieving a Person from the first name
+ and last name.
+\end_layout
+
+\begin_layout Itemize
+Preconditions: A data model instance is started, and 100.000 Person entities
+ has been inserted.
+ The first and last name of each Person entity has additionally been stored
+ in a list.
+\end_layout
+
+\begin_layout Itemize
+Flow of events:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Run garbage collection and finalization.
+\end_layout
+
+\begin_layout Enumerate
+Create a number of worker threads, each with the task of retrieving a person
+ from a first name and last name.
+\end_layout
+
+\begin_layout Enumerate
+Record the current time.
+\end_layout
+
+\begin_layout Enumerate
+Start all the worker threads.
+\end_layout
+
+\begin_layout Enumerate
+Join all the worker threads.
+\end_layout
+
+\begin_layout Enumerate
+Record the current time.
+\end_layout
+
+\begin_layout Enumerate
+Calculate the throughput, as the number of views executed per millisecond.
+\end_layout
+
+\begin_layout Enumerate
+Increase the number of worker threads, and go back to step 1.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+The worker threads together execute a total of one million views.
+\end_layout
+
+\begin_layout Subsubsection
+Results
+\end_layout
+
+\begin_layout Standard
+The results for the throughput measuring can be seen in figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:retrievalDvuThroughput}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width = 0.8
+\backslash
+textwidth, trim = 0 15cm 0 1cm]{img/retrievalDvuThroughput.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{This figure shows the throughput of having a number of threads searching
+ for Persons with randomly chosen names (guaranteed at least one hit).
+ Two different kinds of indexes are used, a compare index and an equals
+ index.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:retrievalDvuThroughput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The x-axis shows the number of concurrent threads to perform the views,
+ and the y-axis shows the calculated number of persons that was retrieved
+ per millisecond.
+\end_layout
+
+\begin_layout Standard
+Running with one thread gives a throughput of 13.75 views / ms with the compare
+ index, and 14.8 with the equal index.
+ Increasing the number of threads to 2 gives a compare index throughput
+ of 58 views / ms, while the equals index is 45 views / ms.
+ The throughput stabilizes at around 78 views / ms for the equals index,
+ and 67 views / ms for the compare index, as long as there are less than
+ 100 worker threads.
+ Using more than 100 threads, the throughput drops to about 30 views / ms.
+\end_layout
+
+\begin_layout Subsubsection
+Discussion
+\end_layout
+
+\begin_layout Standard
+The results show, as expected, that the equals index has a higher throughput
+ value than the compare index, and that running with multiple threads has
+ a great impact, compared to running with only one thread.
+ However, when the number of threads is higher than the size of the execution
+ buffer (here 100), the throughput drops to around 30 views / ms.
+\end_layout
+
+\begin_layout Subsection
+Interleaved Actions and Views
+\end_layout
+
+\begin_layout Standard
+In order to see how the number of actions affects the total throughput,
+ when running interleaved actions and views, we run the following procedure.
+\end_layout
+
+\begin_layout Itemize
+Precondition: A data model instance has been started, and 100.000 Person
+ entities has been inserted.
+\end_layout
+
+\begin_layout Itemize
+Flow of events:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $p_{action}$
+\end_inset
+
+, the probability of running an action instead of a view, is set to 0.
+\end_layout
+
+\begin_layout Enumerate
+While 
+\emph on
+
+\begin_inset Formula $p_{action}\leq1$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+50 worker threads are created, with the task of running either an action
+ or a view in each iteration, depending on 
+\begin_inset Formula $p_{action}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+The current time is recorded.
+\end_layout
+
+\begin_layout Enumerate
+All the worker threads are started.
+\end_layout
+
+\begin_layout Enumerate
+All the worker threads are joined.
+\end_layout
+
+\begin_layout Enumerate
+The current time is recorded.
+\end_layout
+
+\begin_layout Enumerate
+The total number of actions and views are determined.
+\end_layout
+
+\begin_layout Enumerate
+The total throughput, the view throughput and the action throughput is calculate
+d.
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $p_{action}$
+\end_inset
+
+ is increased by 0.02.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Subsubsection
+Results
+\end_layout
+
+\begin_layout Standard
+The result of running interleaved actions and views can be seen in figure
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:interleavedActionsAndViewsThroughput}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.8
+\backslash
+textwidth, trim=0 15cm 0 1cm] {img/interleavedActionsAndViewsThroughput.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{This graph shows the result of running interleaved actions and views.
+ 50 worker threads are set to run concurrently.
+ Each worker thread runs for a number of iterations, where each iteration
+ can run either an action or a view, determined by the probability factor
+ (the x-axis).
+ The throughput is shown on the y-axis.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:interleavedActionsAndViewsThroughput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Discussion
+\end_layout
+
+\begin_layout Standard
+The graph shown in figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:interleavedActionsAndViewsThroughput}
+\end_layout
+
+\end_inset
+
+ shows that the total throughput remains constant, even if the probability
+ of running actions increases.
+ The action throughput seems almost directly inverse to the view throughput,
+ which is contrary to our expectations.
+ Since our runtime system is able to run multiple views concurrently, but
+ not actions, we would expect a dropping total throughput, when increasing
+ the number of actions run.
+\end_layout
+
+\begin_layout Subsection
+Scalability
+\end_layout
+
+\begin_layout Standard
+Scalability denotes the possibilities of adding workload to the system.
+ Andre B.
+ Bondi of Bell Labs proposes definitions of 6 different scalability aspects
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bondi2000characteristics"
+
+\end_inset
+
+.
+ According to Bondi, there are at least the following aspects of scalability:
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Load
+\begin_inset space ~
+\end_inset
+
+Scalability -- describes how well a system is able to function gracefully
+ at light, moderate or heavy load, i.e.
+ mostly considering variance in the number of users.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Space
+\begin_inset space ~
+\end_inset
+
+Scalability -- describes how the memory requirements changes, as the amount
+ of data handled by a system changes.
+ The system can be considered spatially scalable, if the memory usage grows
+ sublinearly with the number of data items in question.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Space-Time
+\begin_inset space ~
+\end_inset
+
+Scalability -- describes the ability for a system to function gracefully,
+ when the amount of data changes by orders of magnitude.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Structural
+\begin_inset space ~
+\end_inset
+
+Scalability -- describes whether a system uses data structures or algorithms
+ that naturally limit the amount of data that can be contained or dealt
+ with.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Distance
+\begin_inset space ~
+\end_inset
+
+Scalability -- the ability for a system to operate over short as well as
+ long distances (considering issues such as reliability at drop-outs, timing
+ issues, noise, etc.)
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+Speed/Distance
+\begin_inset space ~
+\end_inset
+
+Scalability -- the ability for a system to operate at high speed over short
+ as well as long distances.
+\end_layout
+
+\begin_layout Standard
+Throughout the project, some of these scalability aspects has been prioritized
+ higher than others.
+ In the beginning of developing the EDMA system, although not formally stated
+ anywhere, it was the thought that it should be able to serve small businesses
+ with 
+\begin_inset Quotes eld
+\end_inset
+
+thousands
+\begin_inset Quotes erd
+\end_inset
+
+ of users (<10000).
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Load Scalability
+\end_layout
+
+\begin_layout Standard
+The load scalability mainly depends on the execution of actions and views,
+ together with the persistence.
+ According to Bondi, load scalability can be improved by not having unproductive
+ execution cycles in the program, avoiding busy waiting, and allow parallel
+ execution where possible.
+ As explained in the section about the transaction execution, EDMA is able
+ to execute multiple views at the same time.
+ However, only one action can be executed at the time, which puts a boundary
+ on the load scalability.
+ However, even if only one action can be executed at the time, heavy load
+ will have the system continue gracefully, until a certain degree, determined
+ by the maximum size of the execution buffer and the persistence buffer.
+ When these are both filled, throughput decreases drastically, as shown
+ in the test of data insertion throughput.
+\end_layout
+
+\begin_layout Subsubsection
+Space Scalability
+\end_layout
+
+\begin_layout Standard
+The space scalability depends on how data is stored in the runtime system,
+ and how it is persisted on the disk.
+\end_layout
+
+\begin_layout Standard
+In the runtime system, data is held in the memory, in the kind stores.
+ The kind stores hold all data entities in maps, with an ID as key (as a
+ long), and an Entity object as value.
+ The Entity contains an Object array, holding the actual attribute values.
+ However, the value domain system uses instance control, guaranteeing that
+ two equal values will only be instantiated once in the memory.
+ Therefore, the entities that are kept by the kind store may reuse each
+ others' values.
+ However, the kind store still has to hold separate Entity objects for each
+ entity, making it linearly growing with the amount of data.
+ This makes the system less scalable as seen from the spatial aspect.
+ The upper bound for the amount of data is decided by the choice of either
+ using Java maps, or maps from the JDBM3 library (the user chooses this
+ upon instantiation of the data model.) If the former is used, the upper
+ bound is determined by the amount of RAM that is available to the Java
+ Virtual Machine.
+ If the latter is used, the upper bound is determined by the disk size.
+\end_layout
+
+\begin_layout Subsubsection
+Space-Time scalability
+\end_layout
+
+\begin_layout Standard
+With respect to data search, EDMA uses tree maps for compare-indexes and
+ hash maps for equal-indexes, making it efficient.
+ If the user instead uses a custom made filter to search for data of a certain
+ kind, data is traversed linearly, hurting the space-time scalability.
+ Therefore, the user should be encouraged to use indexes as much as possible,
+ and applying custom filters as late in the search process as possible.
+\end_layout
+
+\begin_layout Subsubsection
+Structural scalability
+\end_layout
+
+\begin_layout Standard
+Naturally, there are limits for how much data can be stored.
+ If regular Java maps are used for storing the runtime data, the amount
+ of RAM accessible is a limit for the data amount, and the file system is
+ a limit for the log file size.
+ 
+\end_layout
+
+\begin_layout Standard
+From the user's point of view, some aspects of the EDMA system are structurally
+ scalable, while others are not.
+ There are some logical problems in changing a data model, after it has
+ been taken into use -- for example:
+\end_layout
+
+\begin_layout Itemize
+If a kind is removed, what should be done when the data model tries to load
+ the log file, where the kind existed?
+\end_layout
+
+\begin_layout Itemize
+If non-optional attributes are added to a kind, or a new kind with non-optional
+ attributes is added, what should be the values of the new attributes? When
+ the log file is loaded, how can kind entities be created, if there are
+ no stored values for the newly added attributes?
+\end_layout
+
+\begin_layout Itemize
+What should be done if a kind or an attribute is renamed?
+\end_layout
+
+\begin_layout Standard
+Some of these problems can be solved by having more interaction with the
+ user -- for example, in the case of renaming an element, the user could
+ explicitly tell EDMA the old name and the new name of the element, upon
+ instantiation.
+ In the case of newly added attributes, the user could either manually or
+ automatically supply the missing data, possibly adding null-data or temporary
+ 
+\begin_inset Quotes eld
+\end_inset
+
+dummy
+\begin_inset Quotes erd
+\end_inset
+
+ data (e.g.
+ 00000000 for phone number.)
+\end_layout
+
+\begin_layout Standard
+In this project, we haven't taken into account that the user should be able
+ to change the data model after it has been taken into use.
+ However, because of it's structure, the user is able to make the following
+ changes to a data model, after it has been taken into use (i.e.
+ data has been stored in the log file):
+\end_layout
+
+\begin_layout Itemize
+Adding kinds (after the last kind in the data model in the data model definition
+)
+\end_layout
+
+\begin_layout Itemize
+Adding optional attributes to kinds
+\end_layout
+
+\begin_layout Itemize
+Adding relations (after the last relation in the data model definition)
+\end_layout
+
+\begin_layout Itemize
+Adding actions and views
+\end_layout
+
+\begin_layout Itemize
+Adding indexes to existing kinds and relations
+\end_layout
+
+\begin_layout Standard
+The reason to only be able to be added 
+\begin_inset Quotes eld
+\end_inset
+
+in the end
+\begin_inset Quotes erd
+\end_inset
+
+, is that the runtime system uses the sequential order of the kind (0, 1,
+ 2, ...) in the definition file, rather than the kind name.
+ Adding a kind in the top, will therefore push all the other kinds one step
+ forward, which will invalidate the log file.
+ 
+\end_layout
+
+\begin_layout Standard
+The following is not possible without substantial changes to the system:
+\end_layout
+
+\begin_layout Itemize
+Removing or renaming kinds, attributes, relations, actions or views (renaming
+ or removing actions or views does not break anything in the runtime system
+ directly, but will break the user's code)
+\end_layout
+
+\begin_layout Itemize
+Adding non-optional attributes to kinds
+\end_layout
+
+\end_body
+\end_document

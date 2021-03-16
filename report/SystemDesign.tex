@@ -1,0 +1,90 @@
+\lstdefinelanguage{edma}%
+  {
+	morekeywords={[0]ValueDomain, on, Kind, DataModel, Relation, Singleton, Action, View, Unique, Equals, Compare, Integer, Long, Double, Float, String, Struct, Enum, OneOf, ListOf, Map, As, Publish, true, false, MIN, MAX, extends, Struct, Enum, OneOf, ListOf, Map, As, Publish, true, false, MIN, MAX, extends, Struct, Enum, OneOf, List, Map, As, Publish, true, false, MIN, MAX, extends, Extends, Constraints, Boolean, ?, +, >-<, >--, ---},
+    sensitive=true,
+	morecomment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	morestring=[b]",
+	showstringspaces=false
+}%
+\definecolor{keywordBlue}{rgb}{0,0,0.75}%
+\definecolor{commentGreen}{rgb}{0,0.4,0}%
+\definecolor{identifier}{rgb}{0.2,0.2,0.2}%
+\lstset{xleftmargin=0.5cm,basicstyle=\small, tabsize=3}
+
+
+\section{EDMA System Design}
+
+
+
+The EDMA system consists of the following main components:
+\begin{itemize}
+\item A simple \emph{domain specific language} for defining value domains,
+the structure of the data model and the interface for the data model\nomenclature[data model definition]{Data model definition}{A definition of a data model, ie. the elements that can be contained in a data model. A data model definition is often written in a Data Definition Language (DDL), opposed to a Data Manipulation Language (DML).}.
+\item A \emph{compiler} to transform the definition files into an instance
+of a \emph{meta model.}
+\item A \emph{generator} that uses the \emph{meta model} instance to create: 
+
+\begin{itemize}
+\item An internal Java API for the data model that reflects the structure
+of the data model. This API functions as an embedded DSL in java.
+\item An external interface to the data model that applications can use
+to communicate with the data model through.
+\end{itemize}
+\item A \emph{runtime system} used by the internal API to handle transaction
+control and persistence.
+\end{itemize}
+The interface to the runtime system has been designed to allow flexibility
+in the concrete implementations of the runtime system.
+
+This means that different runtime systems can deploy different strategies
+for transaction control, data storage and persistence and the user
+can switch between different runtime systems without making any changes
+to his code.
+
+Figure \ref{fig:tobiasBilledeAfEdma} shows an overview of the EDMA
+system.
+
+\clearpage
+\begin{figure}[h!]
+\hspace{-1.5cm}
+\includegraphics[width=\textwidth]{img/tobiasBilledeAfEdma.pdf}
+\caption{Overview of the EDMA system. Definitions of value domains, data model external interface and data model structure are compiled into an instance of the meta model. The generator takes the meta model instance and generates model specific code including: Value domains, external data model interface and stub classes for implementing the methods in the external interface, an internal data model API that binds to the runtime system and various utility programs specialized to operate on the specific data model.}
+\label{fig:tobiasBilledeAfEdma}
+\end{figure}
+\clearpage
+
+We have taken an object oriented approach where the data model can
+be seen as a class where the structure of the data model is encapsulated
+from the outside world. The external interface of the data model is
+the public part that external applications can use. As with classes
+in object oriented languages, there can be several independent instances
+of the same data model.
+
+Each method in the external interface represents a transaction on
+the data model. The semantic of the external interface is as if each
+of these methods where synchronized on the same object. The individual
+runtime system implementations may use more clever algorithms for
+concurrency control, as long as the illusion of complete mutual exclusion
+is kept intact. This analogy is used in order to keep focus on the
+object oriented approach, instead of a traditional database approach.
+
+The methods of the external interface are divided in two groups, \emph{views}
+and \emph{actions}. Views cannot change the state of the data model
+instance, only read it (this resembles const methods in C++). Actions
+can both read and change the state of the instance.
+
+In the following, we will describe the four main components in further
+detail, starting with the meta model -- a very central element in
+the EDMA system. Thereafter, we describe the compiler and the generator,
+followed by a description of the example runtime system.
+
+\input{SDMetaModel.tex}
+
+\input{SDLanguage.tex}
+
+\input{SDCompiler.tex}
+
+\input{SDGenerator.tex}
+
+\input{SDRuntimeSystem.tex}

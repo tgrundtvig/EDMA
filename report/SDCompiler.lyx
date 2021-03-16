@@ -1,0 +1,352 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Compiler
+\end_layout
+
+\begin_layout Standard
+In this section, we describe the compilation of EDMA data definition files.
+ The compiler consists of three parts: a parser, a translator, and a generator.
+ An overview of the compilation process can be seen on Figure
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:compilation}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+includegraphics[scale=0.5]{img/compilation.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+caption{The compilation of EDMA data definition files is done in three steps:
+ parsing, compilation into a meta model, and generation of Java files.}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+label{fig:compilation}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A parser takes in one or many data model definition files with the extension
+ 
+\family typewriter
+.edma
+\family default
+.
+ While parsing the files, an abstract syntax tree (AST) representing the
+ data models, is being created.
+ The translator translates the AST into a meta model, which can then be
+ fed to the generator.
+ The generator is responsible for outputting Java classes and interfaces,
+ reflecting the user's data model definition.
+\end_layout
+
+\begin_layout Standard
+It is worth noting, that the abstract syntax tree defines the logical structure
+ of our environment and data models.
+ The important feature of the AST is that it makes the translator completely
+ independent of the concrete textual syntax used in the EDMA language.
+ Having the AST makes it easy to change the textual grammar and create other
+ syntaxes, and even create other types of syntaxes.
+ For example, it would be possible to implement a graphical user interface
+ for drawing data models, thus serving as a syntax.
+\end_layout
+
+\begin_layout Subsubsection
+Parser
+\end_layout
+
+\begin_layout Standard
+For defining the grammer of the textual syntax, we have used a parser /
+ scanner generator known as JavaCC.
+ From a JavaCC-grammer, a Java-based top-down LL(k) parser is generated.
+ The grammar specification is a variation of EBNF, mixed with Java code
+ for building an instance of the AST.
+\end_layout
+
+\begin_layout Subsubsection
+Translator
+\end_layout
+
+\begin_layout Standard
+The translator takes an AST representing the data model definition, and
+ creates a meta model instance.
+ The meta model instance can be seen as an internal representation of the
+ data model definition, and it is used by both the generator, and by the
+ EDMA runtime system.
+\end_layout
+
+\begin_layout Standard
+When the translator has got a complete AST from the parser, resembling the
+ user's data model, it does two things.
+ First, it checks whether everything is consistent within the AST.
+ Then, it simply translates the AST instance into a Meta Model instance.
+\end_layout
+
+\begin_layout Subparagraph
+AST Consistency
+\end_layout
+
+\begin_layout Standard
+In the grammar, syntactical rules governing the data model definition are
+ specified.
+ However, even if the language is only a data definition language, there
+ are also some semantic rules, that we must enforce.
+ Before translating the AST into a meta model, the translator checks for
+ the presence of circular extensions, unknown references, invalid ranges
+ in constraints, and value domain loops.
+\end_layout
+
+\begin_layout Description
+Circular
+\begin_inset space ~
+\end_inset
+
+Extensions -- The kinds Person and Student could be defined to extend each
+ other.
+ Instantiation of either would require an instance of the other to exist.
+ Therefore, we prohibit the user from making circular extensions of kinds.
+\end_layout
+
+\begin_layout Description
+Unknown
+\begin_inset space ~
+\end_inset
+
+References -- Wherever the user has written a reference to an attribute
+ name or a kind name, it must be checked whether the given attribute or
+ kind is actually defined.
+\end_layout
+
+\begin_layout Description
+Value
+\begin_inset space ~
+\end_inset
+
+Domain
+\begin_inset space ~
+\end_inset
+
+Range
+\begin_inset space ~
+\end_inset
+
+Checks -- Since the user can specify ranges on numerical value domains,
+ we have to check that the ranges supplied actually make sense.
+ For example having a minimum value that is greater than the maximum value,
+ should be invalid.
+\end_layout
+
+\begin_layout Description
+Value
+\begin_inset space ~
+\end_inset
+
+Domain
+\begin_inset space ~
+\end_inset
+
+Loops -- Having immutable value domains may be tricky for the unaware user.
+ Without any check for loops, the user would be able to define value domains
+ for which there could never be a valid value.
+ A value domain A of type Struct, could contain an attribute b, of type
+ 
+\family typewriter
+B
+\family default
+.
+ Likewise, a value domain B of type Struct could contain an attribute of
+ type A.
+ This is shown on the listing below.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain A : Struct {
+\end_layout
+
+\begin_layout Plain Layout
+
+  b : B
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain B : Struct {
+\end_layout
+
+\begin_layout Plain Layout
+
+  a : A
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+Since in A, b is not optional, it must be supplied at the instantiation
+ of A.
+ Similarly, when creating a value of B, a value of A must be supplied.
+ The user could declare a type of B, and set it to null, and feed it to
+ A upon creation, but this will make the instantiation of B fail with a
+ nullpointer exception.
+ Since the user might accidentially create loops, by having many different
+ inter-related value domains, we have put a check into the compiler, to
+ make it fail as early as possible.
+\end_layout
+
+\begin_layout Standard
+As soon as an error has been found in the AST, we print out the problem,
+ the file name and the line number where the error occurred.
+ Each element in the AST is created with the file name and line number of
+ the statement, that was the source of it's creation.
+ Therefore, we can easily print it out when an error occurs in the compilation
+ stage.
+\end_layout
+
+\begin_layout Standard
+After the meta model has been created, the compiler invokes the Generator,
+ which then starts generating the model-specific Java code.
+\end_layout
+
+\end_body
+\end_document

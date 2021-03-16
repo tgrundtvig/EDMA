@@ -1,0 +1,190 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Future Work
+\end_layout
+
+\begin_layout Standard
+There are a number of features that could still be implemented in EDMA,
+ especially related to usability.
+ By trying to use EDMA in various situations, we have found that the time
+ the user spends on reaching a readily usable data model can be reduced.
+ For example, we could auto-generate CRUD actions and views (methods for
+ Creating, Reading, Updating and Deleting).
+\end_layout
+
+\begin_layout Description
+CRUD
+\begin_inset space ~
+\end_inset
+
+Actions
+\begin_inset space ~
+\end_inset
+
+and
+\begin_inset space ~
+\end_inset
+
+Views One way of helping the user, is to auto-generate actions and methods
+ for creating, reading, updating and deleting (CRUD) data entities.
+ At first, it was our philosophy that the user should only have the actions
+ and views defined by himself, in order to not clutter the API with functions
+ that wouldn't be used.
+ However, by creating data models with our system ourselves, we have found
+ that we almost always end up creating the most basic actions and views
+ for each kind:
+\end_layout
+
+\begin_layout Itemize
+Insert a new entity of a given kind.
+\end_layout
+
+\begin_layout Itemize
+Get entities based on attribute values (defined from indexes).
+\end_layout
+
+\begin_layout Itemize
+Update one of the mutable attributes in a kind.
+\end_layout
+
+\begin_layout Itemize
+Delete an entity.
+\end_layout
+
+\begin_layout Standard
+As of the current version of EDMA, the user has to define these 4 methods
+ in an 
+\family typewriter
+.edma
+\family default
+-file, and implement them in the generated Java stub-code.
+ Further more, for each relation, the user often needs to connect two or
+ more entities, or to delete a connection between two or more entities.
+\end_layout
+
+\begin_layout Standard
+It would require two changes to the system, to auto-generate CRUD and relation-m
+ethods:
+\end_layout
+
+\begin_layout Itemize
+Changing the compiler to add meta-actions and meta-views, for each kind
+ and each relation.
+\end_layout
+
+\begin_layout Itemize
+Changing the generator to generate the implementations of the actions and
+ views, instead of having the user to fill in stub-code in the auto-generated
+ actions and views.
+\end_layout
+
+\begin_layout Standard
+Both of these two tasks are trivial, and could be implemented in a short
+ time.
+ It would spare the user for the tasks of implementing tedious, simple actions
+ and views, at the cost of putting possibly unused functions in the generated
+ data model API.
+\end_layout
+
+\begin_layout Description
+Multiple
+\begin_inset space ~
+\end_inset
+
+APIs In a setting with many users, it is often possible to distinguish between
+ access rights of users.
+ An extension to the data model would be to group actions and views into
+ interfaces.
+ For example, an interface for an Admin user could contain one set of actions
+ and views, while an interface for a User could contain a different set
+ of actions and views.
+\end_layout
+
+\begin_layout Description
+Simplifying
+\begin_inset space ~
+\end_inset
+
+the
+\begin_inset space ~
+\end_inset
+
+Value
+\begin_inset space ~
+\end_inset
+
+Domain
+\begin_inset space ~
+\end_inset
+
+System The value domain system can be made more simple, by removing some
+ of the primitive types.
+ For example, the types Integer and Long could be substituted with a single
+ Number type, and the Float and Double types could be substituted with a
+ single Decimal type.
+ By inspecting range constraints it is possible to determine best the representa
+tion on the underlying system (in our case Java.)
+\end_layout
+
+\end_body
+\end_document

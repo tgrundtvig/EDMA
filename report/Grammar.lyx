@@ -1,0 +1,1114 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:EDMALanguageGrammar"
+
+\end_inset
+
+EDMA Language Grammar
+\end_layout
+
+\begin_layout Standard
+Here, we present the grammar for the EDMA language.
+ The grammar is written in JavaCC, and the grammar listed shows an EBNF
+ representation of the syntax.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\sffamily},breaklines=true,showstringspaces=false,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+SKIP :
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  " "
+\end_layout
+
+\begin_layout Plain Layout
+
+| "
+\backslash
+t"
+\end_layout
+
+\begin_layout Plain Layout
+
+| "
+\backslash
+r"
+\end_layout
+
+\begin_layout Plain Layout
+
+| "
+\backslash
+n"
+\end_layout
+
+\begin_layout Plain Layout
+
+| <"//" (~[ "
+\backslash
+n", "
+\backslash
+r" ])*
+\end_layout
+
+\begin_layout Plain Layout
+
+    (
+\end_layout
+
+\begin_layout Plain Layout
+
+      "
+\backslash
+n"
+\end_layout
+
+\begin_layout Plain Layout
+
+    | "
+\backslash
+r"
+\end_layout
+
+\begin_layout Plain Layout
+
+    | "
+\backslash
+r
+\backslash
+n"
+\end_layout
+
+\begin_layout Plain Layout
+
+    )>
+\end_layout
+
+\begin_layout Plain Layout
+
+| <"/*">: INSIDE_COMMENT 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+<INSIDE_COMMENT>SKIP :
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  <"*/">: DEFAULT
+\end_layout
+
+\begin_layout Plain Layout
+
+| <~[]>
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+TOKEN :
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  <DECIMAL : <NUMBER> "." <DIGITS>>
+\end_layout
+
+\begin_layout Plain Layout
+
+| <NUMBER : ("-")?<DIGITS>>
+\end_layout
+
+\begin_layout Plain Layout
+
+| <DIGITS : ([ "0"-"9" ])+>
+\end_layout
+
+\begin_layout Plain Layout
+
+| <MIN : "MIN">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <MAX : "MAX">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_NULL : "null">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_VALUEDOMAIN : "ValueDomain">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_DATAMODEL : "DataModel">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_KIND : "Kind">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_EXTENDS : ("e"|"E")"xtends"> // OPTION: Extends or extends?
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_RELATION : "Relation">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_SINGLETON : "Singleton">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_UNIQUE : "Unique">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_COMPARE : "Compare">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_EQUALS : "Equals">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_VOID  : "void">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_ACTION : "Action">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_INTERFACE : "Interface">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_VIEW : "View">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_DEFAULT : "Default">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_TRUE : "true">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_FALSE : "false">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_LISTOF : "List">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_ENUM : "Enum">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_MAP : "Map">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_ONEOF : "OneOf">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_STRUCT : "Struct">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_CONSTRAINTS : "Constraints">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_PUBLISH : "Publish">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_AS : "As">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_PUBLISHAS : "PublishAs">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_ON  : "On">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_INPUT : "Input">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_OUTPUT : "Output">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_ERRORCODES : "ErrorCodes">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <KEYWORD_DESCRIPTION : "Description">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <BOOLEAN_DOMAIN : "Boolean">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <STRING_DOMAIN : "String">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <FLOAT_DOMAIN : "Float">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <DOUBLE_DOMAIN : "Double">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <INTEGER_DOMAIN : "Integer">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <LONG_DOMAIN : "Long">
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+| <REGEX_RANGE : "[
+\backslash
+"" ~[ "
+\backslash
+"", "
+\backslash
+n", "
+\backslash
+r" ] "
+\backslash
+"]">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <CAMELCASE_WORD : [ "a"-"z" ] ([ "a"-"z", "A"-"Z", "0"-"9" ])*>
+\end_layout
+
+\begin_layout Plain Layout
+
+| <IDENTIFIER : [ "A"-"Z" ] ([ "a"-"z", "A"-"Z","0"-"9" ])*>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+| <ARROW : "->">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <L_PAR : "(">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <R_PAR : ")">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <L_BR : "{">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <R_BR : "}">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <L_SQBR : "[">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <R_SQBR : "]">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <COLON : ":">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <COMMA : ",">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <RELATION_SYMBOL :
+\end_layout
+
+\begin_layout Plain Layout
+
+    "---"
+\end_layout
+
+\begin_layout Plain Layout
+
+  | ">--"
+\end_layout
+
+\begin_layout Plain Layout
+
+  | ">-<">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <QUESTION_MARK : "?">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <PLUS : "+">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <MINUS : "-">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <LT : "<">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <GT : ">">
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+TOKEN :
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+  <Q_STRING : "
+\backslash
+""  (<ALLOWABLE_CHARACTERS>)* "
+\backslash
+"">
+\end_layout
+
+\begin_layout Plain Layout
+
+| <ALLOWABLE_CHARACTERS: ( (~["
+\backslash
+
+\backslash
+","
+\backslash
+""]) | ("
+\backslash
+
+\backslash
+" ( ["u"] ["0"-"9", "a"-"f", "A"-"F"]
+\end_layout
+
+\begin_layout Plain Layout
+
+														   ["0"-"9", "a"-"f", "A"-"F"]
+\end_layout
+
+\begin_layout Plain Layout
+
+														   ["0"-"9", "a"-"f", "A"-"F"]
+\end_layout
+
+\begin_layout Plain Layout
+
+														   ["0"-"9", "a"-"f", "A"-"F"]
+\end_layout
+
+\begin_layout Plain Layout
+
+      											     | ["
+\backslash
+"", "
+\backslash
+
+\backslash
+", "b", "f", "n", "r", "t"]
+\end_layout
+
+\begin_layout Plain Layout
+
+      											   )
+\end_layout
+
+\begin_layout Plain Layout
+
+      										  )
+\end_layout
+
+\begin_layout Plain Layout
+
+      					  )> 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/** Productions */
+\end_layout
+
+\begin_layout Plain Layout
+
+Input = { ValueDomain }, { DataModel }, <EOF>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain = <KEYWORD_VALUEDOMAIN>, <IDENTIFIER>, <COLON>,
+\end_layout
+
+\begin_layout Plain Layout
+
+  ( ValueDomainEnum | ValueDomainList | ValueDomainMap | ValueDomainStruct
+\end_layout
+
+\begin_layout Plain Layout
+
+    | ValueDomainSingle | ValueDomainOneOf ), 
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ ConstraintNodeList ];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ConstraintNodeList = <KEYWORD_CONSTRAINTS>, <L_SQBR>, ConstraintNode,
+\end_layout
+
+\begin_layout Plain Layout
+
+  { <COMMA>, ConstraintNode }, <R_SQBR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ConstraintNode = <CAMELCASE_WORD>, [ <Q_STRING> ];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomainEnum = <KEYWORD_ENUM>, <L_SQBR>, <IDENTIFIER>,
+\end_layout
+
+\begin_layout Plain Layout
+
+  { <COMMA>, <IDENTIFIER> }, <R_SQBR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomainList = <KEYWORD_LISTOF>, <LT>, <IDENTIFIER>, <GT>, [ Range ];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Range = <L_SQBR>, ( <MIN>, | ( <DECIMAL> | <NUMBER> ) ),
+\end_layout
+
+\begin_layout Plain Layout
+
+  ( <R_SQBR> | "..", ( <DECIMAL> | <NUMBER> | <MAX> ),
+\end_layout
+
+\begin_layout Plain Layout
+
+    <R_SQBR>
+\end_layout
+
+\begin_layout Plain Layout
+
+  );
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomainMap = <KEYWORD_MAP>, <LT>, <IDENTIFIER>, <COMMA>,
+\end_layout
+
+\begin_layout Plain Layout
+
+  <IDENTIFIER>, <GT>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomainStruct = 
+\end_layout
+
+\begin_layout Plain Layout
+
+  <KEYWORD_STRUCT>, <L_BR>
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ <CAMELCASE_WORD>, [ <QUESTION_MARK> ], <COLON>, <IDENTIFIER>,
+\end_layout
+
+\begin_layout Plain Layout
+
+    { <COMMA>, <CAMELCASE_WORD>, [ <QUESTION_MARK> ], <COLON>, <IDENTIFIER>
+ }
+\end_layout
+
+\begin_layout Plain Layout
+
+  ], <R_BR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomainSingle = 
+\end_layout
+
+\begin_layout Plain Layout
+
+    <BOOLEAN_DOMAIN> 
+\end_layout
+
+\begin_layout Plain Layout
+
+  | <STRING_DOMAIN>, Range [ RegexRange ] 
+\end_layout
+
+\begin_layout Plain Layout
+
+  | ( <FLOAT_DOMAIN> | <DOUBLE_DOMAIN> | <INTEGER_DOMAIN> | <LONG_DOMAIN>
+ ), Range;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+RegexRange = <L_SQBR>, <Q_STRING>, <R_SQBR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomainOneOf = <KEYWORD_ONEOF>, <LT>, <IDENTIFIER>, { <COMMA>, <IDENTIFIER>
+ }, <GT>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+DataModel = <KEYWORD_DATAMODEL>, <IDENTIFIER>, <L_BR>,
+\end_layout
+
+\begin_layout Plain Layout
+
+  { Kind | Relation | Singleton | ActionView | Interface | ValueDomain },
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ ConstraintNodeList ], <R_BR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Index =
+\end_layout
+
+\begin_layout Plain Layout
+
+  ( <KEYWORD_UNIQUE> | <KEYWORD_EQUALS> | <KEYWORD_COMPARE> ),
+\end_layout
+
+\begin_layout Plain Layout
+
+  <L_PAR>, <CAMELCASE_WORD>, { [ <COMMA> ], <CAMELCASE_WORD> }, <R_PAR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+RelationIndex = ( <KEYWORD_UNIQUE> | <KEYWORD_EQUALS> | <KEYWORD_COMPARE>
+ ),
+\end_layout
+
+\begin_layout Plain Layout
+
+  <KEYWORD_ON>, <IDENTIFIER>, [ <COLON>, <CAMELCASE_WORD> ],
+\end_layout
+
+\begin_layout Plain Layout
+
+  <L_PAR>, <CAMELCASE_WORD>, { [<COMMA>], <CAMELCASE_WORD> }, <R_PAR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Kind = < KEYWORD_KIND >, < IDENTIFIER >, [ < KEYWORD_EXTENDS >, < IDENTIFIER
+ > ],
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ <KEYWORD_PUBLISH >, [ <KEYWORD_AS > t=< IDENTIFIER > ] ],
+\end_layout
+
+\begin_layout Plain Layout
+
+  < L_BR >,
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ (  Attribute | Index |  ConstraintNodeList ),
+\end_layout
+
+\begin_layout Plain Layout
+
+  	{ < COMMA >, ( Attribute | Index | ConstraintNodeList ) }
+\end_layout
+
+\begin_layout Plain Layout
+
+  ], < R_BR >;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Attribute = ( <CAMELCASE_WORD>,
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ <QUESTION_MARK>, [ <PLUS> ] | <PLUS> [ <QUESTION_MARK> ] ] ), <COLON>,
+\end_layout
+
+\begin_layout Plain Layout
+
+  <IDENTIFIER>, [ <KEYWORD_DEFAULT>, <L_SQBR>, BasicValue, <R_SQBR> ];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+BasicValue = <Q_STRING> | <MIN> | <MAX> | <NUMBER> | <DECIMAL> | <KEYWORD_TRUE>
+\end_layout
+
+\begin_layout Plain Layout
+
+  | <KEYWORD_FALSE> | <IDENTIFIER> | <KEYWORD_NULL> | ListOfBasicValues;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ListOfBasicValues = <L_PAR>, BasicValue, { <COMMA>, BasicValue }, <R_PAR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation = <KEYWORD_RELATION>, <IDENTIFIER>, <IDENTIFIER>,
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ <COLON>, <CAMELCASE_WORD> ],
+\end_layout
+
+\begin_layout Plain Layout
+
+  RelationType, <IDENTIFIER>, [ <COLON>, <CAMELCASE_WORD> ],
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ <L_BR>, ( RelationIndex | ConstraintNodeList ),
+\end_layout
+
+\begin_layout Plain Layout
+
+	{ <COMMA>, ( RelationIndex | ConstraintNodeList ) }, <R_BR> ];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+RelationType = <RELATION_SYMBOL>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Singleton = <KEYWORD_SINGLETON>, <IDENTIFIER>,
+\end_layout
+
+\begin_layout Plain Layout
+
+ [ <KEYWORD_PUBLISH>, [ <KEYWORD_AS>, <IDENTIFIER> ] ],
+\end_layout
+
+\begin_layout Plain Layout
+
+  <L_BR>, Attribute , { <COMMA>, Attribute },
+\end_layout
+
+\begin_layout Plain Layout
+
+  [ ConstraintNodeList ], <R_BR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ActionView = ( <KEYWORD_ACTION> | <KEYWORD_VIEW> ), <CAMELCASE_WORD>, <L_BR>,
+\end_layout
+
+\begin_layout Plain Layout
+
+	{ <KEYWORD_INPUT>, <COLON>, NameAndTypeList
+\end_layout
+
+\begin_layout Plain Layout
+
+    | <KEYWORD_OUTPUT>, <COLON>, NameAndTypeList
+\end_layout
+
+\begin_layout Plain Layout
+
+    | <KEYWORD_ERRORCODES>, <COLON>, ErrorCodeList
+\end_layout
+
+\begin_layout Plain Layout
+
+    | <KEYWORD_DESCRIPTION>, <COLON>, <Q_STRING> },
+\end_layout
+
+\begin_layout Plain Layout
+
+  <R_BR>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ErrorCodeList = [ ErrorCode, { <COMMA>, ErrorCode } ];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ErrorCode = ( <DIGITS> | <NUMBER> ), <MINUS>, <Q_STRING>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+NameAndTypeList = NameAndType, { <COMMA>, NameAndType };
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+NameAndType = <CAMELCASE_WORD>, [ <QUESTION_MARK> ], <COLON>, <IDENTIFIER>;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,1676 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{wrapfig}
+\usepackage{nameref}
+\usepackage{todonotes}
+\usepackage{url}
+\usepackage{listings}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+EDMA Data Definition Language
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{sec:DataDefLanguage}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In designing the syntax for the EDMA language, we have striven to create
+ a comfortable and easily learned language, for data and interface definition.
+ In this section we describe the textual syntax through of the language
+ through the use of examples.
+ The complete EBNF grammar is found in Appendix 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:EDMALanguageGrammar"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The EDMA language is used to define both data and interfaces, using the
+ following structure:
+\end_layout
+
+\begin_layout Itemize
+Value Domains (global value domains)
+\end_layout
+
+\begin_layout Itemize
+Data Models
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Local Value Domains
+\end_layout
+
+\begin_layout Itemize
+Singletons
+\end_layout
+
+\begin_layout Itemize
+Kinds
+\end_layout
+
+\begin_layout Itemize
+Relations
+\end_layout
+
+\begin_layout Itemize
+Actions
+\end_layout
+
+\begin_layout Itemize
+Views
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Since value domains can be shared by several data models, they can be defined
+ outside the context of data models.
+ Data models are defined with a block-structure (delimited by curly brackets),
+ containing local value domains, singletons, kinds, relations, actions and
+ views inside the block.
+ White spaces and newline-characters are ignored, meaning that blocks can
+ be written on a single line.
+\end_layout
+
+\begin_layout Standard
+It is possible to divide the definition into different files.
+ For example, the user might want to have all the global value domains in
+ one file, kinds, relations and singletons in a second file, and actions
+ and views in a third file.
+ 
+\end_layout
+
+\begin_layout Standard
+The syntax makes use of a set of reserved keywords, partly to make the language
+ easy to read and understand for the user, partly to make it easier to parse.
+ In the following, examples of each element type are used to explain the
+ syntax.
+\end_layout
+
+\begin_layout Paragraph
+Value Domains
+\end_layout
+
+\begin_layout Standard
+Value domains are defined by a keyword 
+\series bold
+ValueDomain
+\series default
+ followed by an identifier, the name of the value domain.
+ The name of the value domain is written in camel case, and may contain
+ numbers, although the first character of a value domain name must be an
+ uppercase letter.
+ After the identifier, a colon is written, followed by a type of primitive.
+ There are 9 types of primitives, represented by the following keywords:
+ 
+\series bold
+Integer
+\series default
+, 
+\series bold
+Long
+\series default
+, 
+\series bold
+Boolean
+\series default
+, 
+\series bold
+Float
+\series default
+, 
+\series bold
+Double
+\series default
+, 
+\series bold
+Struct
+\series default
+, 
+\series bold
+Enum
+\series default
+, 
+\series bold
+OneOf
+\series default
+ and 
+\series bold
+List
+\series default
+.
+ The colon serves to represent a type declaration, and can be read as 
+\begin_inset Quotes eld
+\end_inset
+
+of type
+\begin_inset Quotes erd
+\end_inset
+
+.
+ After the primitive type has been given, the user can optionally declare
+ a constraint on the value domain.
+ An example of a value domain declaration is shown in the following listing.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Month : Integer[1..12]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the example given, the Month value domain is constrained to be in the
+ range 1 to 12, both inclusive.
+ For the number types, the constraint is always considering the range of
+ values.
+ The constraint is written in the form 
+\family typewriter
+[a..b]
+\family default
+, where 
+\family typewriter
+a
+\family default
+ and 
+\family typewriter
+b
+\family default
+ are numbers, and where 
+\family typewriter
+b
+\family default
+ 
+\begin_inset Formula $\geq$
+\end_inset
+
+ 
+\family typewriter
+a
+\family default
+.
+ Alternatively, the user can use the keywords 
+\series bold
+MIN
+\series default
+ and 
+\series bold
+MAX
+\series default
+ to represent the smallest or largest possible number.
+ 
+\end_layout
+
+\begin_layout Standard
+For the String primitive type, the constraint considers the length of the
+ string.
+ The user can also specify a regular expression in a quoted string between
+ 
+\series bold
+[
+\series default
+ and 
+\series bold
+]
+\series default
+.
+ Values matching the given regular expression are considered valid.
+\end_layout
+
+\begin_layout Standard
+The 
+\series bold
+Long
+\series default
+, 
+\series bold
+Float
+\series default
+ and 
+\series bold
+Double
+\series default
+ value domains are written in the same way as the Integer value domain,
+ using the respective keywords.
+\end_layout
+
+\begin_layout Standard
+The List value domain is written with the contained value domain given between
+ a pair of angle brackets.
+ Optionally, the user can declare a length constraint on the list on the
+ form 
+\family typewriter
+[a..b]
+\family default
+, as the range constraint on number value domains.
+ An example of a List definition is shown in the following listing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain StudentList : List< Student > [0..99]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The Enum value domain is written with the possible enumeration values in
+ square brackets, as shown in the example in the following listing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Animal : Enum[Cat, Dog, Horse]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Like the numerical constraint is written in square brackets, we can see
+ the enum values as being the constraint of the enum type, i.e.
+ the value of an Animal type must be one of the given enumeration types.
+\end_layout
+
+\begin_layout Standard
+The OneOf value domain is defined almost like the Enum value domain, but
+ with angle brackets, as shown in the following example.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Person : OneOf<Teacher, Pupil>
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This bears resemblance to the notion of parametrized types in Java, generics,
+ which is written as for example 
+\family typewriter
+ArrayList<Point>
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Structs are defined by declaring the primitive type 
+\series bold
+Struct
+\series default
+, followed by a block delimited by curly brackets.
+ Inside the block is written a comma separated list of attributes.
+ The following example shows the definition of a struct.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Person : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	age? : PositiveInteger,
+\end_layout
+
+\begin_layout Plain Layout
+
+	phone : PhoneNumber
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Each attribute consists of a name, a colon (again, to declare that the type,
+ or value domain, is following), and a value domain.
+ Attributes may be declared optional, by writing a question mark after the
+ attribute name.
+ The attribute type must be a non-primitive value domain.
+ 
+\end_layout
+
+\begin_layout Standard
+Since white spaces are ignored, it is possible to write structs in a more
+ compact style, like shown in the following example.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Date : Struct { y:Year, m:Month, d:Day }
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Because the attributes are separated by comma, the compact style is still
+ readable.
+ In contrast, the user can also add extra white space, as to impose a structure
+ to make it more readable.
+ This is shown in the following example.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Person : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	firstName : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	lastName  : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	age       : Age
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subparagraph
+Custom Constraints
+\end_layout
+
+\begin_layout Standard
+The user can write custom constraints on value domains.
+ Custom constraints are implemented manually by the user (in generated stub-file
+s), and thus can be arbitrarily complex.
+ The custom constraints are written immediately after the value domain definitio
+n, starting with the keyword 
+\series bold
+Constraints
+\series default
+, following a square bracket enclosed, comma separated list of constraints.
+ Each constraint is a camel case word with a lower-case first character,
+ and optionally, a double quoted string describing the constraint.
+ The following listing shown an example of a value domain Date with constraints
+ for disallowing non-work days.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Date : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	year : Year,
+\end_layout
+
+\begin_layout Plain Layout
+
+	month : Month,
+\end_layout
+
+\begin_layout Plain Layout
+
+	day : Day
+\end_layout
+
+\begin_layout Plain Layout
+
+} 
+\end_layout
+
+\begin_layout Plain Layout
+
+Constraints[leapYearCheck "Checks for leap year correctness",
+\end_layout
+
+\begin_layout Plain Layout
+
+ workDays "Checks that the date represents a work day"]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another example of a custom constraint is shown in the following listing.
+ The example shows a definition of the value domain OddNumber with a constraint
+ declaration.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain OddNumber : Integer 
+\end_layout
+
+\begin_layout Plain Layout
+
+Constraints[oddNumber "Checks that the number is odd"]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As the user can omit the quoted descriptions, constraints can be written
+ in a more compact form, as shown in the following listing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain WorkDate : Struct { y:Year,m:Month,d:Day }
+\end_layout
+
+\begin_layout Plain Layout
+
+Constraints[leapYear, notWeekend, notHoliday, notMothersDay]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Data Models
+\end_layout
+
+\begin_layout Standard
+Data models are defined using the keyword 
+\series bold
+DataModel
+\series default
+, followed by an identifier making up the name of the data model.
+ The name of the data model must be written with a capital first letter,
+ like the name of value domains.
+ After the name, a curly-bracket delimited block follows, containing definitions
+ of local value domains, singletons, kinds, relations and actions and views.
+ An example of an empty data model is shown in the following listing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+DataModel DivingSchool
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Data model definitions can be split up into several blocks.
+ In that way, the user might create different parts of the data model in
+ different files.
+ The following example shows one single data model, defined over two files.
+ Each of the two partial definitions of the single model contains a local
+ value domain definition.
+ Thus, the DivingSchool data model will contain two local value domains.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+DataModel DivingSchool
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	ValueDomain WetsuitSize : Enum[XS, S, M, L, XL, XXL]
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hrule
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{8pt}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+DataModel DivingSchool
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	ValueDomain BootSize : Integer[25..48]
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Kinds
+\end_layout
+
+\begin_layout Standard
+The definition of kinds follows the same style as the definition of data
+ models.
+ First, the keyword 
+\series bold
+Kind
+\series default
+ is given, followed by the name of the kind.
+ The name of the kind must start with a capital letter.
+ Like structs value domains, kinds have a comma separated list of attributes.
+ The following example shows a definition of a kind inside a data model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+DataModel DivingSchool
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Kind Person
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		firstName     : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		middleName ?  : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		lastName      : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		phoneNumber + : Phone,
+\end_layout
+
+\begin_layout Plain Layout
+
+		email     ? + : Email
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+Like in structs, attributes can be declared optional by adding a question
+ mark after the name.
+ Further more, attributes in kinds may be declared mutable with a plus-sign
+ after the name (this is not possible in value domains, as they are immutable.)
+\end_layout
+
+\begin_layout Standard
+When defining a kind, EDMA automatically defines a local value domain resembling
+ the entities of that kind.
+ The local value domain corresponding to the one generated from the previous
+ listing, is shown in the following listing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Person : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	firstName    : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	middleName ? : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	lastName     : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	phoneNumber  : Phone,
+\end_layout
+
+\begin_layout Plain Layout
+
+	email      ? : Email
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In some cases, the user might want to make the generated local value domain
+ visible outside the data model.
+ This can be done by declaring the kind public, and optionally, declaring
+ it public under a certain name.
+ This can be done with the 
+\series bold
+Publish
+\series default
+ and 
+\series bold
+Publish As
+\series default
+ keywords respectively.
+ If no name is given, the local value domain will be published under its
+ own name.
+ In the following example, a Person kind is published as DivingSchoolPerson
+ (omitting the details.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+Kind Person Publish As DivingSchoolPerson { ...
+ }
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Further more, a kind can extend another kind.
+ Kind extension is declared with the keyword 
+\series bold
+extends
+\series default
+, as shown in the following example (omitting the details.)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+Kind Student extends Person { ...
+ }
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A kind can have indexes defined on any of its attributes, or list of attributes.
+ An index is declared on one or many attributes by writing one of the three
+ keywords, representing the three kinds of indexes, 
+\series bold
+Unique
+\series default
+, 
+\series bold
+Compare
+\series default
+ and 
+\series bold
+Equals
+\series default
+.
+ The keyword is followed by a comma separated list of attribute names, enclosed
+ in parenthesis.
+ An example of a Person kind with a compare index is shown in the following
+ listing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+Kind Person
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	firstName : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	lastName  : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	Compare(firstName, lastName)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The index follows the natural order of the value domains.
+\end_layout
+
+\begin_layout Paragraph
+Singletons
+\end_layout
+
+\begin_layout Standard
+Singletons are defined in the same style as kinds, but with the 
+\series bold
+Singleton
+\series default
+ keyword used instead of the 
+\series bold
+Kind
+\series default
+ keyword.
+\end_layout
+
+\begin_layout Paragraph
+Relations
+\end_layout
+
+\begin_layout Standard
+A relation is defined by its name, the type of relation, and the two kinds
+ that participate in the relation, and their roles.
+ A relation definition starts with the 
+\series bold
+Relation
+\series default
+ keyword, followed by the name of the relation.
+ The relation name must start with a capital letter.
+ After the relation name comes the first relation participant, the relation
+ type, and the second participant.
+ Each participant is written as two colon-separated parts, the name of a
+ kind, and the lowercase role name.
+ The user can leave out the colon and role, in which case the role will
+ be the same as the kind.
+ An example of two relation definitions are showed in the following listing.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation StudentEnrolled Course >-< Person : student
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation TeacherEnrolled Course >-- Person : teacher
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The relation type is shown with the 
+\family typewriter
+\series bold
+>-<
+\family default
+\series default
+ symbol, to mimic crows-feet notation.
+ The three relation types available are 
+\family typewriter
+\series bold
+>-<
+\family default
+\series default
+, 
+\family typewriter
+\series bold
+>--
+\family default
+\series default
+ and 
+\family typewriter
+\series bold
+---
+\family default
+\series default
+.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+many
+\begin_inset Quotes erd
+\end_inset
+
+ part of a many-to-one or one-to-many relation is always written on the
+ left side.
+\end_layout
+
+\begin_layout Standard
+Indexes can be defined on relations, as well as on indexes.
+ When defined on a relation, the user must choose on which of the participants
+ the index is placed, with the 
+\series bold
+On
+\series default
+ keyword.
+ The index declaration is placed inside a block delimited by curly brackets.
+ The following example shows a relation with a unique index.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation Enrollment Course >-< Person : student
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Unique On Person(firstName, lastName)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If the relation is between two of the same kinds, a colon and role name
+ can be supplied after the kind name.
+\end_layout
+
+\begin_layout Standard
+Constraints can be declared on relations, by using the same syntax as constraint
+s in value domains.
+ The constraints must be written inside the block, where also the relation
+ indexes are written.
+\end_layout
+
+\begin_layout Paragraph
+Actions and Views
+\end_layout
+
+\begin_layout Standard
+Actions and views are defined inside a data model block, starting with either
+ of the keywords 
+\series bold
+Action
+\series default
+ or 
+\series bold
+View
+\series default
+.
+ The syntax of actions and views are similar, besides the keyword.
+ After the keyword follows the name, which must start with a lowercase letter.
+ The name is followed by a block delimited by curly braces.
+ Inside the block, four keywords are recognized: 
+\series bold
+Input
+\series default
+, 
+\series bold
+Output
+\series default
+, 
+\series bold
+ErrorCodes
+\series default
+ and 
+\series bold
+Description
+\series default
+.
+ The input and output declarations are followed by colon, and a comma separated
+ list of attributes, given either as inputs or outputs.
+ An error code is written as a number (the error code), a hyphen for separation,
+ and quoted error text.
+ The description keyword lets the user write a quoted string, acting as
+ a description.
+ The following example shows the definition of a view and an action.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma]
+\end_layout
+
+\begin_layout Plain Layout
+
+Action createTeacher
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Description: "Create a new teacher from a person."
+\end_layout
+
+\begin_layout Plain Layout
+
+	Input: 
+\end_layout
+
+\begin_layout Plain Layout
+
+		personID : PersonID,
+\end_layout
+
+\begin_layout Plain Layout
+
+		salary : PosInt
+\end_layout
+
+\begin_layout Plain Layout
+
+	Output:
+\end_layout
+
+\begin_layout Plain Layout
+
+		id : TeacherID
+\end_layout
+
+\begin_layout Plain Layout
+
+	ErrorCodes:
+\end_layout
+
+\begin_layout Plain Layout
+
+		1 - "Person does not exist",
+\end_layout
+
+\begin_layout Plain Layout
+
+		2 - "Person is already a teacher"
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+View getCoursesFromStudent
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+		"Returns a list of courses, 
+\end_layout
+
+\begin_layout Plain Layout
+
+		given a student id"
+\end_layout
+
+\begin_layout Plain Layout
+
+	Input:
+\end_layout
+
+\begin_layout Plain Layout
+
+		sid : StudentID
+\end_layout
+
+\begin_layout Plain Layout
+
+	Output:
+\end_layout
+
+\begin_layout Plain Layout
+
+		courses : CourseList
+\end_layout
+
+\begin_layout Plain Layout
+
+	ErrorCodes:
+\end_layout
+
+\begin_layout Plain Layout
+
+		1 - "Non-existing student"
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+The input, output, description, and error code sections can be written in
+ any order.
+\end_layout
+
+\begin_layout Paragraph
+Comments
+\end_layout
+
+\begin_layout Standard
+The syntax for comments is like that of Java, 
+\series bold
+//
+\series default
+ denounces a line comment, while 
+\series bold
+/*
+\series default
+ and 
+\series bold
+*/
+\series default
+ is used for block-commenting.
+\end_layout
+
+\end_body
+\end_document

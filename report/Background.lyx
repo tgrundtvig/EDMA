@@ -1,0 +1,1940 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{todonotes}
+\lstset{frame=lrtb,captionpos=b,basicstyle=\small}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman palatino
+\font_sans lmss
+\font_typewriter lmtt
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:DatabaseProgramming"
+
+\end_inset
+
+Background
+\end_layout
+
+\begin_layout Standard
+In this section, we describe some of the different approaches to working
+ with structured, persisted data models.
+ We base the following sections on our running example model of a diving
+ school.
+\end_layout
+
+\begin_layout Standard
+In the following present some of the problems that must be overcome, when
+ implementing the model in a purely object oriented manner, using relational
+ databases, and using object relational mapping.
+\end_layout
+
+\begin_layout Subsection
+Object Models
+\end_layout
+
+\begin_layout Standard
+Coding the diving school data model in a purely object oriented fashion
+ requires going through the following steps.
+\end_layout
+
+\begin_layout Itemize
+Create a class for each entity kind (Student, Teacher, Course, etc.)
+\end_layout
+
+\begin_layout Itemize
+For each one-to-one relation, create an reference going from each class
+ to the other.
+\end_layout
+
+\begin_layout Itemize
+For each one-to-many relation, e.g.
+ going from Teacher to Course, create a set of references to Course in Teacher,
+ and a single reference to Teacher in Course.
+\end_layout
+
+\begin_layout Itemize
+For each many-to-many relation, e.g.
+ going from Student to Course, create a set of references to Course in Student,
+ and vice versa.
+\end_layout
+
+\begin_layout Itemize
+For each is-a relation (e.g.
+ Student is an Person), let Student inherit from Person.
+\end_layout
+
+\begin_layout Standard
+Creating the diving school model will follow roughly these steps, but there
+ are some pitfalls.
+\end_layout
+
+\begin_layout Paragraph
+Relations
+\end_layout
+
+\begin_layout Standard
+In object oriented languages, only one-way associations are directly supported,
+ in the form of object references.
+ Having two-way associations requires carefully hooking up objects to each
+ other, for example by adding methods in all participants for adding and
+ deleting mutual connections.
+ For example, if a relation between Teacher and Course exists (one-to-many),
+ whenever a teacher is put on a course, two actions must happen:
+\end_layout
+
+\begin_layout Itemize
+The 
+\emph on
+teacher
+\emph default
+ reference in the course must be set to point at the teacher.
+\end_layout
+
+\begin_layout Itemize
+The 
+\emph on
+course
+\emph default
+ must be added to the teacher's set of courses.
+\end_layout
+
+\begin_layout Standard
+This book-keeping requires careful maintenance, and the connections must
+ only be changed through dedicated methods.
+ If, for example, another object gets hold of the teacher instance's set
+ of courses, the set might be manipulated without the teacher instance knowing.
+ Or the teacher-reference in the course instance might get changed, without
+ the teacher-instance being noticed of the association change.
+\end_layout
+
+\begin_layout Standard
+This problem may be manageable in relatively simple data models, but requires
+ more boilerplate-code for maintaining these relationships must be created,
+ making it a time consuming and error prone process.
+\end_layout
+
+\begin_layout Paragraph
+Indexes
+\end_layout
+
+\begin_layout Standard
+In systems with structured data, there is often a need to be able to search
+ for data pertaining to certain criteria.
+ For example, it might be desirable to be able to search for a set of students
+ with a certain name.
+ It might be sufficient to perform these searches by simple filtering.
+ However, if performance is important, it might be desirable to create an
+ index on the student names.
+\end_layout
+
+\begin_layout Standard
+In some cases, the criteria can be more complicated.
+ For example it might be desirable to get a set of all courses that a specific
+ student can attend.
+ It could be done by the following procedure:
+\end_layout
+
+\begin_layout Itemize
+For the specific student, get all passed course types (
+\emph on
+passed_course_types
+\emph default
+).
+\end_layout
+
+\begin_layout Itemize
+Create an empty result course set (
+\emph on
+res_course
+\emph default
+).
+\end_layout
+
+\begin_layout Itemize
+For each course type, if the course type is not in 
+\emph on
+passed_course_types
+\emph default
+, and all of its dependencies are in the 
+\emph on
+passed_course_types
+\emph default
+, add all instances of the course type, with correct state and date, to
+ 
+\emph on
+res_course
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+This is a tedious procedure to program.
+\end_layout
+
+\begin_layout Paragraph
+Extension
+\end_layout
+
+\begin_layout Standard
+In the diving school data model, a person can be both a Student and a Teacher
+ at the same time.
+ Therefore, we cannot use normal object oriented inheritance to model the
+ relationships between Person, Student and Teacher.
+ Instead, we can use composition, so a Student and a Teacher contains a
+ reference to a Person.
+ Since we know the full data model at compile time, it makes sense to add
+ downwards references from Person to Student and Teacher.
+ It would then be possible to examine whether a Person is also a Student
+ and/or a Teacher.
+\end_layout
+
+\begin_layout Paragraph
+Persistence
+\end_layout
+
+\begin_layout Standard
+Another issue with the object oriented data model, is that of persistence.
+ If a user wants to persist the data model, without mapping it to a database,
+ this has to be coded manually, using the available serialization mechanism
+ of the language.
+ 
+\end_layout
+
+\begin_layout Subsection
+Relational Databases
+\end_layout
+
+\begin_layout Standard
+Relational databases play an important role in many different kinds of applicati
+ons today.
+ With the emergence of object oriented languages, and the availability of
+ free and highly advanced database systems, the number of applications utilizing
+ databases has exploded.
+\end_layout
+
+\begin_layout Standard
+In many relational database systems, the actual data manipulation logic
+ is performed in a 
+\emph on
+Database Management System
+\emph default
+ (DBMS).
+ Data is manipulated and retrieved using SQL (Structured Query Language),
+ a declarative language, which lets the user express a prepositional truth
+ about the wanted result.
+ The DBMS consists of a number of subsystems, for example for managing user
+ access rights, receiving query strings, compiling query expressions, and
+ managing catalogs and indexes.
+ 
+\end_layout
+
+\begin_layout Standard
+There are several ways to communicate with the DBMS.
+ One way is to embed SQL into the host language program, and precompile
+ the program before the final compilation.
+ Another approach is to use a Call Level Interface -- an interface to call
+ the DBMS directly, from inside the host language.
+\end_layout
+
+\begin_layout Paragraph
+Embedded/Static SQL
+\end_layout
+
+\begin_layout Standard
+The principle in using 
+\emph on
+embedded SQL
+\emph default
+ (also known as 
+\emph on
+static SQL
+\emph default
+), is to write the necessary SQL queries inside the host language, delimited
+ by a special pair of tags.
+ The source code is then run through a precompiler, which looks for the
+ special tags, and starts parsing the SQL queries.
+ Here, the SQL queries can contain references to variables in the host language,
+ nicely integrating the two quite differently purposed languages.
+ The precompiler turns the SQL code into calls to library routines, accessing
+ the DBMS.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.6
+\backslash
+textwidth]{img/precompilingEmbeddedSql.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Pre-compiling embedded SQL.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:preCompilingEmbeddedSql}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Call Level Interface
+\end_layout
+
+\begin_layout Standard
+Another way of communicating with the DBMS from within the host programming
+ language, is via an implementation of a 
+\emph on
+call level interface
+\emph default
+ (CLI).
+ A call level interface is a definition of which commands can be sent to
+ the DBMS, and how the DBMS should answer.
+ Having a CLI means that there is a standard way of talking to the DMBS,
+ regardless of the vendor
+\begin_inset CommandInset citation
+LatexCommand cite
+key "venkatrao1995sql"
+
+\end_inset
+
+.
+ The CLI guarantees that there is a standardized way of doing low-level
+ communication, such as opening connections, issuing queries, and scanning
+ through results.
+\end_layout
+
+\begin_layout Standard
+The CLI contains functions for connections, diagnostics, functionality for
+ pulling out meta data, processing statements, pulling out attributes, and
+ allocating handles (connection, environment and statement handles).
+\end_layout
+
+\begin_layout Standard
+Using CLI in practice is mostly done implicitly, by using a driver that
+ builds on the CLI.
+ An example of such a driver is the ODBC (Open DataBase Connectivity) driver,
+ which lets a host program interact transparantly with a wide variety of
+ databases.
+ In different environments, different derivatives of the ODBC standard has
+ been constructed -- for example JDBC for Java.
+\end_layout
+
+\begin_layout Paragraph
+JDBC
+\end_layout
+
+\begin_layout Standard
+Using a JDBC, the developer is given a 
+\begin_inset Quotes eld
+\end_inset
+
+connector
+\begin_inset Quotes erd
+\end_inset
+
+, with which to connect to the database.
+ Then, using 
+\begin_inset Quotes eld
+\end_inset
+
+statement
+\begin_inset Quotes erd
+\end_inset
+
+ objects, the user writes queries as strings, which get sent to the database.
+\end_layout
+
+\begin_layout Standard
+The package 
+\family typewriter
+java.sql
+\family default
+ contains interfaces for communicating with JDBC drivers.
+ The first step in doing so, is to open a connection, which is done by invoking
+ a connect-method in a Connection interface.
+ The Connection interface also provides means for closing the connection
+ again, obtaining statement-objects, preparing statements, rolling back
+ or committing transactions.
+ The code example shown in Listing
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{lst:jdbc1}
+\end_layout
+
+\end_inset
+
+ shows the opening of a connection to a MySQL database in Java, followed
+ by the execution of a query.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[caption={Opening a connection and issuing a query, using
+ the Statement object.},label={lst:jdbc1},breaklines=true]
+\end_layout
+
+\begin_layout Plain Layout
+
+Connection con = DriverManager.getConnection(url, user, passwd);
+\end_layout
+
+\begin_layout Plain Layout
+
+Statement stmt = con.createStatement();
+\end_layout
+
+\begin_layout Plain Layout
+
+ResultSet res = stmt.executeQuery("SELECT * FROM Persons WHERE name = "+name);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\backslash
+vspace{-0.5cm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+The Connection object can be stored as a field in the class and reused,
+ until the program terminates.
+ Before the final termination of the program, the connection should be properly
+ closed (so that the database system doesn't have to wait for time out).
+ The Statement object is used for issuing queries to the database.
+ With each Statement object, there is a ResultSet object associated -- when
+ a query has been executed, a ResultSet can be retrieved.
+ The ResultSet object functions as a cursor, and resembles a traditional
+ iterator-object, that makes it possible to sequentially iterate over the
+ results.
+ 
+\end_layout
+
+\begin_layout Subparagraph
+Prepared Statements
+\end_layout
+
+\begin_layout Standard
+There are a couple of problems with the approach used in the code shown
+ in Listing
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{lst:jdbc1}
+\end_layout
+
+\end_inset
+
+.
+ First, there is a security issue, in that the 
+\family typewriter
+name
+\family default
+ variable can contain any text, making the application vulnerable to injection
+ attacks.
+ Secondly, what happens when the DBMS receives the query, is that it will
+ compile the query, and create an optimized query plan.
+ If we issue the same query multiple times, but with a different value for
+ 
+\family typewriter
+name
+\family default
+, the query gets compiled from scratch every single time.
+ Even if the name is missing, the query can be pre- compiled, resulting
+ in what is known as a 
+\emph on
+prepared statement
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[caption={Using a prepared statement enhances both security
+ and performance.},label={lst:jdbcPreparedStatement}, breaklines=true]
+\end_layout
+
+\begin_layout Plain Layout
+
+PreparedStatement stmt = con.prepareStatement("SELECT * FROM Persons WHERE
+ name = ?");
+\end_layout
+
+\begin_layout Plain Layout
+
+stmt.setString(1, name);
+\end_layout
+
+\begin_layout Plain Layout
+
+ResultSet res = stmt.execute();
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+Here, a '
+\family typewriter
+?
+\family default
+' is used to indicate the parameter to be substituted, and the call 
+\family typewriter
+setString
+\family default
+ on stmt sets the parameter to the wanted value.
+ Now, a query plan is produced only once, and the query can be run multiple
+ times without the time penalty of the compilation.
+ 
+\end_layout
+
+\begin_layout Subparagraph
+Retrieving Results
+\end_layout
+
+\begin_layout Standard
+After executing a statement (prepared or not), a 
+\family typewriter
+ResultSet
+\family default
+ object is obtained.
+ The resulting tuples are retrieved by sequentially iterating through the
+ 
+\family typewriter
+ResultSet
+\family default
+ object, as shown in Listing
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{lst:retrievingResults}
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[caption={Retrieving results of queries is done by iterating
+ through the ResultSet, and calling get-methods for the appropriate types.
+ The get-methods take either a number (namely, the column number) or a string
+ (the attribute name)},label={lst:retrievingResults},tabsize=4]
+\end_layout
+
+\begin_layout Plain Layout
+
+while(res.next())
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	int age = res.getInt(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+	String name = res.getString("name");
+\end_layout
+
+\begin_layout Plain Layout
+
+	...
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+The actual data for the result is retrieved by asking the ResultSet object
+ for the value lying at a certain position in the tuple (like 
+\family typewriter
+getInt(1)
+\family default
+ or 
+\family typewriter
+getString(2)
+\family default
+), or by asking for the value that is stored for the attribute of a given
+ name (like 
+\family typewriter
+getInt(
+\begin_inset Quotes eld
+\end_inset
+
+age
+\begin_inset Quotes erd
+\end_inset
+
+)
+\family default
+ or 
+\family typewriter
+getString(
+\begin_inset Quotes eld
+\end_inset
+
+name
+\begin_inset Quotes erd
+\end_inset
+
+)
+\family default
+).
+ Calling the 
+\family typewriter
+next
+\family default
+ method on the 
+\family typewriter
+ResultSet
+\family default
+ advances the cursor once, and returns true if hasn't reached the end.
+ The first time 
+\family typewriter
+next()
+\family default
+ is called, the cursor is moved from before the first row to the first now.
+\end_layout
+
+\begin_layout Subparagraph
+Transactions
+\end_layout
+
+\begin_layout Standard
+In some cases, the user has to issue a series of commands, which must be
+ processed as one atomic group of commands -- if one of them fails, the
+ rest has to fail as well.
+ 
+\end_layout
+
+\begin_layout Standard
+Transactions can be controlled by first disabling auto-commit on the connection-
+object, which is on by default.
+ This is done by calling a specific method on the JDBC, which then tells
+ the DBMS that each query shouldn't be committed instantly.
+ After disabling auto-commit, it is up to the user to call a 
+\family typewriter
+commit
+\family default
+ function on the JDBC, after the necessary queries has been issued, or 
+\family typewriter
+rollback.
+\end_layout
+
+\begin_layout Subparagraph
+Stored Procedures
+\end_layout
+
+\begin_layout Standard
+There are two ways to utilize stored procedures, when coupling Java with
+ a relational database.
+ Either the stored procedure can be written in Java, and called from there
+ as a traditional Java class, or it can be written in SQL.
+\end_layout
+
+\begin_layout Standard
+Creating a stored procedure in Java is done by creating a static method,
+ which fetches a connection to the database, creates a statement, and executes
+ queries.
+ The example in Listing
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{lst:storedProcedureJava}
+\end_layout
+
+\end_inset
+
+ shows a stored procedure implemented in Java, which creates a course with
+ a given name, and puts a teacher with the given id on the course.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[caption={An example of a stored procedure written in Java.},lab
+el={lst:storedProcedureJava},tabsize=4,breaklines=true]
+\end_layout
+
+\begin_layout Plain Layout
+
+public static void CreateNewCourse(
+\end_layout
+
+\begin_layout Plain Layout
+
+	String courseName, int teacherId, String startDate, String state)
+\end_layout
+
+\begin_layout Plain Layout
+
+	throws SQLException
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Connection con = DriverManager.getConnection(
+\end_layout
+
+\begin_layout Plain Layout
+
+		"jdbc:default:connection");
+\end_layout
+
+\begin_layout Plain Layout
+
+	con.setAutoCommit(false);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PreparedStatement stmt = con.prepareStatement(
+\end_layout
+
+\begin_layout Plain Layout
+
+		"SELECT COUNT() FROM Teachers WHERE Id = ?");
+\end_layout
+
+\begin_layout Plain Layout
+
+	stmt.setInt(1, teacherId);
+\end_layout
+
+\begin_layout Plain Layout
+
+	ResultSet res = stmt.executeQuery();
+\end_layout
+
+\begin_layout Plain Layout
+
+	res.next();
+\end_layout
+
+\begin_layout Plain Layout
+
+	int c = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (res.next())
+\end_layout
+
+\begin_layout Plain Layout
+
+		c = res.getInt(1);
+\end_layout
+
+\begin_layout Plain Layout
+
+	if (c == 0)
+\end_layout
+
+\begin_layout Plain Layout
+
+		return;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	stmt = con.createStatement(
+\end_layout
+
+\begin_layout Plain Layout
+
+		"INSERT INTO Courses VALUES (null,?,?,?,?)");
+\end_layout
+
+\begin_layout Plain Layout
+
+	stmt.setString(1, courseName);
+\end_layout
+
+\begin_layout Plain Layout
+
+	stmt.setString(2, teacherId);
+\end_layout
+
+\begin_layout Plain Layout
+
+	stmt.setDate(3, startDate);
+\end_layout
+
+\begin_layout Plain Layout
+
+	stmt.setString(4, state);
+\end_layout
+
+\begin_layout Plain Layout
+
+	stmt.executeQuery();
+\end_layout
+
+\begin_layout Plain Layout
+
+	con.commit();
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another way of defining stored procedures, is by using an extension of the
+ SQL language, known as SQL/PSM (Persistent Stored Modules).
+ SQL/PSM extends SQL with variables, conditions, loops and signals.
+ Extending SQL with at least variables and conditional branching.
+ Although a standard has been proposed by ANSI, many of the big commercial
+ database vendors have developed their own extensions for their flavor of
+ SQL.
+ 
+\end_layout
+
+\begin_layout Standard
+When writing SQL/PSM, the procedures are stored in the database management
+ system
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+add ref infolab.stanford.edu/~ullman/dscb/pslides/psm.ppt
+\end_layout
+
+\end_inset
+
+.
+ This is convenient, since most applications have a limited set of queries
+ that are repeated over and over, only with different parameters.
+ Having to send only a short command and a list of parameters, is shorter
+ than sending possibly a long sequence of queries.
+ This is both more secure, like prepared statements, and it reduces traffic
+ between the application server and the database server.
+ 
+\end_layout
+
+\begin_layout Standard
+Stored procedures need to be given parameters, like regular functions, but
+ it distinguishes between three modes of parameters: input (IN), output
+ (OUT), or mixed (INOUT).
+\end_layout
+
+\begin_layout Description
+IN Parameters marked 
+\family typewriter
+IN
+\family default
+ are placeholders for the values that were given, when the procedure was
+ called.
+ Therefore, they are read-only from within the stored procedure, thus acting
+ as constants.
+\end_layout
+
+\begin_layout Description
+OUT Parameters marked 
+\family typewriter
+OUT
+\family default
+ are those that are returned, when the stored procedure finishes.
+ 
+\end_layout
+
+\begin_layout Description
+INOUT Parameters marked 
+\family typewriter
+INOUT
+\family default
+ are both input and output parameters -- they will have a value when the
+ procedure is called, but they can be assigned a new value before the procedure
+ completes.
+ 
+\end_layout
+
+\begin_layout Standard
+Conditionals in SQL/PSM follow a typical syntax of if-then-else statement.
+ Variables can be declared with a 
+\family typewriter
+DECLARE
+\family default
+ statement, and assigned values with a 
+\family typewriter
+SET
+\family default
+ statement.
+ Statements can be grouped between 
+\family typewriter
+BEGIN...END
+\family default
+ statements.
+ Loops can be created with either 
+\family typewriter
+LOOP...END LOOP
+\family default
+ construct, with a 
+\family typewriter
+WHILE <condition> DO...ENDWHILE
+\family default
+ or with the 
+\family typewriter
+REPEAT...UNTIL <condition> END REPEAT
+\family default
+ construct.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:UsingRelationalModel"
+
+\end_inset
+
+Using a Relational Model
+\end_layout
+
+\begin_layout Standard
+Relational database systems provide many services and advanced features
+ concerning data storage.
+ Advanced algorithms and data structures provide fast storage of huge amounts
+ of data.
+ Query optimizing utilized to optimize the data retrieval in run-time, depending
+ on the use of the database.
+ Concurrency control mechanisms allow maintaining a high throughput for
+ many concurrent users, and the database system can be tuned to perform
+ optimal in certain scenarios.
+ Further more, the widespread use of database systems has created a large
+ community of users, making it easy to getting started using databases.
+\end_layout
+
+\begin_layout Paragraph
+Impedance Mismatch
+\end_layout
+
+\begin_layout Standard
+However, using a relational database from an object oriented language imposes
+ a different kind of issues, than seen when working with a purely object
+ oriented model.
+ Many of these issues fall under the category known as 
+\emph on
+object-relational impedance mismatch
+\emph default
+, and are caused by the fact that the two kinds of models are grounded in
+ two different paradigms
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ireland2009classification"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subparagraph
+Classes and Tables
+\end_layout
+
+\begin_layout Standard
+First and foremost, it is worth have in mind the difference between object
+ systems and relational systems.
+ The two are two completely different paradigms, i.e.
+ two different ways to view the world.
+ The object oriented model views the world as objects, where an object is
+ an entity having at least the three attributes: identity, behavior and
+ state.
+ An instance of a class is an individual object, and its state is made up
+ of the values of all of its fields.
+ Two classes having the same state might be different identities (residing
+ at different memory locations.) Each class defines a behavior -- a set of
+ methods, through which to view or alter its state.
+ Encapsulation secures that the state of an object is only changed by the
+ object itself, or through one of the defined methods.
+ The concept of information hiding lets objects provide a public interface
+ to a hidden implementation, segregating parts of the program implementation
+ from each other\SpecialChar \@.
+ Thus, parts of a program can be changed without other parts
+ of the program ever notices.
+\end_layout
+
+\begin_layout Standard
+Relational models work differently.
+ Here, tables are named relations of attributes pertaining to a certain
+ type.
+ A relation can be seen as a truth statement, and SQL can be seen as a language
+ for evaluating the state of the universe (e.g.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+does there exist a user with the first name John, taking the course `Diving
+ for beginners'?
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Subparagraph
+Type System
+\end_layout
+
+\begin_layout Standard
+Database systems often has a coarse grained type system, with a few broad
+ types for storing many different kinds of data.
+ For example, 
+\family typewriter
+VARCHAR
+\family default
+ may be used for strings of any length (although different vendors have
+ different maximum lengths in practice.) The user can store anything that
+ is a string of characters in a 
+\family typewriter
+VARCHAR
+\family default
+, whether the column is actually for e-mail addresses or user names.
+ In many applications this is `good enough', as the validity of the strings
+ can be checked by the program that calls the database system, to prevent
+ semantically incorrect data values to be stored.
+ 
+\end_layout
+
+\begin_layout Standard
+Another problem is brought to attention when using an object oriented programmin
+g language with arbitrarily complex data types (user defined classes).
+ Since relational databases only allow a small set of primitive types, storing
+ complex data structures requires creating the necessary tables to hold
+ the data.
+ In the host programming language, complex data values must be traversed
+ or unwrapped when constructing a query to persist the object.
+ Likewise, when reading data from the database, data values must be wrapped
+ into an object of the correct type.
+\end_layout
+
+\begin_layout Subparagraph
+Performance and Table Design
+\end_layout
+
+\begin_layout Standard
+In the article 
+\begin_inset Quotes eld
+\end_inset
+
+Mapping Objects to Tables -- a Pattern Language
+\begin_inset Quotes erd
+\end_inset
+
+ by Wolfgang Keller 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "keller1997mapping"
+
+\end_inset
+
+, it is argued that companies using relational databases over long time,
+ will often meet a need for tuning the database, in order to maximize the
+ performance.
+ Some of this tuning might involve de-normalization of the database schema.
+ Since the overhead lies on the disk search times, not throughput, minimizing
+ the number of accesses to the database increases performance.
+ Such a change could require rewriting a lot of queries in the host program,
+ or the program will need to be redesigned to use dynamic SQL.
+ Depending on the system, it can lead to ripples of changes spreading out,
+ or even changes to legacy code.
+ Further more, it also reduces the maintainability of the database as such.
+\end_layout
+
+\begin_layout Subparagraph
+Querying
+\end_layout
+
+\begin_layout Standard
+In general, sending queries to a database system from a host language implies
+ sending strings in SQL, which are typically not checked by the host compiler
+ of the host language.
+ This means that errors will be discovered late in the process.
+ Having simple strings means that the user easily can write a malformed
+ query, or misspell a table or column name.
+ The user rarely gets any help from the IDE (for example with resolving
+ names), when writing queries, because it would require an open connection
+ to the database at the time of checking the query.
+ It can lead to work flows where a query is first constructed, then tested
+ in a command line interface, then corrected as needed, before it is inserted
+ into the host program.
+ Further more, even though there is a defined SQL-92 standard, there are
+ different variants of SQL from different database vendors, providing vendor-spe
+cific features.
+ This means that it might be difficult to change the database system to
+ one of another vendor.
+\end_layout
+
+\begin_layout Standard
+However, if embedded SQL is used, a precompiler might be able to check the
+ correctness of queries, and the presence of the tables and attributes given,
+ at compile time.
+\end_layout
+
+\begin_layout Subparagraph
+Inheritance
+\end_layout
+
+\begin_layout Standard
+Inheritance is one of the most important features of object oriented languages.
+ However, in relational database systems, an inheritance hierarchy has to
+ be modeled over several tables (one table for each class in the inheritance
+ hierarchy.) Each table will then either have all the data of the tables
+ representing super classes, or foreign keys of the table representing its
+ super classes.
+ This leads to the problem of increasing the number of join operations in
+ the database, leading to decreased performance.
+\end_layout
+
+\begin_layout Subsection
+Object Relational Mapping
+\end_layout
+
+\begin_layout Standard
+As a mitigation of the problem, 
+\emph on
+object-relational mapping
+\emph default
+ (ORM), seeks to map concepts of one paradigm into concepts of the other
+ paradigm.
+ ORM tools serve to automate parts of this process, mapping classes in the
+ host language to tables in a relational database, objects to rows, and
+ fields to columns.
+ However, it can be argued that ORM only solves part of the problems of
+ impedance mismatch, and that it even creates new problems by its own
+\begin_inset CommandInset citation
+LatexCommand cite
+key "vietnam2007"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Implementations
+\end_layout
+
+\begin_layout Standard
+There are many implementations of ORM systems, but some of the most well-known
+ are the 
+\begin_inset Quotes eld
+\end_inset
+
+Entity Data Model
+\begin_inset Quotes erd
+\end_inset
+
+ from Microsoft, and the open-source project 
+\begin_inset Quotes eld
+\end_inset
+
+Hibernate
+\begin_inset Quotes erd
+\end_inset
+
+ for Java
+\begin_inset CommandInset citation
+LatexCommand cite
+key "o2008object"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Entity classes
+\end_layout
+
+\begin_layout Standard
+In Hibernate, annotations are used to mark 
+\begin_inset Quotes eld
+\end_inset
+
+entity classes
+\begin_inset Quotes erd
+\end_inset
+
+ (also called 
+\begin_inset Quotes eld
+\end_inset
+
+domain classes
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+persistent objects
+\begin_inset Quotes erd
+\end_inset
+
+).
+ In our example with the diving school, a Person domain class would look
+ somewhat as shown in Listing 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{lst:PersonDomainClass}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,breaklines=true,caption={A domain class
+ for the Person entity of the diving school example.},label=lst:PersonDomainClass
+]
+\end_layout
+
+\begin_layout Plain Layout
+
+@Entity
+\end_layout
+
+\begin_layout Plain Layout
+
+public class Person {
+\end_layout
+
+\begin_layout Plain Layout
+
+	private int id;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private String name;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private String email;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private String mobile;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private int balance;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	@Id
+\end_layout
+
+\begin_layout Plain Layout
+
+	public int getId() { return id; }
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void setId(int id) { this.id = id; }
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	public String getName() { return name; }
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void setName(String name) { this.name = name; }
+\end_layout
+
+\begin_layout Plain Layout
+
+    ...
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+The 
+\family typewriter
+@Entity
+\family default
+ and 
+\family typewriter
+@Id 
+\family default
+annotations are part of the Java Persistence API.
+ In order to let Hibernate recognize the class as a persistence class, an
+ instance of a configuration object must be created, given a reference to
+ 
+\family typewriter
+Person.class
+\family default
+.
+ Using reflection, Hibernate will traverse the list of annotations for the
+ class, and communicate with the database, in order for it to create a Person
+ table.
+ An alternative to using annotations is to supply an external mapping file.
+\end_layout
+
+\begin_layout Standard
+When the class structure is created, it is possible to create one-one, one-many
+ or many-many relationships between classes, by specifying fields, and annotatin
+gg them with names of join columns or tables.
+ In listing 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{lst:StudentAndCourseDomainClasses}
+\end_layout
+
+\end_inset
+
+, we show how the relationship between Course and Student are created.
+ For the sake of simplicity, the example only show a small part of the full
+ classes.
+ The class Student shows a one-to-one relationship between Student and Person.
+ Both the Student class and the Course class shows a many-to-many relationship
+ with each other, with the specification of a join table and join columns.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,tabsize=3,caption={One-to-one and One-to-many
+ relations are created by the use of annotations.},label=lst:StudentAndCourseDoma
+inClasses]
+\end_layout
+
+\begin_layout Plain Layout
+
+@Entity
+\end_layout
+
+\begin_layout Plain Layout
+
+public class Student {
+\end_layout
+
+\begin_layout Plain Layout
+
+	@OneToOne(cascade=CascadeType.ALL)
+\end_layout
+
+\begin_layout Plain Layout
+
+	private Person person;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private int wetsuitSize;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private int bootSize;
+\end_layout
+
+\begin_layout Plain Layout
+
+	@ManyToMany
+\end_layout
+
+\begin_layout Plain Layout
+
+	@JoinTable(name="student_enrollment"
+\end_layout
+
+\begin_layout Plain Layout
+
+		joinColumns={@JoinColumn(name="person_id")}
+\end_layout
+
+\begin_layout Plain Layout
+
+		inverseJoinColumns={@JoinColumn(name="course_id")})
+\end_layout
+
+\begin_layout Plain Layout
+
+	private List<Course> coursesAttending;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	public Person getPerson() { return person; }
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void addCourse(Course c) { courses.add(c); }
+\end_layout
+
+\begin_layout Plain Layout
+
+	public List<Course> getCourses() { return courses; }
+\end_layout
+
+\begin_layout Plain Layout
+
+    ...
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+@Entity
+\end_layout
+
+\begin_layout Plain Layout
+
+public class Course {
+\end_layout
+
+\begin_layout Plain Layout
+
+	private int courseId;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private Status start, end;
+\end_layout
+
+\begin_layout Plain Layout
+
+	@ManyToOne
+\end_layout
+
+\begin_layout Plain Layout
+
+	@JoinColumn(name="person_id")
+\end_layout
+
+\begin_layout Plain Layout
+
+	private Person teacher;
+\end_layout
+
+\begin_layout Plain Layout
+
+	@ManyToMany
+\end_layout
+
+\begin_layout Plain Layout
+
+	@JoinTable(name="student_enrollment"
+\end_layout
+
+\begin_layout Plain Layout
+
+		joinColumns={@JoinColumn(name="person_id")}
+\end_layout
+
+\begin_layout Plain Layout
+
+		inverseJoinColumns={@JoinColumn(name="course_id")})
+\end_layout
+
+\begin_layout Plain Layout
+
+	private List<Student> students;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	public void addStudent(Student s) { students.add(s); }
+\end_layout
+
+\begin_layout Plain Layout
+
+	public List<Student> getStudents() { return students; }
+\end_layout
+
+\begin_layout Plain Layout
+
+	...
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By specifying the classes in this way, standard Java methods are used to
+ retrieve data, simply by 
+\begin_inset Quotes eld
+\end_inset
+
+dotting
+\begin_inset Quotes erd
+\end_inset
+
+ through (like for example 
+\family typewriter
+student.getCourses()
+\family default
+, or 
+\family typewriter
+courses.getTeacher().getPerson().getName()
+\family default
+, etc.)
+\end_layout
+
+\begin_layout Standard
+New entities are created by creating a new instance of a class, and then
+ saving it using a Session-object, provided by a SessionFactory.
+ Using a Session, the user has to call methods to begin a transaction, to
+ actually save the new data, and to commit the transaction.
+\end_layout
+
+\begin_layout Standard
+Further more, it is also possible to write standard SQL queries:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[breaklines=true,]
+\end_layout
+
+\begin_layout Plain Layout
+
+Query studentsQ = session.createQuery("select s from Student s where s.bootSize
+  > " + bootSize + " and s.wetsuitSize > " + wetsuitSize");
+\end_layout
+
+\begin_layout Plain Layout
+
+List students = studentsQ.list();
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+Query updateQ = session.createQuery("update Student set wetsuitSize = "+newSize+"
+ where personId = "+id);
+\end_layout
+
+\begin_layout Plain Layout
+
+updateQ.executeUpdate();
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Both Hibernate and Entity Data Model operate with what is called an entity
+ context.
+ It can be seen as an environment, within which transactions are being run.
+ The before mentioned Session class in Hibernate, acts as an entity context.
+ The role of the entity context is to provide a closed environment, within
+ which a thread can operate safely.
+ In Hibernate, a session can be given to each thread that wants to operate
+ on data.
+ The sessions provide a mechanism of caching the recently accessed rows,
+ so access to popular data is sped up, though always persisting data on
+ the database when needed.
+\end_layout
+
+\begin_layout Subsubsection
+Using ORM
+\end_layout
+
+\begin_layout Standard
+Using object-relational mapping imposes many of the problems described in
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:UsingRelationalModel"
+
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Using a Relational Model
+\begin_inset Quotes erd
+\end_inset
+
+, because the issues are pertaining to the fact that there is a difference
+ in the two paradigms.
+ ORM tools helps automating parts of the solution to some of the problems,
+ but it doesn't make the problems disappear.
+ Some problems that are pointed out in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "vietnam2007"
+
+\end_inset
+
+ relate to maintenance.
+\end_layout
+
+\begin_layout Standard
+Having both an object-based model and a relational model implies having
+ to maintain two parallel models.
+ Changes in one model, either because of changes in the conceptual model,
+ or changes related to performance optimization, must be reflected in the
+ other model.
+ This makes refactoring and schema updates rather complicated, especially
+ if the relational model is used by many different programs
+\begin_inset CommandInset citation
+LatexCommand cite
+key "vietnam2007"
+
+\end_inset
+
+.
+ Further more, having to create mapping files or annotate classes complicates
+ the process, if the table design changes often, as a result of being in
+ a prototyping phase, or if business requirements are not fixed.
+\end_layout
+
+\begin_layout Subsection
+Summary
+\end_layout
+
+\begin_layout Standard
+Many of today's popular object oriented programming languages (such as Java)
+ are not well suited for creating searchable, persisted data models, and
+ the creation of such a model involves a lot of tedious hand-coding.
+ Using relational models imposes a new category of problems, relating to
+ the mismatch of coupling the two different paradigms.
+ Object oriented languages send string objects, containing queries, to a
+ database management system for data retrieval and manipulation.
+ Not being able to call the storage system like a normal object results
+ in inflexible designs.
+ 
+\end_layout
+
+\end_body
+\end_document

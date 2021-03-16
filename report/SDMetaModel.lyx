@@ -1,0 +1,1853 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{wrapfig}
+\usepackage{nameref}
+\usepackage{todonotes}
+\usepackage{url}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Value-domains"
+
+\end_inset
+
+Value Domains
+\end_layout
+
+\begin_layout Standard
+In most relational database systems, many different types of values share
+ the same data type.
+ A person's name, an e-mail address, and a URL could all have the same data
+ type, e.g.
+ 
+\family typewriter
+VARCHAR
+\family default
+.
+ This means that the type system is coarse grained, and it doesn't hinder
+ the user in storing, for example an e-mail, as a person's name.
+\end_layout
+
+\begin_layout Standard
+In EDMA, we want to create a fine grained type system, where for example
+ an e-mail address, and a person's name belong to different types.
+ We call these types 
+\emph on
+value domains
+\emph default
+
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "value domain"
+symbol "Value domain"
+description "Can be seen as a type with extra restrictions on the possible values. Like the value 42 could be of type \"int\", the value \"John\" could be in a value domain \"Name\"."
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In EDMA we encourage the user to create a distinct value domain for each
+ semantically unique type.
+ This not only adds useful semantic information to the users of the value
+ domains, it also makes the type system able to discover a category of semantic
+ errors, like if an email address is accidentally used in place of a name
+ or a URL.
+\end_layout
+
+\begin_layout Paragraph
+Immutability
+\end_layout
+
+\begin_layout Standard
+In a multithreaded environment, mutable
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "mutable"
+symbol "Mutable"
+description "Changable. A mutable variable can get its value changed over the course of its lifetime."
+
+\end_inset
+
+ objects must be protected from race conditions, that can lead to threads
+ seeing them in an inconsistent state.
+ For immutable
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "immutable"
+symbol "Immutable"
+description "Not changable. An immutable variable can never get its value changed over the course of its lifetime."
+
+\end_inset
+
+ objects this is not a problem, since they can never change after they have
+ been created.
+ Therefore they will always be in a consistent state (provided that they
+ where created in a consistent state).
+ Also, it is never necessary to make defensive copies of immutable values,
+ and all values that are equal can be represented by the same instance.
+ For immutable values, the problem of accidental aliasing is also non-existing
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hogg1992geneva"
+
+\end_inset
+
+.
+ For these reasons, in EDMA, all values (instances of value domains) are
+ immutable.
+\end_layout
+
+\begin_layout Paragraph
+Value Domain Constraints
+\end_layout
+
+\begin_layout Standard
+The value domain system allows adding constraints to the value domains.
+ These constraints are automatically checked every time a new value is created.
+ As an example, the user can add a constraint to the value domain 
+\family typewriter
+EmailAddress
+\family default
+, that checks that the content matches a regular expression for accepted
+ email addresses.
+ 
+\end_layout
+
+\begin_layout Standard
+There are two types of constraints on the value domains: 
+\emph on
+Simple constraints
+\emph default
+ and 
+\emph on
+user implemented constraints
+\emph default
+.
+ The simple constraints regard lengths and contents of strings, and numerical
+ ranges for numeric types.
+ The user implemented constraints are, as the name suggests, implemented
+ by the user and can therefore be arbitrarily complex.
+\end_layout
+
+\begin_layout Standard
+By defining constraints on the value domains the system can automatically
+ validate values when they are created.
+\end_layout
+
+\begin_layout Paragraph
+Primitive Value Domains
+\end_layout
+
+\begin_layout Standard
+Value domains can be defined from the simple value domain types: 
+\family typewriter
+String
+\family default
+, 
+\family typewriter
+Integer
+\family default
+, 
+\family typewriter
+Long
+\family default
+, 
+\family typewriter
+Float
+\family default
+, 
+\family typewriter
+Double
+\family default
+, 
+\family typewriter
+Boolean
+\family default
+ and 
+\family typewriter
+Enum
+\family default
+.
+ Since we encourage the user to create a fine-grained set of semantically
+ unique value domains, the primitive types can not be used directly, only
+ in the definition of other value domains.
+\end_layout
+
+\begin_layout Paragraph
+Composed Value Domains
+\end_layout
+
+\begin_layout Standard
+It is possible to construct more complex value domains from the simpler
+ ones.
+ For this purpose we have 3 different composable value domain types: 
+\family typewriter
+Struct
+\family default
+, 
+\family typewriter
+List
+\family default
+ and 
+\family typewriter
+OneOf
+\family default
+.
+\end_layout
+
+\begin_layout Paragraph
+Struct
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+Struct
+\family default
+ value domain type consists of a number of attributes, each of which has
+ a name and a value domain.
+ The struct value domain type can therefore be seen as a container of multiple
+ values, each given a name.
+ An example of a struct value domain, could be a 
+\family typewriter
+Date
+\family default
+, containing a 
+\family typewriter
+Day
+\family default
+, a 
+\family typewriter
+Month
+\family default
+ and a 
+\family typewriter
+Year
+\family default
+.
+ The attributes in a struct value domain can be declared optional, which
+ means that the value might be 
+\emph on
+null
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph
+List
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+List
+\family default
+ value domain type contains a number of values from another value domain.
+ For example, a value domain 
+\family typewriter
+NameList
+\family default
+ could be a list of 
+\family typewriter
+Name
+\family default
+s.
+\end_layout
+
+\begin_layout Paragraph
+OneOf
+\end_layout
+
+\begin_layout Standard
+A 
+\family typewriter
+OneOf
+\family default
+ value domain type contains a value from one of a predefined set of value
+ domains.
+ An example could be a value domain 
+\family typewriter
+Pet
+\family default
+, which can hold the value of either a 
+\family typewriter
+Dog
+\family default
+, 
+\family typewriter
+Cat
+\family default
+, or 
+\family typewriter
+Fish
+\family default
+.
+ Thus the OneOf value domain type adds polymorphism to the value domain
+ system.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Structurally Recursive Value Domains
+\end_layout
+
+\begin_layout Standard
+Value domains can be structurally recursive, meaning that for example a
+ value domain 
+\family typewriter
+Person
+\family default
+ could contain a friend list of 
+\family typewriter
+Person
+\family default
+ values.
+ But values (instances of value domains) are always tree-structures and
+ cannot contain loops or recursive references.
+ In the above example a person value cannot be in its own friend list.
+ This is enforced by the immutability of the values.
+ It is only possible to construct values from already created values, so
+ all values are tree-structures that are constructed in a bottom-up process.
+ This means that it is possible to define value domains where it would never
+ be possible to create a value from that value domain.
+ 
+\end_layout
+
+\begin_layout Standard
+An example would be a Struct value domain 
+\emph on
+A
+\emph default
+ that contains a field 
+\emph on
+b
+\emph default
+ from value domain 
+\emph on
+B
+\emph default
+ where the 
+\emph on
+B
+\emph default
+ value domain is a Struct containing a field 
+\emph on
+a
+\emph default
+ from value domain 
+\emph on
+A
+\emph default
+.
+ You would need a value from value domain 
+\emph on
+B
+\emph default
+ to create a value from value domain 
+\emph on
+A
+\emph default
+, but to create a value from value domain 
+\emph on
+B
+\emph default
+ you need a value from value domain 
+\emph on
+A
+\emph default
+.
+ One way to solve this deadlock is to make at least one of the fields 
+\emph on
+a
+\emph default
+ or 
+\emph on
+b
+\emph default
+ optional.
+ The EDMA compiler will detect impossible value domains and complain about
+ them.
+ This is done by checking that all recursive paths contains an optional
+ field, a list that may be empty or a OneOf with a choice that breaks the
+ loop.
+\end_layout
+
+\begin_layout Standard
+There are advantages in having values that are guaranteed to be tree structures
+ and therefore self-contained and loop-free.
+ This makes processing values much simpler and the risk of entering an infinite
+ loop while processing values is greatly reduced.
+ This also makes it simple to move values across different borders of JVMs,
+ machines, languages etc.
+\end_layout
+
+\begin_layout Standard
+It is worth to notice here that it 
+\emph on
+is
+\emph default
+ possible to create a value domain that represents a general graph by using
+ indexes into lists as references.
+ However as long as the value domain contains both the indexes and the lists
+ they index into, this approach does not break the self-contained and loop-free
+ properties of the value domain.
+\end_layout
+
+\begin_layout Paragraph
+Expressiveness
+\end_layout
+
+\begin_layout Standard
+The value domain system is expressive enough to model itself as seen in
+ the following listing:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\tiny},breaklines=true,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ValueDomain MetaValueDomainSystem :
+\end_layout
+
+\begin_layout Plain Layout
+
+	List<MetaValueDomain> Constraints[noDuplicateOrMissingOrImpossible]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaValueDomain :
+\end_layout
+
+\begin_layout Plain Layout
+
+	Struct {name : UIdentifier, type : MetaValueDomainType, constraintList
+ : ConstraintList}
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaValueDomainType:
+\end_layout
+
+\begin_layout Plain Layout
+
+	OneOf<MetaPrimitiveType, MetaStructType, MetaListType, MetaOneOfType>
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaPrimitiveType :
+\end_layout
+
+\begin_layout Plain Layout
+
+	OneOf<MetaStringType, MetaIntegerType, MetaFloatType, MetaBooleanType,
+ MetaEnumType>
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaStructType :
+\end_layout
+
+\begin_layout Plain Layout
+
+	List<MetaAttribute> Constraints[uniqueAttNames]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaAttribute :
+\end_layout
+
+\begin_layout Plain Layout
+
+	Struct {attName : LIdentifier, attValueDomain : UIdentifier, isOptional
+ : TrueFalse}
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaListType :
+\end_layout
+
+\begin_layout Plain Layout
+
+	Struct {elementValueDomain : UIdentifier, minLength : NotNegInt, maxLength
+ : NotNegInt} Constraints[listMinLTEMax]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaOneOfType : List<UIdentifier>[1..MAX]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaStringType :
+\end_layout
+
+\begin_layout Plain Layout
+
+	Struct {minLength : NotNegInt, maxLength : NotNegInt, regexp? : Regexp}
+ Constraints[stringMinLTEMax]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaIntegerType :
+\end_layout
+
+\begin_layout Plain Layout
+
+	Struct {min : AnyInt, max : AnyInt} Constraints[integerMinLTEMax]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaFloatType :
+\end_layout
+
+\begin_layout Plain Layout
+
+	Struct {min : AnyFloat, max : AnyFloat} Constraints[floatMinLTEMax]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaBooleanType :
+\end_layout
+
+\begin_layout Plain Layout
+
+	Struct {restrictedValue? : TrueFalse}
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain MetaEnumType : List<UIdentifier>
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain LIdentifier : String[1..MAX]["[a-z][A-Za-z0-9]*"]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain UIdentifier : String[1..MAX]["[A-Z][A-Za-z0-9]*"]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain TrueFalse : Boolean
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain AnyInt : Integer[MIN..MAX]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain NotNegInt : Integer[0..MAX]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain AnyFloat : Float[MIN..MAX]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Regexp : String[0..MAX]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain ConstraintList : List<LIdentifier>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This makes it possible to create a value that represents a value domain
+ system for a specific domain, and use it as any other value in the system
+ e.g.
+ use it in kind attributes, move it across socket connections etc.
+ It is also possible to model the meta model in the value domain system,
+ in this way an entire data model instance can be stored as a single value.
+\end_layout
+
+\begin_layout Subsection
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:MetaModel"
+
+\end_inset
+
+Meta Model
+\end_layout
+
+\begin_layout Standard
+The EDMA meta model is the central model that everything else in EDMA is
+ built around.
+ The meta model is used to describe the individual data models.
+ An instance of the meta model represents a specific user defined data model.
+\end_layout
+
+\begin_layout Standard
+Since the meta model has many different elements, it is described in a bottom-up
+ fashion, starting with the most low-level definitions first, gradually
+ adding complexity as we go along.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+%	
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+%	
+\backslash
+includegraphics[width=0.75
+\backslash
+textwidth]{img/metaModel.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+%	
+\backslash
+caption{The class diagram of the meta model is the %abstract syntax of the
+ data model definition.}
+\end_layout
+
+\begin_layout Plain Layout
+
+%	
+\backslash
+label{fig:metaModel}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Kinds and Entities
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{wrapfigure}{r}{0.4
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+includegraphics[width=0.4
+\backslash
+textwidth]{img/kindAndEntities.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+end{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+caption{Kinds describe and contain entities, having certain attributes.}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+label{fig:kindAndEntities}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{wrapfigure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In EDMA a 
+\emph on
+kind
+\emph default
+ 
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "kind"
+symbol "Kind"
+description "A kind consists of a name and a set of attributes. An instance of a kind is called an entity. For example, a kind could be Person, with the attributes name, birth date and phone number. An entity of this kind could be (John, (1980, 3, 5), 31415926)."
+
+\end_inset
+
+is both a data type and a container of all instances of that type.
+ A kind has a set of 
+\emph on
+attributes
+\emph default
+
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "attribute"
+symbol "Attribute"
+description "A name and a value domain. An example could be \"age\" in the value domain \"PositiveInteger\", which is comparable to a variable \"age\" of type \"uint\". Attributes are either optional or mandatory, and mutable or immutable."
+
+\end_inset
+
+, where each attribute has a name and a value domain.
+ An 
+\emph on
+entity
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "entity"
+symbol "Entity"
+description "A set of values, conforming to a certain kind. "
+
+\end_inset
+
+
+\emph default
+ is an instance of a kind.
+ As an example we could have a person kind with attributes like name, gender,
+ birth date, email and phone number.
+ A person entity would then contain a value for each of the attributes in
+ the person kind.
+ Each attribute in a kind can be either mutable or immutable.
+ If it is immutable then a value for the attribute is set upon creation
+ of an entity, but this value can never change throughout the lifetime of
+ the entity.
+ An attribute can be optional, which means that the value corresponding
+ to that attribute may be 
+\emph on
+null
+\emph default
+.
+ All kinds in EDMA have an attribute called ID, which is a positive integer
+ that uniquely identifies each 
+\emph on
+entity
+\emph default
+ in the kind.
+\end_layout
+
+\begin_layout Subsubsection
+Relations and Connections
+\end_layout
+
+\begin_layout Standard
+Assume that we have a person kind and a course kind, and we want to be able
+ to express that a person is a student on a course.
+ In EDMA we call this a 
+\emph on
+relation
+\begin_inset CommandInset nomenclature
+LatexCommand nomenclature
+prefix "relation"
+symbol "Relation"
+description "A connection between two kinds. If a relation exists between kinds A and B, entities of A and B can be connected. For example, a relation can exist between kinds Course and Student, which means that an entity of course (eg. (Programming, 2012)) can be connected to a Student (eg. (John Doe, 1984, +4531415926))."
+
+\end_inset
+
+
+\emph default
+ between the person kind and the course kind.
+ When there is a 
+\emph on
+relation
+\emph default
+ between the person kind and the course kind, it is possible to make a 
+\emph on
+connection
+\emph default
+ between a specific person entity and a specific course entity.
+ A 
+\emph on
+relation
+\emph default
+ is both a description of possible 
+\emph on
+connections
+\emph default
+ between entities and a container for these 
+\emph on
+connections
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+includegraphics[scale=0.4]{img/relationAndConnection.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+caption{A relation between two kinds makes it possible to 
+\backslash
+emph{connect} entities of those kinds.}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+label{fig:relationAndConnection}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subparagraph
+Roles
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+relation
+\emph default
+ always has two participants, which we can call A and B.
+ Both A and B are defined by a 
+\emph on
+kind
+\emph default
+ and a 
+\emph on
+role
+\emph default
+.
+ The reason for having roles is that we can have different relations, which
+ involve the same kinds, in which case we use the roles to distinguish them.
+ In the example with the Person kind and the Course kind, we could have
+ two different relations between them: One that represents students that
+ are enrolled on the course, and one that represents teachers that teach
+ the course.
+ To distinguish the two different 
+\emph on
+relations
+\emph default
+, the role of the person would be 
+\emph on
+student
+\emph default
+ in the one relation, and 
+\emph on
+teacher
+\emph default
+ in the other.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+includegraphics[width=0.75
+\backslash
+textwidth]{img/relationRoles.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+caption{A Relations between kinds can have roles.
+ This figure shows two relations between the kinds Person and Course.
+ In the first relation, named Attends, the first participant is the Person
+ kind, with the role Student.
+ In the second relation, Teaches, the Person has the role Teacher.
+ In both Relations the second participant is the Course kind with the implicit
+ role course.}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+label{fig:relationRoles}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is also possible to have relations, where both the kind and the role
+ would be the same for A and B.
+ An example could be a friendship relation, where the kind is person and
+ the role is friend for both A and B, this type of relation we call a self-relat
+ion.
+ If we have a relation where A and B has the same kind, but different roles,
+ then it is not a self relation.
+ An example of this could be where A and B both are persons, but where the
+ role of A is parent and the role of B is child.
+ In a self-relation, the order of the participants are irrelevant, so if
+ we have person a and person b, then 
+\begin_inset Quotes eld
+\end_inset
+
+a is friends with b
+\begin_inset Quotes erd
+\end_inset
+
+ is the same as 
+\begin_inset Quotes eld
+\end_inset
+
+b is friends with a
+\begin_inset Quotes erd
+\end_inset
+
+, but there is a difference between 
+\begin_inset Quotes eld
+\end_inset
+
+a is parent of b
+\begin_inset Quotes erd
+\end_inset
+
+ (or 
+\begin_inset Quotes eld
+\end_inset
+
+b is child of a
+\begin_inset Quotes erd
+\end_inset
+
+) and 
+\begin_inset Quotes eld
+\end_inset
+
+b is parent of a
+\begin_inset Quotes erd
+\end_inset
+
+ (or 
+\begin_inset Quotes eld
+\end_inset
+
+a is child of b
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subparagraph
+Multiplicities
+\end_layout
+
+\begin_layout Standard
+We also distinguish between many-to-many, many-to-one and one-to-one relations
+ (we do not have a one-to-many relation as this is the same as a many-to-one
+ where A and B are switched).
+ It is worth to notice that a many-to-one self-relation does not make any
+ sense, so this leaves us with five different types of relations:
+\end_layout
+
+\begin_layout Enumerate
+Many-To-Many (MTM)
+\end_layout
+
+\begin_layout Enumerate
+Many-To-Many-Self (MTMS)
+\end_layout
+
+\begin_layout Enumerate
+Many-To-One (MTO)
+\end_layout
+
+\begin_layout Enumerate
+One-To-One (OTO)
+\end_layout
+
+\begin_layout Enumerate
+One-To-One-Self (OTOS)
+\end_layout
+
+\begin_layout Standard
+So, a relation in EDMA contains the following information: a name, the kind
+ of A, the role of A, the kind of B, the role of B, the type of the relation
+ (one of the five types above).
+ If a role is not defined on one of the participants, the role is set to
+ the same as the name of the participating kind.
+ For example, in the relations shown on Figure
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:relationRoles}
+\end_layout
+
+\end_inset
+
+, the role of the Course is simply ``course''.
+ In the five relation types above, 
+\emph on
+many
+\emph default
+ actually means 
+\emph on
+0 or more
+\emph default
+ and 
+\emph on
+one
+\emph default
+ actually means 
+\emph on
+0 or 1
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+A 
+\emph on
+connection
+\emph default
+ is an instance of a relation and can be thought of as a set of pairs of
+ ids (a, b).
+ Each element in the set represents the connection between an entity from
+ kind A and an entity from kind B with the ids a and b respectively.
+ In a self-relation (a, b) is the same as (b, a).
+\end_layout
+
+\begin_layout Subparagraph
+Extension
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{wrapfigure}{r}{0.3
+\backslash
+textwidth}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+vspace{-0.415cm}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+includegraphics[width=0.3
+\backslash
+textwidth]{img/kindExtension.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+caption{Here, Student and Teacher extends Person, adding extra attributes.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{wrapfigure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There is actually a sixth relation type, which we call 
+\emph on
+extension
+\emph default
+.
+ An extension between kinds is a 1-to-(0 or 1) relation between two different
+ kinds.
+ As an example we could have a kind, Person, and another kind, Student,
+ which extends Person.
+ This means that every student is also a person, so in order to create a
+ new student, you would need to provide an already existing person, that
+ is not already a student.
+ We could also have another kind, Teacher, that also extends Person.
+ Then every teacher would also be a person, and a person could be both a
+ teacher and a student, or only one of them, or neither.
+ In our running example with the diving school, we have shown the kinds
+ Student and Teacher that both extend the kind Person.
+\end_layout
+
+\begin_layout Subsubsection
+Indexes
+\end_layout
+
+\begin_layout Standard
+In EDMA indexes are used for two different purposes: To enforce uniqueness
+ of certain attributes within all entities of a kind, and to gain fast and
+ easy access to certain entities, or sets of entities.
+ Indexes can either be declared on a kind, in which case they cover all
+ entities of that kind, or they can be declared on a relation, in which
+ case they cover only sets of entities, that are grouped by that relation.
+ EDMA supports three types of indexes: 
+\emph on
+Unique
+\emph default
+, 
+\emph on
+Equal
+\emph default
+ and 
+\emph on
+Compare
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Subparagraph
+Unique index
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+unique index
+\emph default
+ is used to enforce uniqueness of one attribute or a combination of attributes
+ within all entities of a kind, or within sets of entities grouped by a
+ relation.
+ The unique index also gives a fast search mechanism using the attributes
+ in the index.
+ 
+\end_layout
+
+\begin_layout Standard
+As an example, we could have a Person kind with attributes 
+\family typewriter
+firstName
+\family default
+ and 
+\family typewriter
+lastName
+\family default
+.
+ If we declared a 
+\emph on
+unique
+\emph default
+ index on (
+\family typewriter
+firstName
+\family default
+, 
+\family typewriter
+lastName
+\family default
+) in the person kind, then this would enforce the uniqueness of the combination
+ of first name and last name, across all person entities.
+ If we were to create a person with a name that were already taken, we would
+ get an exception.
+ If instead we declared the index on a relation that connects persons and
+ courses, then we could have two or more persons with the same name, but
+ they could not attend the same course, because the index would cover every
+ set of persons connected to the same course.
+\end_layout
+
+\begin_layout Standard
+In the example with the unique index on first name and last name, it is
+ very fast to get access to a specific person entity, given that you know
+ the first name and last name.
+\end_layout
+
+\begin_layout Subparagraph
+Equals index
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+equal index
+\emph default
+ does not enforce any constraints, but are used to get fast access to sets
+ of entities, where the involved attributes are equal to a certain value.
+ As an example we could have an equal index on the attribute 
+\family typewriter
+firstName
+\family default
+, making it very fast to find all entities with a specific first name.
+\end_layout
+
+\begin_layout Subparagraph
+Compare index
+\end_layout
+
+\begin_layout Standard
+Like the equal index, the
+\emph on
+ compare index
+\emph default
+ does not enforce any constraints, but are only used to speed up certain
+ searches among entities.
+ With a compare index, it is not only possible to search for entities where
+ the involved attributes are equal to some value.
+ It is also possible to find sets of entities, where the involved attributes
+ are less than a given value, greater than a given value or within a range.
+ The compare index uses the natural order of the value domains.
+\end_layout
+
+\begin_layout Subsubsection
+Singletons
+\end_layout
+
+\begin_layout Standard
+Singletons are very similar to kinds, except that they contain exactly one
+ entity.
+ If a singleton defines non-optional attributes, the values for these attributes
+ most be provided upon creation of the data model instance.
+ It is worth to note here that singletons are singletons on the data model
+ 
+\emph on
+instance
+\emph default
+ level, not on the data model level.
+\end_layout
+
+\begin_layout Subsubsection
+Actions and Views
+\end_layout
+
+\begin_layout Standard
+Kinds and relations make up the structure of the data model.
+ Actions and views make up the external interface to the data model.
+ Actions can both read and change the state of the data model instances,
+ views can only read the state.
+ We call both actions and views 
+\emph on
+methods
+\emph default
+ if we do not need to distinguish between them.
+\end_layout
+
+\begin_layout Standard
+Methods have a set of input and output parameters, each having a name and
+ a value domain.
+ Both input parameters and output parameters can be declared optional.
+ Methods also return an error-code.
+ The possible error-codes are defined in the definition of the method.
+ An error-code of 0 always means that the method completed successfully
+ and the output parameters are valid.
+ Any other error-code means that the method could not complete for some
+ reason and the output parameters are invalid (meaning that they are all
+ 
+\emph on
+null
+\emph default
+).
+ For actions an error-code different from 0 also means that the state of
+ the data model is left unchanged (any changes made by the action before
+ it returns a non-zero error-code is automatically rolled back).
+\end_layout
+
+\begin_layout Standard
+An example of an action could be one for adding a student to a course.
+ It would take two input parameters: the ID of the student, and the ID of
+ the course, and the action would not have any output parameters except
+ for the error-code.
+ Error-codes would then be defined for situations where there is no student
+ with the given ID, no course with the given ID or the student is already
+ assigned to the course.
+ There could also be an error-code for the situation where the student do
+ not have enough funding to pay for the course.
+ As seen here the error-codes are dependent on the business logic for the
+ data model and the user can define any number of error-codes that seems
+ fit.
+\end_layout
+
+\begin_layout Standard
+An example of a view could be getting the set of all students enrolled on
+ a specific course.
+ This view would take a course ID as input and the output would be a list
+ of students.
+ An error-code could be defined for the situation where there are no course
+ with the given ID.
+\end_layout
+
+\begin_layout Standard
+The actions and views are atomic operations -- they either complete successfully
+ and return an error-code of zero, or they fail and return a non-zero error-code
+, in which case no changes are made to the state of the data model instance.
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Transactions"
+
+\end_inset
+
+Transactions
+\end_layout
+
+\begin_layout Standard
+Although we have taken an object oriented approach on the data models and
+ on a high level of abstraction see a data model instance as just an object
+ with synchronized methods, we want to elaborate a bit more on the transactional
+ model behind the scene.
+\end_layout
+
+\begin_layout Standard
+In this subsection we will now switch to a more database oriented terminology
+ and call the methods on a data model instance 
+\emph on
+transactions
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+The illusion of complete mutual exclusive access to a data model instance,
+ in database terminology, is the isolation property of the ACID (Atomicity,
+ Consistency, Isolation and Durability) properties.
+\end_layout
+
+\begin_layout Standard
+Although some object oriented languages supports methods to obtain isolation
+ in multi-threaded environments, like the synchronize keyword in Java, they
+ do not incorporate support for the other ACID properties in the core language.
+\end_layout
+
+\begin_layout Standard
+This is something that we want to address in EDMA, therefore we will now
+ go through each of the ACID properties and discuss how they will be handled
+ in the example runtime.
+ 
+\end_layout
+
+\begin_layout Subparagraph
+Atomicity
+\end_layout
+
+\begin_layout Standard
+This guarantees that a transaction is executed as an atomic unit, which
+ means that it either completes successfully or does not change the state
+ of the data model at all.
+ This property is only relevant for 
+\emph on
+actions
+\emph default
+, since 
+\emph on
+views
+\emph default
+ can never change the state of the data model anyway.
+ The way this is implemented is through a rollback functionality.
+ At any stage during the execution of an 
+\emph on
+action
+\emph default
+, if something unexpected happens, or if the action is not able to complete
+ successful for some reason, it can choose to abort (by returning a non-zero
+ error-code) and any changes it have already made to the state of the data
+ model up to this point will be automatically rolled back.
+\end_layout
+
+\begin_layout Standard
+This has been implemented in the example runtime implementation by defining
+ a small set of six primitive reversible operations that can be performed
+ on the data model.
+ These are the only operations allowed on the lowest level, so every execution
+ of an action are broken down to a sequence of these primitive operations.
+ When an action is executed these primitive operations are recorded and
+ in the case of a rollback they can be inverted and played back in a reversed
+ order which will effectively bring the data model back to the starting
+ state.
+ The set of primitive operations contains the following six operations:
+\end_layout
+
+\begin_layout Itemize
+Update an attribute in a singleton
+\end_layout
+
+\begin_layout Itemize
+Create a new entity
+\end_layout
+
+\begin_layout Itemize
+Delete an entity
+\end_layout
+
+\begin_layout Itemize
+Update an entity
+\end_layout
+
+\begin_layout Itemize
+Create a new connection in a relationship
+\end_layout
+
+\begin_layout Itemize
+Delete an existing connection in a relationship
+\end_layout
+
+\begin_layout Standard
+Each of these operations contains just enough information to be able to
+ perform the reversed operation as well.
+ This means that 
+\begin_inset Quotes eld
+\end_inset
+
+updates
+\begin_inset Quotes erd
+\end_inset
+
+ contains both the old and the new values and 
+\begin_inset Quotes eld
+\end_inset
+
+deletes
+\begin_inset Quotes erd
+\end_inset
+
+ contains information about the deleted item so it can be re-created.
+ These sequences of primitive operations are also the basis for the persistence,
+ which will be discussed later.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Explain why update is used
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subparagraph
+Consistency
+\end_layout
+
+\begin_layout Standard
+When we say that the data model is in a consistent state, we mean that all
+ consistency rules set up by the designer of the data model is respected
+ in this state.
+ Every 
+\emph on
+action
+\emph default
+ must guarantee that if it starts its execution with the data model in a
+ consistent state, then the data model is also in a consistent state upon
+ successful completion of the 
+\emph on
+action.
+ During 
+\emph default
+the execution of the action, it is allowed for the data model to be in a
+ non-consistent state.
+ In EDMA it is therefore considered as an 
+\emph on
+error
+\emph default
+ in the programming of an 
+\emph on
+action
+\emph default
+ if it can move the data model from a consistent state to a non-consistent
+ state.
+\end_layout
+
+\begin_layout Standard
+At the time of writing this document there have not been incorporated a
+ way to define consistency rules for EDMA data models (except for the value
+ domain system and the unique index).
+ But this would be an obvious extension of EDMA.
+\end_layout
+
+\begin_layout Standard
+Depending on number and type of consistency rules it can be very slow to
+ test the consistency of a data model.
+ Therefore it can be a good idea to split consistency checks into different
+ categories of checks that only looks at parts of the data model.
+ For example we could define a kind consistency to only concern the attributes
+ of an entity kind.
+ This consistency would only have to be checked when a new entity is created
+ or an existing entity is updated.
+ Then we could define a relationship consistency that would concern a specific
+ relationship, this would then have to be checked whenever a new connection
+ is made, a connection is removed or if any of the participating entities
+ are updated.
+ But there could also be more complex consistency rules that would have
+ to look at larger parts of the data model and these would be difficult
+ to generalize about and therefore they would have to be checked after each
+ update of the data model.
+ Because of the potential large impact that consistency checks can have
+ on the performance, we would consider them as part of a debugging process
+ and there should be a possibility to turn them off when there is enough
+ confidence in the implementations of the actions and better performance
+ is needed.
+ 
+\end_layout
+
+\begin_layout Standard
+It would be quite easy to implement a complete consistency check that could
+ be run after each successfully executed action, but we think that a more
+ general consistency and trigger framework is much more desirable and therefore
+ we have hesitated to implement this simple solution.
+\end_layout
+
+\begin_layout Subparagraph
+Isolation
+\end_layout
+
+\begin_layout Standard
+The isolation property says that during the execution of a transaction,
+ this transaction may not see any changes to the state of the data model
+ caused by other transactions.
+ Or in other words: during the execution of a transaction it must seem to
+ that transaction that it is the only transaction running at that time.
+\end_layout
+
+\begin_layout Subparagraph
+Durability
+\end_layout
+
+\begin_layout Standard
+Traditionally durability means that once a transaction is committed it stays
+ so, even in the event of a system failure.
+ As we see it, there are at least two problems with this formulation:
+\end_layout
+
+\begin_layout Enumerate
+It is not clear what is covered by the term 
+\begin_inset Quotes eld
+\end_inset
+
+system failure
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Is it enough that data is stored on the local hard drive or should it be
+ stored on several different hard drives located in different cities or
+ even on different continents? No matter how secure the data is stored it
+ is always possible to think of some (maybe very unlikely) event that would
+ wipe out all the data.
+ In the EDMA example runtime implementation we have solved this by having
+ an interchangeable persistence module with a simple interface that handles
+ the persistence strategy.
+ So in EDMA we define data to be persisted whenever the persistence module
+ say so.
+\end_layout
+
+\begin_layout Enumerate
+It is not perfectly clear if this formulation covers both updates and queries
+ on the database.
+ For 
+\emph on
+actions
+\emph default
+ it is clear that when they return from execution successfully, then any
+ changes they have made to the state of the data model should already be
+ persisted.
+ But we think that it should also cover 
+\emph on
+views
+\emph default
+, so whenever a view returns from execution, then any data seen by that
+ view must be persisted.
+\end_layout
+
+\begin_layout Standard
+So in EDMA we will reformulate the durability property to something that
+ is a bit more clear on what we mean exactly: 
+\end_layout
+
+\begin_layout Standard
+Durability is the property ensuring that: When a transaction (both views
+ and actions) has returned successfully from its execution, the state of
+ the data model known by the transaction at the end of the execution, must
+ be persisted successfully.
+\end_layout
+
+\begin_layout Subparagraph
+Transaction Model
+\end_layout
+
+\begin_layout Standard
+Since we want to abstract a data model instance to an object with synchronized
+ methods that operates on an internal state, we have chosen a flat transaction
+ model, where the transaction begins upon entering the method execution
+ and ends upon exiting the method execution.
+ In this way the end user of EDMA will never have to think about transactions
+ or write transaction begin and end declarations.
+\end_layout
+
+\begin_layout Subsubsection
+Data Models
+\end_layout
+
+\begin_layout Standard
+A data model can be seen as a class with an internal, encapsulated state
+ and an external interface.
+ There can be many instances of the same data model, just as there can be
+ many instances of a class.
+ A data model instance also defines a transactional context, meaning that
+ the internal state of the instance is under transactional control, but
+ it is not possible to make transactions that span more than one data model
+ instance.
+\end_layout
+
+\begin_layout Standard
+In a large software project there could be several different data models
+ covering different areas of the business model and there could be several
+ instances of each data model.
+ 
+\end_layout
+
+\begin_layout Standard
+The value domain system is the infrastructure that EDMA provides to transport
+ information between different data model instances.
+ Since all values in the value domain system are immutable and self-contained
+ it is easy to seamlessly distribute the data model instances on different
+ physical machines.
+\end_layout
+
+\begin_layout Subsubsection
+Environment
+\end_layout
+
+\begin_layout Standard
+An environment is a collection of data models that 
+\begin_inset Quotes eld
+\end_inset
+
+speak the same language
+\begin_inset Quotes erd
+\end_inset
+
+.
+ By this we mean that the environment defines a set of common value domains
+ that the data models use in their methods.
+ Each data model can also define local value domains that are only relevant
+ in dealing with that specific data model.
+\end_layout
+
+\begin_layout Standard
+Both the common value domains and the local value domains are available
+ to applications that uses the data models in the environment.
+\end_layout
+
+\end_body
+\end_document

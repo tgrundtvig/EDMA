@@ -1,0 +1,2332 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsubsection
+Generator
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Generator"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The generator is the module responsible for generating Java classes and
+ interfaces for a specific instance of the meta model.
+\end_layout
+
+\begin_layout Standard
+The generator generates the following:
+\end_layout
+
+\begin_layout Itemize
+Interfaces and classes for each Value Domain defined in the environment
+ and the data models.
+\end_layout
+
+\begin_layout Itemize
+The environment class that contains the instance factories for each data
+ model in the environment.
+\end_layout
+
+\begin_layout Itemize
+An instance factory for each data model in the environment, that controls
+ the individual instances of the data model.
+\end_layout
+
+\begin_layout Standard
+For each data model in the environment, the following is generated:
+\end_layout
+
+\begin_layout Itemize
+The set of interfaces that makes up the internal API, used by the actions
+ and views to manipulate and view the state of the data model instance.
+\end_layout
+
+\begin_layout Itemize
+The set of classes that implements the internal API and binds it to the
+ runtime interface.
+\end_layout
+
+\begin_layout Itemize
+The stub classes where the user implements the actions and view.
+ There is one stub class for each action and view.
+\end_layout
+
+\begin_layout Itemize
+The external interface for the data model.
+\end_layout
+
+\begin_layout Itemize
+The implementation of the external interface, that binds the methods of
+ the interface to the stub classes and execute them through the runtime
+ interface.
+\end_layout
+
+\begin_layout Subparagraph
+
+\end_layout
+
+\begin_layout Paragraph
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Creation-of-values"
+
+\end_inset
+
+Value Domains
+\end_layout
+
+\begin_layout Standard
+The value domains are the type system and infrastructure in EDMA that binds
+ everything together and ensures that every part of a project speaks the
+ same language.
+ Each value domain represents a unique type of data with a well defined
+ structure.
+\end_layout
+
+\begin_layout Standard
+The generator generates two classes for each defined value domain: An abstract
+ class that serves as an interface to values from the value domain and an
+ implementation class that implements the abstract methods in the interface.
+ The reason for using an abstract class instead of a Java interface is that
+ Java does not support static methods in interfaces and there are several
+ static methods used to create new values:
+\end_layout
+
+\begin_layout Itemize
+create - this method creates a new value from scratch 
+\end_layout
+
+\begin_layout Itemize
+fromString - this method creates a new value from the string representation
+ of the value.
+\end_layout
+
+\begin_layout Itemize
+fromStream - this method reads a value from a stream.
+\end_layout
+
+\begin_layout Itemize
+fromStreamNoValidate - this method reads a value from a stream without validatin
+g it.
+ It should only be used when reading from a trusted source.
+ For large complex values with many constraints the validate process could
+ be slow, that is the reason for having this method.
+\end_layout
+
+\begin_layout Itemize
+fromTerminal - this method uses a terminal to instruct a user to create
+ a new value.
+\end_layout
+
+\begin_layout Standard
+And some abstract methods:
+\end_layout
+
+\begin_layout Itemize
+toString - returns the string representation of the value.
+\end_layout
+
+\begin_layout Itemize
+toStream - writes the value to a stream.
+\end_layout
+
+\begin_layout Standard
+All value domain classes also have sensible implementations of the comparable
+ interface, the hashCode and equals methods.
+\end_layout
+
+\begin_layout Standard
+The create method for struct type value domains uses a modified version
+ of the builder pattern to create new values.
+ The builder pattern uses what is known as a fluid interface
+\begin_inset CommandInset citation
+LatexCommand cite
+key "fowler2008"
+
+\end_inset
+
+, where methods are chained together.
+ This results in more readable code, where each field has a set-method named
+ after it.
+ In EDMA we have taken the builder pattern one step further, so each field
+ has its own interface, with a set-method named after the field.
+ Each set-method then returns the builder-interface for the next field except
+ the last one, which returns the created object or value.
+ By doing it this way, we get a fixed order of the attributes and we make
+ sure that it is not possible to miss out on any of them.
+ It would be a bit cumbersome to program this by hand, but with auto-generated
+ code it is no problem.
+ As an example, lets see how we would create a new date from the date value
+ domain:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=none]
+\end_layout
+
+\begin_layout Plain Layout
+
+Date myDate = Date.create().year(1973).month(6).day(7);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+The static method 
+\family typewriter
+Date.create()
+\family default
+ returns an interface that only has a method for setting the year.
+ That method returns an interface with a method to set the month, which
+ in turn returns an interface to set the day.
+ The interface for setting the day finally returns the completed data value.
+ If we put the attributes in a wrong order or if we missed out any of them,
+ then the Java compiler would complain immediately.
+ If the user uses a modern IDE e.g.
+ eclipse, it gets very easy since the automatic code-completion will pop
+ up with the name of the next field after each dot.
+ This type of chained interfaces are used in EDMA both when creating values
+ from value domains and when creating entities from kinds.
+\end_layout
+
+\begin_layout Paragraph
+Data Models
+\end_layout
+
+\begin_layout Standard
+For each data model in the environment, several interfaces and classes are
+ created:
+\end_layout
+
+\begin_layout Itemize
+Data model factory interface.
+ This interface provides methods to create new instances of the data model
+ and to get access to existing instances of the data model.
+ Each instance is identified by a name.
+\end_layout
+
+\begin_layout Itemize
+Data model instance interface.
+ This interface is used to start and stop the instance and to get the external
+ interface of the instance.
+ The methods of the external interface can only be called when the instance
+ is running.
+ Otherwise an exception is thrown.
+\end_layout
+
+\begin_layout Itemize
+Data model external interface.
+ This is the external interface of the data model that clients can use to
+ execute the actions and views on the data model.
+\end_layout
+
+\begin_layout Itemize
+Internal view interface.
+ This is the interface that 
+\emph on
+views
+\emph default
+ use internally to navigate and extract information from the data model.
+\end_layout
+
+\begin_layout Itemize
+Internal update interface.
+ This interface extends the internal view interface and adds functionality
+ to make changes to the data model.
+ This is the interface that 
+\emph on
+actions
+\emph default
+ use internally.
+\end_layout
+
+\begin_layout Standard
+Besides these interfaces there are also generated classes that bind these
+ data model specific interfaces to the general runtime interface.
+\end_layout
+
+\begin_layout Paragraph
+Kinds
+\end_layout
+
+\begin_layout Standard
+For each kind in the data model we create a number of interfaces that can
+ be used internally in the implementation of the views and actions.
+ These interfaces are:
+\end_layout
+
+\begin_layout Itemize
+The entity view interface.
+ This interface provides methods to read the attributes of an entity of
+ this kind.
+ It will also get the methods that are used to navigate any relations that
+ this kind is part of.
+\end_layout
+
+\begin_layout Itemize
+The entity update interface.
+ This interface extends the view interface and adds methods to update the
+ mutable attributes.
+ This interface will also get methods to create and delete connections with
+ other entities through the relations that this kind is part of.
+\end_layout
+
+\begin_layout Itemize
+The set interface.
+ This interface is used to navigate sets of entities of this kind.
+ It implements the iterable interface and has methods to create new sets
+ by unions, intersections and subtractions with other sets of the same kind.
+ It also gets methods to navigate relations that this kind is part of.
+\end_layout
+
+\begin_layout Itemize
+The filter interface.
+ This is a simple interface that can be used to create specialized filters
+ that can be used on sets of entities of this kind.
+\end_layout
+
+\begin_layout Itemize
+The kind interface.
+ This interface has methods to get access to all entities of this kind or
+ a specific entity either by ID or by any unique index on the kind.
+ It also has methods to get access to specific sets of entities based on
+ the indexes declared on this kind.
+\end_layout
+
+\begin_layout Standard
+For each kind in the data model, the internal view interface for the data
+ model gets a method to access the kind interface and the internal update
+ interface gets methods to create new entities and delete entities of this
+ kind and a method to upgrade a view interface for an entity of this kind
+ to an update interface.
+ For singletons we only have the entity view and entity update interface.
+\end_layout
+
+\begin_layout Standard
+The way we update entities is a little special because of the unique index.
+ Normally we would just make a set method for each mutable attribute and
+ then these could be used to update entities one attribute at the time,
+ but this could give problems if there are unique indexes that span more
+ than one attribute.
+ As an example, lets say we have a person kind with separate attributes
+ for first name and last name and that we have a unique index on (firstName,
+ lastName).
+ There exist a person called 
+\begin_inset Quotes eld
+\end_inset
+
+John Andersen
+\begin_inset Quotes erd
+\end_inset
+
+ and another person called 
+\begin_inset Quotes eld
+\end_inset
+
+Thomas Andersen
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Lets say we want to change the name of 
+\begin_inset Quotes eld
+\end_inset
+
+Thomas Andersen
+\begin_inset Quotes erd
+\end_inset
+
+ to 
+\begin_inset Quotes eld
+\end_inset
+
+John Nielsen
+\begin_inset Quotes erd
+\end_inset
+
+, then we would get an UniqueException if we started by changing his first
+ name to 
+\begin_inset Quotes eld
+\end_inset
+
+John
+\begin_inset Quotes erd
+\end_inset
+
+, because now there would be two people named 
+\begin_inset Quotes eld
+\end_inset
+
+John Andersen
+\begin_inset Quotes erd
+\end_inset
+
+.
+ To solve this we have made it possible to update several attributes at
+ once.
+ Instead of doing something like this:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=l]
+\end_layout
+
+\begin_layout Plain Layout
+
+person.setFirstName("John");
+\end_layout
+
+\begin_layout Plain Layout
+
+person.setLastName("Nielsen");
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+We instead do like this:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=l]
+\end_layout
+
+\begin_layout Plain Layout
+
+person.setFirstName("John").setLastName("Nielsen").save();
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+Thus, we update both the first name and the last name at the same time and
+ we will only get an UniqueException if there is another person named 
+\begin_inset Quotes eld
+\end_inset
+
+John Nielsen
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The 
+\emph on
+save
+\emph default
+ method only declares that it can throw a UniqueException if we actually
+ update an attribute that is part of a unique index.
+ This is done by a little trick, where we actually have two different interfaces
+ for updating the attributes, a 
+\emph on
+plain
+\emph default
+ one where the 
+\emph on
+save
+\emph default
+ method does 
+\emph on
+not
+\emph default
+ throw a UniqueException and a 
+\emph on
+unique
+\emph default
+ one where the 
+\emph on
+save
+\emph default
+ method declares to throw the UniqueException.
+ In the 
+\emph on
+plain
+\emph default
+ interface all set methods on attributes that are not part of a unique index
+ just return the 
+\emph on
+plain
+\emph default
+ interface again, but the set methods for those attributes that are involved
+ in a unique index returns the 
+\emph on
+unique
+\emph default
+ interface instead.
+ In the 
+\emph on
+unique
+\emph default
+ interface all set methods returns the 
+\emph on
+unique
+\emph default
+ interface again.
+ So this does that as soon as we have 
+\begin_inset Quotes eld
+\end_inset
+
+touched
+\begin_inset Quotes erd
+\end_inset
+
+ an attribute that is part of a unique index, then the 
+\emph on
+save
+\emph default
+ method will declare that it can throw the UniqueException.
+\end_layout
+
+\begin_layout Standard
+Besides these interfaces there are also generated classes that binds these
+ data model specific interfaces to the general runtime interface.
+\end_layout
+
+\begin_layout Paragraph
+Relations
+\end_layout
+
+\begin_layout Standard
+The relations in the data model add methods to the interfaces for the kinds
+ participating in the relation.
+ The names of these methods are dependent on the type of the relation, as
+ well as names and roles of the participating kinds.
+ For example, having a relation 
+\family typewriter
+StudentEnrollment
+\family default
+ between 
+\family typewriter
+Course
+\family default
+ and 
+\family typewriter
+Person
+\family default
+ (having the role of 
+\family typewriter
+student
+\family default
+) results in four methods; two in the 
+\family typewriter
+CourseUpdate
+\family default
+ interface (
+\family typewriter
+addStudent
+\family default
+ and 
+\family typewriter
+removeStudent
+\family default
+), one in the 
+\family typewriter
+PersonViewer
+\family default
+ interface (
+\family typewriter
+asStudentGetCourseSet
+\family default
+) and one in the 
+\family typewriter
+CourseViewer
+\family default
+ interface (
+\family typewriter
+getStudentSet
+\family default
+).
+ This is visualized in figure
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:generatorRelations}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{EDMA file:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma,frame=l]
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation StudentEnrollment Course >-< Person:student
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{Generated Java:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=l]
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface CourseUpdater {
+\end_layout
+
+\begin_layout Plain Layout
+
+	boolean addStudent(PersonViewer student);
+\end_layout
+
+\begin_layout Plain Layout
+
+	boolean removeStudent(PersonViewer student);
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+ .
+ .
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface PersonViewer {
+\end_layout
+
+\begin_layout Plain Layout
+
+	CourseSet asStudentGetCourseSet();
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+ .
+ .
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface CourseViewer {
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getStudentSet();
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+ .
+ .
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Top: The relation as represented in the data definition language.
+ Bottom: The generated code.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:generatorRelations}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+Notice that the method in the course viewer interface is not named 
+\family typewriter
+asCourseGetStudentSet
+\family default
+, but just 
+\family typewriter
+getStudentSet.
+
+\family default
+ Methods in the 
+\family typewriter
+PersonUpdate
+\family default
+ interface for adding and removing courses (as a student) could be generated
+ as well; however, these would be redundant with the 
+\family typewriter
+addStudent
+\family default
+ and 
+\family typewriter
+removeStudent
+\family default
+ in the 
+\family typewriter
+CourseUpdater
+\family default
+ interface.
+ Therefore, the generator only creates connection methods on the first kind
+ in the relation (the kind written to the left in the relation declaration).
+\end_layout
+
+\begin_layout Standard
+In a one-to-many relation, a method returning a set of the other kind, is
+ created on the first kind, while a method returning a single entity is
+ created on the second kind.
+ This is shown in figure
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:generatorRelationsManyOne}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{0.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{EDMA file:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma,frame=l]
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation TeacherAssignment Course >-- Person:teacher
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{Generated Java:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=l]
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface PersonViewer {
+\end_layout
+
+\begin_layout Plain Layout
+
+	CourseSet asTeacherGetCourseSet();
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+ .
+ .
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface CourseViewer {
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonViewer getTeacher();
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+ .
+ .
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{0.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{In a many-to-one relation, a method returning a set is generated
+ on the one-part, while a method returning a single viewer is generated
+ on the many-part.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:generatorRelationsManyOne}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+In the 
+\family typewriter
+CourseUpdate
+\family default
+ interface, a method is generated for creating and deleting connections,
+ as shown below.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=l]
+\end_layout
+
+\begin_layout Plain Layout
+
+PersonViewer setTeacher(PersonViewer teacher);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+This method returns the previous teacher, or 
+\emph on
+null
+\emph default
+ if there previously was no teacher assigned to the course.
+ To remove the current teacher without setting a new, this method can be
+ called with 
+\emph on
+null
+\emph default
+ as argument.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{0.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{EDMA file:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=edma,frame=none]
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation Marriage Person:spouse --- Person:spouse
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{Generated Java:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=none]
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface PersonViewer {
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonViewer asSpouseGetSpouse();
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonViewer asSpouseSetSpouse(PersonViewer spouse);
+\end_layout
+
+\begin_layout Plain Layout
+
+	.
+ .
+ .
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{0.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{In a one-to-one-self relation, a getter and setter method is generated
+ as expected.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:generatorRelationsOneToOneSelf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+The one-to-one-self relation generates code as expected.
+ Figure
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:generatorRelationsOneToOneSelf}
+\end_layout
+
+\end_inset
+
+ shows a one-to-one-self relation, 
+\family typewriter
+Marriage
+\family default
+, relating two persons, each with the role of 
+\family typewriter
+spouse
+\family default
+.
+ In the resulting PersonViewer interface, a method to get the spouse, as
+ well one to set the spouse, is generated.
+\end_layout
+
+\begin_layout Paragraph
+Indexes
+\end_layout
+
+\begin_layout Standard
+There are three types of indexes in EDMA
+\emph on
+ (Unique
+\emph default
+, 
+\emph on
+Equal
+\emph default
+ and 
+\emph on
+Compare
+\emph default
+) and each of these can be placed both on kinds and on relations.
+ When an index is placed on a kind, the methods related to the index are
+ added to the kind's interface.
+ When an index is placed on a relation, the methods are added to the entity
+ viewer interface.
+ A Unique index does not only add extra methods to these interfaces, it
+ also adds a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+throws UniqueException
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ declaration to every method that might violate the unique constraint.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{EMDA file:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=EDMA, frame=none, tabsize=4]
+\end_layout
+
+\begin_layout Plain Layout
+
+Kind Person
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	name : Name
+\end_layout
+
+\begin_layout Plain Layout
+
+	email : Email
+\end_layout
+
+\begin_layout Plain Layout
+
+	birthdate : Date
+\end_layout
+
+\begin_layout Plain Layout
+
+	Unique(email)
+\end_layout
+
+\begin_layout Plain Layout
+
+	Compare(birthdate)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+emph{Generated Java:}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java, frame=none, tabsize=4]
+\end_layout
+
+\begin_layout Plain Layout
+
+public interface PersonKind {
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonViewer getFromID(PersonID id);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getAll();
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonViewer getFromEmail(Email email);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getWhereBirthdayEquals(Date date);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getWhereBirthdayLessThan(Date date);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getWhereBirthdayLessThanOrEqual(Date date);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getWhereBirthdayGreaterThan(Date date);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getWhereBirthdayGreaterThanOrEqual(Date date);
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonSet getWhereBirthdayInRange(
+\end_layout
+
+\begin_layout Plain Layout
+
+			Date minBirthday, 
+\end_layout
+
+\begin_layout Plain Layout
+
+			boolean minInclusive,
+\end_layout
+
+\begin_layout Plain Layout
+
+			Date maxBirthday,
+\end_layout
+
+\begin_layout Plain Layout
+
+			boolean maxInclusive);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+rule{
+\backslash
+textwidth}{.1mm}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{empty}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:empty}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Actions and Views
+\end_layout
+
+\begin_layout Standard
+Actions and views are the transactions in EDMA.
+ For each Action or View defined by a data model, a corresponding Java class
+ is created by the generator.
+ These classes are the placeholders for the Java-code that makes up the
+ specific action or view.
+ This is best illustrated by an example: In the data model definition we
+ define an action like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[frame=l,breaklines=true]
+\end_layout
+
+\begin_layout Plain Layout
+
+Action createPerson
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+		"Creates a new person"
+\end_layout
+
+\begin_layout Plain Layout
+
+	Input: 
+\end_layout
+
+\begin_layout Plain Layout
+
+		name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+		mobile : Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+	Output:
+\end_layout
+
+\begin_layout Plain Layout
+
+		id : PersonID
+\end_layout
+
+\begin_layout Plain Layout
+
+	ErrorCodes:
+\end_layout
+
+\begin_layout Plain Layout
+
+		1 - "Email already exists",
+\end_layout
+
+\begin_layout Plain Layout
+
+		2 - "Mobile already exists"
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The generator will then generate the following java class:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=l,breaklines=true]
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+public class CreatePersonUserImpl extends 
+\end_layout
+
+\begin_layout Plain Layout
+
+	Result implements CreatePersonResult
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	private static final int OK = 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private static final int EMAIL_ALREADY_EXISTS = 1;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private static final int MOBILE_ALREADY_EXISTS = 2;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private final Name in_name;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private final Email in_email;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private final Mobile in_mobile;
+\end_layout
+
+\begin_layout Plain Layout
+
+	private PersonID out_id;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	/**
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * Constructor
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * @param in_name    Input parameter 1
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * @param in_email   Input parameter 2
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * @param in_mobile  Input parameter 3
+\end_layout
+
+\begin_layout Plain Layout
+
+	 */
+\end_layout
+
+\begin_layout Plain Layout
+
+	public CreatePersonUserImpl(Name in_name, 
+\end_layout
+
+\begin_layout Plain Layout
+
+			Email in_email, 
+\end_layout
+
+\begin_layout Plain Layout
+
+			Mobile in_mobile)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		this.in_name = in_name;
+\end_layout
+
+\begin_layout Plain Layout
+
+		this.in_email = in_email;
+\end_layout
+
+\begin_layout Plain Layout
+
+		this.in_mobile = in_mobile;
+\end_layout
+
+\begin_layout Plain Layout
+
+		out_id = null;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	/**
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * Execution of the action
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * @param upd  Update interface
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * @return     Return 0 to commit or one of the error codes to roll back
+\end_layout
+
+\begin_layout Plain Layout
+
+	 */
+\end_layout
+
+\begin_layout Plain Layout
+
+	public int execute(CourseRegUpdater upd)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		// Implementation of createPerson
+\end_layout
+
+\begin_layout Plain Layout
+
+		// Return one of the following error codes:
+\end_layout
+
+\begin_layout Plain Layout
+
+		// OK
+\end_layout
+
+\begin_layout Plain Layout
+
+		// EMAIL_ALREADY_EXISTS
+\end_layout
+
+\begin_layout Plain Layout
+
+		// MOBILE_ALREADY_EXISTS
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+		// If an error needs extra explanation,
+\end_layout
+
+\begin_layout Plain Layout
+
+		// use: setErrorDescription("Extra info");
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+		// WARNING : Any code outside the following begin and end tags
+\end_layout
+
+\begin_layout Plain Layout
+
+		// will be lost when re-generation occurs.
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+		// EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+		//TODO : put your implementation here...
+\end_layout
+
+\begin_layout Plain Layout
+
+		throw new RuntimeException("This action has not been implemented yet!");
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+		// EDMA_non-generated_code_end
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+	/**
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * Returns the output id:PersonID
+\end_layout
+
+\begin_layout Plain Layout
+
+	 * @return  The output id:PersonID
+\end_layout
+
+\begin_layout Plain Layout
+
+	 */
+\end_layout
+
+\begin_layout Plain Layout
+
+	public PersonID getId()
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		if(errorCode() != 0) return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+		return out_id;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The user must now implement the business logic that makes up the action
+ using the interface provided as a parameter in the execute method.
+ The execute method must return one of the error-codes or 0 (OK) if successful.
+ The implementation could look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{lstlisting}[language=java,frame=l,breaklines=true]
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+	// EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(upd.getPersonKind().getFromEmail(in_email) != null)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		return EMAIL_ALREADY_EXISTS;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	if(upd.getPersonKind().getFromMobile(in_mobile) != null)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		return MOBILE_ALREADY_EXISTS;
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	PersonUpdater person = upd.newPerson()
+\end_layout
+
+\begin_layout Plain Layout
+
+		.name(in_name)
+\end_layout
+
+\begin_layout Plain Layout
+
+		.email(in_email)
+\end_layout
+
+\begin_layout Plain Layout
+
+		.mobile(in_mobile)
+\end_layout
+
+\begin_layout Plain Layout
+
+		.balance(NotNegInt.create(0));
+\end_layout
+
+\begin_layout Plain Layout
+
+	out_id = person.getID();
+\end_layout
+
+\begin_layout Plain Layout
+
+	return OK;
+\end_layout
+
+\begin_layout Plain Layout
+
+	// EDMA_non-generated_code_end
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{lstlisting}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The EDMA framework will take care of calling the execute method and automaticall
+y roll back changes in the case of an error code different than 0 (OK) is
+ returned or an exception is thrown.
+\end_layout
+
+\begin_layout Standard
+For a view it is almost the same except that the interface provided as a
+ parameter to the execute method is a 
+\begin_inset Quotes eld
+\end_inset
+
+view
+\begin_inset Quotes erd
+\end_inset
+
+ interface which means that it has no methods for updating the data model
+ instance.
+\end_layout
+
+\begin_layout Paragraph
+Utilities
+\end_layout
+
+\begin_layout Standard
+Because of the fine grained value domain system with well defined, but arbitrary
+ complex values and the meta description of both the internal structure
+ and the external interface of the data models, it is possible to auto-generate
+ many useful utilities for working with specific data models.
+ This is where the full strength of the model driven approach comes to play.
+ We have created a few simple examples of what can be auto generated, but
+ only ones imagination limits the possibilities of what could be auto generated.
+\end_layout
+
+\begin_layout Standard
+When a new utility has been invented and generation code written, all both
+ earlier and future projects can benefit from a specialized version of the
+ utility by the press of a button.
+\end_layout
+
+\begin_layout Subparagraph
+Remote access
+\end_layout
+
+\begin_layout Standard
+The generator creates a Java-interface from the actions and views on each
+ data model defined.
+ This interface is the external interface to an instance of that data model.
+ This interface will be used by the client programs that operate on the
+ specific data model instance.
+ These client programs could be placed within the same JVM as the Data model
+ instance, but they could also be placed in a different JVM, perhaps on
+ a different machine.
+ Therefore the generator will generate a server program and a client proxy
+ that communicates over sockets.
+ This makes it very easy to separate the client application from the data
+ model instance if this is needed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[scale=0.5]{img/remoteAccess.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{A data model proxy interface and server is generated, to support
+ transparent remote access to a data model instance.
+ Coloured areas are auto generated code.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:remoteAccess}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subparagraph
+Terminal test
+\end_layout
+
+\begin_layout Standard
+The generator also generates a program where a user can call the methods
+ of the external interface through a simple terminal.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[scale=0.5]{img/terminalTest.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{An terminal test program is generated to let a user test the methods
+ in the external interface of a data model instance.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:terminalTest}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subparagraph
+Web Interface
+\end_layout
+
+\begin_layout Standard
+It would also be possible to generate a web interface where a user can interact
+ with a data model instance through the external interface.
+ Javascript can be created to validate the value domains.
+ We have created an early prototype of this, but it requires a bit more
+ work to be perfected.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[scale=0.5]{img/web.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{A web servlet for interacting with a data model instance together
+ with HTML and Javascript for validating values on the client side, could
+ be auto generated.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:web}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Names and Packages
+\end_layout
+
+\begin_layout Standard
+It is important to us that the generated code can compile right away without
+ any changes, so we need to keep track of all imports and package information.
+ Since many of the generated interfaces and classes are dependent on each
+ other and on the runtime interface, any changes to the naming conventions
+ or the package structure would require lots of changes to the generator
+ code in many different places.
+ To avoid this we have abstracted out the naming conventions and the package
+ structure to a separate interface that takes care of all class names, package
+ names and package layout.
+ This interface is then used all over the generator.
+ In this way it is easy to make changes to the names of interfaces and classes
+ or to the package structure of the generated code.
+ It is even possible to have several implementations of the naming interface,
+ so it is possible to switch between different naming and package layout
+ strategies.
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,134 @@
+
+\section{\label{sec:Evaluation}Evaluation}
+
+In this section, we address the issue of evaluating the EDMA system,
+both with respect to its functional usability, and with respect to
+a few performance parameters. Since one of the main points with EDMA
+is to make it easy for the user to come from an idea of a data model,
+to working implemented code reflecting that model, we briefly discuss
+the steps that are required for doing so.
+
+Although performance hasn't been the main focus of this project, we
+have created a few simple performance tests. These are presented and
+briefly discussed in Appendix \ref{sec:PerformanceEvaluation}.
+
+
+\paragraph{Functional Evaluation}
+
+Evaluating the usability of EDMA can be done by asking a series of
+questions:
+\begin{itemize}
+\item How easy or difficult is it to create a new data model?
+\item How easy or difficult is it to change an existing data model?
+\item How easy or difficult is it to implement actions and views?
+\end{itemize}
+One way of measuring the complexity of using EDMA would be to get
+a group of people to read the tutorial, and then carry out a list
+of predefined tasks. The time it would take to complete each task
+would then depict the complexity of the various parts of the system.
+Another way of measuring the complexity, is to count the number of
+steps it takes to optimally solve a certain task.
+
+In answering these questions, we need a standard measure, to describe
+how the tasks are carried out. As a measure, we count the number of
+steps involved, and comment on the complexity of the steps.
+
+The flow of creating a data model implementation can be divided into
+4 phases:
+\begin{itemize}
+\item 1 -- Model definition
+\item 2 -- Code generation (run the EDMA compiler)
+\item 3 -- action and view implementation (create the necessary code in
+the action and view stub classes)
+\item 4 -- data model instantiation (create an instance of the data model
+to use in the external application)
+\end{itemize}
+We see designing and implementing a concrete data model as an iterative
+process, where the user switches between phase 1, 2 and 3 in a number
+of iterations. In a prototyping scenario, where not all business requirements
+may be strictly given, new requirements or ideas may influence and
+change the design for a number of iterations. The user might work
+in a typical prototyping scenario, going in and out of different work
+phases in an undetermined order:
+\begin{itemize}
+\item Recognition and definition of the domain specific value domains
+\item Recognition of the need for modeling a certain kind, relation, singleton,
+action or view
+\item Creation or refining of the data and interface definition files
+\item Generation of code and implementation of actions and views
+\end{itemize}
+In many prototyping scenarios, the user will not be able to create
+the full data model in one iteration. Therefore, it is important that
+the user can easily go back and update the definition files, re-generate
+the code, and fill out stub code of newly created actions and views.
+And if the latest change to a definition file has resulted in broken
+code, it must be easy to find and correct the files in question. In
+the following, we discuss the four steps that make up the process
+of using EDMA.
+
+
+\paragraph{Data Definition}
+
+Data definition is done by creating one, or many, data definition
+files, adhering to the syntax of the EDMA definition language. The
+definition of the kinds will itself result in a number of iterations,
+where the user realizes the need for value domains, relations and
+actions and views. For example, when creating the Person, the user
+realizes the need for the attribute value domains Name, Date, PhoneNumber
+and Balance. The following is noticed.
+\begin{itemize}
+\item Each value domain and each relation takes up one line of code. Each
+kind takes up one line for the declaration, plus one line for each
+attribute. Actions and views take up one line for the declaration,
+one line for the description, one for the error code, and one line
+for each input and output.
+\item The number of relations will roughly be following the number of relations.
+\item The number of actions will often be around twice the number of kinds
+and relations (the user can have creation and deletion actions for
+each kind and for each relation, and additional views and actions.)
+\item Creating the value domains may be time consuming the first time it
+is done, but as the user creates subsequent data models, he will find
+out that there is a common set of value domains that are needed in
+many data models. Therefore, the user might create a file for holding
+the basic value domains needed (Year, Month, Day, Date, Hour, Minute,
+Second, Time, PosInt, NegInt, etc.)
+\end{itemize}
+Because of the number, and line-span, of actions and views, we estimate
+that writing the action and views is the most time consuming process,
+when writing the edma-files.
+
+
+\paragraph{Running the EDMA Compiler}
+
+Running the EDMA compiler is a question of running a Java program.
+If there are errors in any of the edma-files, the compiler gives the
+user a message stating the error type, and the location of the error.
+After the compiler has been run, the user should make sure that the
+IDE shows the newest version of the directory listing (in Eclipse,
+this is done by right clicking on the project folder, and choosing
+Refresh.)
+
+
+\paragraph{Implementing Actions and Views}
+
+The stub code that is generated for actions and views purposefully
+contains a syntax error. In that way, the user can quickly find the
+action and view stub classes that need to be filled out
+
+If the user has already implemented some actions and views, and later
+decide to recompile the edma-files, the existing actions and views
+will be kept.
+
+
+\paragraph{Instantiation}
+
+Instantiating the created data model is done in very few steps, by
+calling a static method to retrieve a meta model instance, and creating
+a runtime factory by which to obtain a model instance.
+
+
+\subsubsection{Evaluation of Tutorial}
+
+One way of assessing the usability of the EDMA system, is to let a
+user complete the tutorial (Appendix \ref{sec:EDMAtutorial}), and
+note down the time it takes to complete the individual steps. 

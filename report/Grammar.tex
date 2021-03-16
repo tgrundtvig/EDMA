@@ -1,0 +1,210 @@
+
+\section{\label{sec:EDMALanguageGrammar}EDMA Language Grammar}
+
+Here, we present the grammar for the EDMA language. The grammar is
+written in JavaCC, and the grammar listed shows an EBNF representation
+of the syntax.
+
+\begin{lstlisting}[basicstyle={\scriptsize\sffamily},breaklines=true,showstringspaces=false,tabsize=2]
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+| "\n"
+| <"//" (~[ "\n", "\r" ])*
+    (
+      "\n"
+    | "\r"
+    | "\r\n"
+    )>
+| <"/*">: INSIDE_COMMENT 
+}
+
+<INSIDE_COMMENT>SKIP :
+{
+  <"*/">: DEFAULT
+| <~[]>
+}
+
+TOKEN :
+{
+  <DECIMAL : <NUMBER> "." <DIGITS>>
+| <NUMBER : ("-")?<DIGITS>>
+| <DIGITS : ([ "0"-"9" ])+>
+| <MIN : "MIN">
+| <MAX : "MAX">
+| <KEYWORD_NULL : "null">
+| <KEYWORD_VALUEDOMAIN : "ValueDomain">
+| <KEYWORD_DATAMODEL : "DataModel">
+| <KEYWORD_KIND : "Kind">
+| <KEYWORD_EXTENDS : ("e"|"E")"xtends"> // OPTION: Extends or extends?
+| <KEYWORD_RELATION : "Relation">
+| <KEYWORD_SINGLETON : "Singleton">
+| <KEYWORD_UNIQUE : "Unique">
+| <KEYWORD_COMPARE : "Compare">
+| <KEYWORD_EQUALS : "Equals">
+| <KEYWORD_VOID  : "void">
+| <KEYWORD_ACTION : "Action">
+| <KEYWORD_INTERFACE : "Interface">
+| <KEYWORD_VIEW : "View">
+| <KEYWORD_DEFAULT : "Default">
+| <KEYWORD_TRUE : "true">
+| <KEYWORD_FALSE : "false">
+| <KEYWORD_LISTOF : "List">
+| <KEYWORD_ENUM : "Enum">
+| <KEYWORD_MAP : "Map">
+| <KEYWORD_ONEOF : "OneOf">
+| <KEYWORD_STRUCT : "Struct">
+| <KEYWORD_CONSTRAINTS : "Constraints">
+| <KEYWORD_PUBLISH : "Publish">
+| <KEYWORD_AS : "As">
+| <KEYWORD_PUBLISHAS : "PublishAs">
+| <KEYWORD_ON  : "On">
+| <KEYWORD_INPUT : "Input">
+| <KEYWORD_OUTPUT : "Output">
+| <KEYWORD_ERRORCODES : "ErrorCodes">
+| <KEYWORD_DESCRIPTION : "Description">
+| <BOOLEAN_DOMAIN : "Boolean">
+| <STRING_DOMAIN : "String">
+| <FLOAT_DOMAIN : "Float">
+| <DOUBLE_DOMAIN : "Double">
+| <INTEGER_DOMAIN : "Integer">
+| <LONG_DOMAIN : "Long">
+
+| <REGEX_RANGE : "[\"" ~[ "\"", "\n", "\r" ] "\"]">
+| <CAMELCASE_WORD : [ "a"-"z" ] ([ "a"-"z", "A"-"Z", "0"-"9" ])*>
+| <IDENTIFIER : [ "A"-"Z" ] ([ "a"-"z", "A"-"Z","0"-"9" ])*>
+
+| <ARROW : "->">
+| <L_PAR : "(">
+| <R_PAR : ")">
+| <L_BR : "{">
+| <R_BR : "}">
+| <L_SQBR : "[">
+| <R_SQBR : "]">
+| <COLON : ":">
+| <COMMA : ",">
+| <RELATION_SYMBOL :
+    "---"
+  | ">--"
+  | ">-<">
+| <QUESTION_MARK : "?">
+| <PLUS : "+">
+| <MINUS : "-">
+| <LT : "<">
+| <GT : ">">
+}
+
+TOKEN :
+{
+  <Q_STRING : "\""  (<ALLOWABLE_CHARACTERS>)* "\"">
+| <ALLOWABLE_CHARACTERS: ( (~["\\","\""]) | ("\\" ( ["u"] ["0"-"9", "a"-"f", "A"-"F"]
+														   ["0"-"9", "a"-"f", "A"-"F"]
+														   ["0"-"9", "a"-"f", "A"-"F"]
+														   ["0"-"9", "a"-"f", "A"-"F"]
+      											     | ["\"", "\\", "b", "f", "n", "r", "t"]
+      											   )
+      										  )
+      					  )> 
+}
+
+/** Productions */
+Input = { ValueDomain }, { DataModel }, <EOF>;
+
+ValueDomain = <KEYWORD_VALUEDOMAIN>, <IDENTIFIER>, <COLON>,
+  ( ValueDomainEnum | ValueDomainList | ValueDomainMap | ValueDomainStruct
+    | ValueDomainSingle | ValueDomainOneOf ), 
+  [ ConstraintNodeList ];
+
+ConstraintNodeList = <KEYWORD_CONSTRAINTS>, <L_SQBR>, ConstraintNode,
+  { <COMMA>, ConstraintNode }, <R_SQBR>;
+
+ConstraintNode = <CAMELCASE_WORD>, [ <Q_STRING> ];
+
+ValueDomainEnum = <KEYWORD_ENUM>, <L_SQBR>, <IDENTIFIER>,
+  { <COMMA>, <IDENTIFIER> }, <R_SQBR>;
+
+ValueDomainList = <KEYWORD_LISTOF>, <LT>, <IDENTIFIER>, <GT>, [ Range ];
+
+Range = <L_SQBR>, ( <MIN>, | ( <DECIMAL> | <NUMBER> ) ),
+  ( <R_SQBR> | "..", ( <DECIMAL> | <NUMBER> | <MAX> ),
+    <R_SQBR>
+  );
+
+ValueDomainMap = <KEYWORD_MAP>, <LT>, <IDENTIFIER>, <COMMA>,
+  <IDENTIFIER>, <GT>;
+
+ValueDomainStruct = 
+  <KEYWORD_STRUCT>, <L_BR>
+  [ <CAMELCASE_WORD>, [ <QUESTION_MARK> ], <COLON>, <IDENTIFIER>,
+    { <COMMA>, <CAMELCASE_WORD>, [ <QUESTION_MARK> ], <COLON>, <IDENTIFIER> }
+  ], <R_BR>;
+
+ValueDomainSingle = 
+    <BOOLEAN_DOMAIN> 
+  | <STRING_DOMAIN>, Range [ RegexRange ] 
+  | ( <FLOAT_DOMAIN> | <DOUBLE_DOMAIN> | <INTEGER_DOMAIN> | <LONG_DOMAIN> ), Range;
+
+RegexRange = <L_SQBR>, <Q_STRING>, <R_SQBR>;
+
+ValueDomainOneOf = <KEYWORD_ONEOF>, <LT>, <IDENTIFIER>, { <COMMA>, <IDENTIFIER> }, <GT>;
+
+DataModel = <KEYWORD_DATAMODEL>, <IDENTIFIER>, <L_BR>,
+  { Kind | Relation | Singleton | ActionView | Interface | ValueDomain },
+  [ ConstraintNodeList ], <R_BR>;
+
+Index =
+  ( <KEYWORD_UNIQUE> | <KEYWORD_EQUALS> | <KEYWORD_COMPARE> ),
+  <L_PAR>, <CAMELCASE_WORD>, { [ <COMMA> ], <CAMELCASE_WORD> }, <R_PAR>;
+
+RelationIndex = ( <KEYWORD_UNIQUE> | <KEYWORD_EQUALS> | <KEYWORD_COMPARE> ),
+  <KEYWORD_ON>, <IDENTIFIER>, [ <COLON>, <CAMELCASE_WORD> ],
+  <L_PAR>, <CAMELCASE_WORD>, { [<COMMA>], <CAMELCASE_WORD> }, <R_PAR>;
+
+Kind = < KEYWORD_KIND >, < IDENTIFIER >, [ < KEYWORD_EXTENDS >, < IDENTIFIER > ],
+  [ <KEYWORD_PUBLISH >, [ <KEYWORD_AS > t=< IDENTIFIER > ] ],
+  < L_BR >,
+  [ (  Attribute | Index |  ConstraintNodeList ),
+  	{ < COMMA >, ( Attribute | Index | ConstraintNodeList ) }
+  ], < R_BR >;
+
+Attribute = ( <CAMELCASE_WORD>,
+  [ <QUESTION_MARK>, [ <PLUS> ] | <PLUS> [ <QUESTION_MARK> ] ] ), <COLON>,
+  <IDENTIFIER>, [ <KEYWORD_DEFAULT>, <L_SQBR>, BasicValue, <R_SQBR> ];
+
+BasicValue = <Q_STRING> | <MIN> | <MAX> | <NUMBER> | <DECIMAL> | <KEYWORD_TRUE>
+  | <KEYWORD_FALSE> | <IDENTIFIER> | <KEYWORD_NULL> | ListOfBasicValues;
+
+
+ListOfBasicValues = <L_PAR>, BasicValue, { <COMMA>, BasicValue }, <R_PAR>;
+
+Relation = <KEYWORD_RELATION>, <IDENTIFIER>, <IDENTIFIER>,
+  [ <COLON>, <CAMELCASE_WORD> ],
+  RelationType, <IDENTIFIER>, [ <COLON>, <CAMELCASE_WORD> ],
+  [ <L_BR>, ( RelationIndex | ConstraintNodeList ),
+	{ <COMMA>, ( RelationIndex | ConstraintNodeList ) }, <R_BR> ];
+
+RelationType = <RELATION_SYMBOL>;
+
+Singleton = <KEYWORD_SINGLETON>, <IDENTIFIER>,
+ [ <KEYWORD_PUBLISH>, [ <KEYWORD_AS>, <IDENTIFIER> ] ],
+  <L_BR>, Attribute , { <COMMA>, Attribute },
+  [ ConstraintNodeList ], <R_BR>;
+
+ActionView = ( <KEYWORD_ACTION> | <KEYWORD_VIEW> ), <CAMELCASE_WORD>, <L_BR>,
+	{ <KEYWORD_INPUT>, <COLON>, NameAndTypeList
+    | <KEYWORD_OUTPUT>, <COLON>, NameAndTypeList
+    | <KEYWORD_ERRORCODES>, <COLON>, ErrorCodeList
+    | <KEYWORD_DESCRIPTION>, <COLON>, <Q_STRING> },
+  <R_BR>;
+
+ErrorCodeList = [ ErrorCode, { <COMMA>, ErrorCode } ];
+
+ErrorCode = ( <DIGITS> | <NUMBER> ), <MINUS>, <Q_STRING>;
+
+NameAndTypeList = NameAndType, { <COMMA>, NameAndType };
+
+NameAndType = <CAMELCASE_WORD>, [ <QUESTION_MARK> ], <COLON>, <IDENTIFIER>;
+\end{lstlisting}
+

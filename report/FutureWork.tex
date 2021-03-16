@@ -1,0 +1,58 @@
+
+\section{Future Work}
+
+There are a number of features that could still be implemented in
+EDMA, especially related to usability. By trying to use EDMA in various
+situations, we have found that the time the user spends on reaching
+a readily usable data model can be reduced. For example, we could
+auto-generate CRUD actions and views (methods for Creating, Reading,
+Updating and Deleting).
+\begin{description}
+\item [{CRUD~Actions~and~Views}] One way of helping the user, is to
+auto-generate actions and methods for creating, reading, updating
+and deleting (CRUD) data entities. At first, it was our philosophy
+that the user should only have the actions and views defined by himself,
+in order to not clutter the API with functions that wouldn't be used.
+However, by creating data models with our system ourselves, we have
+found that we almost always end up creating the most basic actions
+and views for each kind:\end{description}
+\begin{itemize}
+\item Insert a new entity of a given kind.
+\item Get entities based on attribute values (defined from indexes).
+\item Update one of the mutable attributes in a kind.
+\item Delete an entity.
+\end{itemize}
+As of the current version of EDMA, the user has to define these 4
+methods in an \texttt{.edma}-file, and implement them in the generated
+Java stub-code. Further more, for each relation, the user often needs
+to connect two or more entities, or to delete a connection between
+two or more entities.
+
+It would require two changes to the system, to auto-generate CRUD
+and relation-methods:
+\begin{itemize}
+\item Changing the compiler to add meta-actions and meta-views, for each
+kind and each relation.
+\item Changing the generator to generate the implementations of the actions
+and views, instead of having the user to fill in stub-code in the
+auto-generated actions and views.
+\end{itemize}
+Both of these two tasks are trivial, and could be implemented in a
+short time. It would spare the user for the tasks of implementing
+tedious, simple actions and views, at the cost of putting possibly
+unused functions in the generated data model API.
+\begin{description}
+\item [{Multiple~APIs}] In a setting with many users, it is often possible
+to distinguish between access rights of users. An extension to the
+data model would be to group actions and views into interfaces. For
+example, an interface for an Admin user could contain one set of actions
+and views, while an interface for a User could contain a different
+set of actions and views.
+\item [{Simplifying~the~Value~Domain~System}] The value domain system
+can be made more simple, by removing some of the primitive types.
+For example, the types Integer and Long could be substituted with
+a single Number type, and the Float and Double types could be substituted
+with a single Decimal type. By inspecting range constraints it is
+possible to determine best the representation on the underlying system
+(in our case Java.)\end{description}
+

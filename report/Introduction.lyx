@@ -1,0 +1,310 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Many software development projects use object oriented approaches to solve
+ various problems.
+ The main idea in object oriented development is to use various abstraction
+ levels to overview and understand large and complex systems.
+ An object should encapsulate and hide any internal structure and state
+ from the outside world and provide only an interface for the outside world
+ to see and use.
+ One advantage of doing this, is that the object can then be seen at a higher
+ level of abstraction, since the outside viewer does not have to care about
+ the internal details.
+ Another advantage is that the object could easily be replaced with another
+ object providing the same interface, but with a different implementation.
+\end_layout
+
+\begin_layout Standard
+In an ideal world, building software would be much like playing with LEGO
+ bricks.
+ Instead of building large specialized programs from scratch, we should
+ rather create a good set of small abstract programs that can be put together
+ in different ways to solve different tasks.
+ There are two properties in which software development is superior to LEGO:
+\end_layout
+
+\begin_layout Itemize
+When you need a type of brick that LEGO does not manufacture, it is rather
+ hard to make it yourself.
+ This is not the case in software development.
+ 
+\end_layout
+
+\begin_layout Itemize
+You have an unlimited number of each type of brick, so in software development
+ reuse does not mean recycle.
+ You do not have to tear down the beautiful house you build yesterday, because
+ you want to build a robot today.
+\end_layout
+
+\begin_layout Standard
+In a good object oriented design, interfaces are designed at the highest
+ possible level of abstraction to obtain high flexibility and code reuse.
+\end_layout
+
+\begin_layout Standard
+Here is a very simple example to illustrate the idea of polymorphism through
+ an interface: 
+\end_layout
+
+\begin_layout Standard
+We want to create some Java programs that interacts with a user through
+ a textual interface.
+ This could be written using System.in to receive input from the user and
+ System.out to show a text to the user.
+ But in a good object oriented design we would instead create a terminal
+ interface with a putString and a getString, that our programs would use
+ instead of the System.in and System.out.
+ Then when we could create an implementation of the terminal interface that
+ uses the System.in and System.out.
+ Now we would have the exact same behavior of the program as if we had used
+ System.in and System.out.
+\end_layout
+
+\begin_layout Standard
+At this point we have done some extra work, but without any real benefit
+ yet.
+ But then one day we want to send the text messages to and from a mobile
+ phone or maybe even pass them through voice generation and recognition
+ to facilitate a blind user.
+ All we have to do then is create new implementations of the terminal interface,
+ leaving the original programs untouched.
+ 
+\end_layout
+
+\begin_layout Standard
+People that play with LEGO bricks often tries to make models of real-world
+ objects like trains, houses, persons, cars cities etc.
+ Sometimes they also try to model objects from fantasy worlds like dragons,
+ goblins, unicorns etc.
+ Software developers also often try to model objects and concepts from real
+ or fantasy worlds (this is especially true for game developers).
+\end_layout
+
+\begin_layout Standard
+Imagine that you have spent an entire day building a large LEGO city.
+ Then you get tired and go to bed.
+ Next morning when you wake up, the city is still there exactly as you left
+ it.
+\end_layout
+
+\begin_layout Standard
+Unfortunately this does NOT work in a typical object oriented language.
+ When you turn off the computer, all objects disappear and you have to start
+ all over next time you start the computer.
+ We would actually like to have this as an optional feature for our LEGO
+ bricks, so if we pushed a button, all bricks would automatically be returned
+ to their starting position in the drawer.
+\end_layout
+
+\begin_layout Standard
+With LEGO bricks persistence is build in as a standard, but it takes quite
+ some work to reset everything.
+ In a typical object oriented language persistence takes quite some work
+ to get, but resetting is easy.
+\end_layout
+
+\begin_layout Standard
+In this thesis we will analyze various methods of abstraction that could
+ make software developing faster and even more like playing with LEGO bricks.
+\end_layout
+
+\begin_layout Standard
+We will analyze methods to 
+\emph on
+shorten the path from an idea of a model to a functional prototype
+\emph default
+.
+ We will use ideas from various domains: Object oriented programming, model
+ driven development, modular programming, interface based programming, entity-re
+lationships and LEGO.
+\end_layout
+
+\begin_layout Subsection
+Example Conceptual Data Model
+\end_layout
+
+\begin_layout Standard
+Throughout this report, we will concretize the discussed concepts using
+ a small, structured data model representing a course registration system
+ for a fictive diving school.
+ 
+\end_layout
+
+\begin_layout Standard
+The school offers different diving courses and some of these courses are
+ dependent on one or more other courses.
+ For example it is only possible to take the course 
+\begin_inset Quotes eld
+\end_inset
+
+Shark riding
+\begin_inset Quotes erd
+\end_inset
+
+ if you have already passed the course 
+\begin_inset Quotes eld
+\end_inset
+
+Shark taming
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The system must keep track of the different course types and their dependencies.
+ It must also keep track of the students and which course types they have
+ passed and which courses they are enrolled on.
+ The system should also keep track of the teachers, which course types they
+ are able to teach and which courses they are signed up to teach.
+\end_layout
+
+\begin_layout Standard
+The diver school recruits their teachers from the best of the students and
+ they can start teaching the basic courses even before they have finished
+ all the advanced courses.
+ Therefore, it must be possible for the same person to be both a teacher
+ and a student at the same time.
+\end_layout
+
+\begin_layout Standard
+Each person in the system must also have an amount of credit associated,
+ which will be used by the students to pay for the courses they sign up
+ for and the teachers salary will be paid out to their credit account.
+ In a real world scenario we would keep track of all transactions on the
+ credit account, but to keep our example simple we will only save the current
+ balance.
+ See figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:divingSchoolModel}
+\end_layout
+
+\end_inset
+
+ for a graphical representation of the diving schools conceptual data model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[h!]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=
+\backslash
+textwidth]{img/CourseEnrollmentExample.pdf}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{An example model of a diving school.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+label{fig:divingSchoolModel}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
