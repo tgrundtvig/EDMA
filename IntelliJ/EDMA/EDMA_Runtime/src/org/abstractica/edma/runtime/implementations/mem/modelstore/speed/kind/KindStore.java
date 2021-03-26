@@ -127,6 +127,12 @@ public class KindStore implements IKindStore
 	}
 
 	@Override
+	public int getEmptySet(ISetManager setManager)
+	{
+		return setManager.emptySet();
+	}
+
+	@Override
 	public IKindIndex getIndex(int index)
 	{
 		return kindIndexes[index];

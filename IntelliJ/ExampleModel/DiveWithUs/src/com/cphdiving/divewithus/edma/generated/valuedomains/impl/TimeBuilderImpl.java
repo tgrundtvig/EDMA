@@ -40,7 +40,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
      */
     public TimeBuilderMin hour(Hour hour)
     {
-        if(hour == null) throw new NullPointerException("The field hour in Time may not be null");
+        if(hour == null) throw new NullPointerException("The field hour in the Time ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) hour).edma_getValue();
         return this;
     }
@@ -53,7 +53,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
     public TimeBuilderMin hour(Integer hour) throws InvalidValueException
     {
         if(hour != null) HourImpl.edma_validate(hour);
-        if(hour == null) throw new NullPointerException();
+        if(hour == null) throw new NullPointerException("The field hour in the Time ValueDomain may not be null");
         edma_value[0] = HourImpl.edma_create(hour);
         return this;
     }
@@ -65,7 +65,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
      */
     public TimeBuilderSecond min(Minute min)
     {
-        if(min == null) throw new NullPointerException("The field min in Time may not be null");
+        if(min == null) throw new NullPointerException("The field min in the Time ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) min).edma_getValue();
         return this;
     }
@@ -78,7 +78,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
     public TimeBuilderSecond min(Integer min) throws InvalidValueException
     {
         if(min != null) MinuteImpl.edma_validate(min);
-        if(min == null) throw new NullPointerException();
+        if(min == null) throw new NullPointerException("The field min in the Time ValueDomain may not be null");
         edma_value[1] = MinuteImpl.edma_create(min);
         return this;
     }
@@ -90,7 +90,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
      */
     public TimeBuilderMilliseconds second(Second second)
     {
-        if(second == null) throw new NullPointerException("The field second in Time may not be null");
+        if(second == null) throw new NullPointerException("The field second in the Time ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) second).edma_getValue();
         return this;
     }
@@ -103,7 +103,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
     public TimeBuilderMilliseconds second(Integer second) throws InvalidValueException
     {
         if(second != null) SecondImpl.edma_validate(second);
-        if(second == null) throw new NullPointerException();
+        if(second == null) throw new NullPointerException("The field second in the Time ValueDomain may not be null");
         edma_value[2] = SecondImpl.edma_create(second);
         return this;
     }
@@ -115,7 +115,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
      */
     public Time milliseconds(Millisecond milliseconds)
     {
-        if(milliseconds == null) throw new NullPointerException("The field milliseconds in Time may not be null");
+        if(milliseconds == null) throw new NullPointerException("The field milliseconds in the Time ValueDomain may not be null");
         edma_value[3] = ((IValueInstance) milliseconds).edma_getValue();
         return new TimeImpl(TimeImpl.edma_create(edma_value));
     }
@@ -128,7 +128,7 @@ public class TimeBuilderImpl implements TimeBuilderHour, TimeBuilderMilliseconds
     public Time milliseconds(Integer milliseconds) throws InvalidValueException
     {
         if(milliseconds != null) MillisecondImpl.edma_validate(milliseconds);
-        if(milliseconds == null) throw new NullPointerException();
+        if(milliseconds == null) throw new NullPointerException("The field milliseconds in the Time ValueDomain may not be null");
         edma_value[3] = MillisecondImpl.edma_create(milliseconds);
         return new TimeImpl(TimeImpl.edma_create(edma_value));
     }

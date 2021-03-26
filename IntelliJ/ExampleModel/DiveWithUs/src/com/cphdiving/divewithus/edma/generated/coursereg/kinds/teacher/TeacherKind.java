@@ -19,6 +19,12 @@ public interface TeacherKind
     public TeacherViewer getFromID(TeacherID id);
 
     /**
+     * Returns an empty set of Teacher entities.
+     * @return  An empty set of Teacher entities.
+     */
+    public TeacherSet getEmptyTeacherSet();
+
+    /**
      * Returns the set of all Teacher entities.
      * @return  The set of all Teacher entities.
      */

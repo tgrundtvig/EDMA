@@ -48,6 +48,16 @@ public class PersonKindImpl implements PersonKind
     }
 
     /**
+     * Returns an empty set of Person entities.
+     * @return  An empty set of Person entities.
+     */
+    public PersonSet getEmptyPersonSet()
+    {
+        int newSetID = edma_dmview.kindGetEmptySet(0);
+        return new PersonSetImpl(newSetID, edma_dmview);
+    }
+
+    /**
      * Returns the set of all Person entities.
      * @return  The set of all Person entities.
      */

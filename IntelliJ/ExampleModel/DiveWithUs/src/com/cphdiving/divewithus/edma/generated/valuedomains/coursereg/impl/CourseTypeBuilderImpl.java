@@ -72,7 +72,7 @@ public class CourseTypeBuilderImpl implements CourseTypeBuilderID, CourseTypeBui
      */
     public CourseTypeBuilderSize name(CourseName name)
     {
-        if(name == null) throw new NullPointerException("The field name in CourseType may not be null");
+        if(name == null) throw new NullPointerException("The field name in the CourseType ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) name).edma_getValue();
         return this;
     }
@@ -85,7 +85,7 @@ public class CourseTypeBuilderImpl implements CourseTypeBuilderID, CourseTypeBui
     public CourseTypeBuilderSize name(String name) throws InvalidValueException
     {
         if(name != null) CourseNameImpl.edma_validate(name);
-        if(name == null) throw new NullPointerException();
+        if(name == null) throw new NullPointerException("The field name in the CourseType ValueDomain may not be null");
         edma_value[1] = CourseNameImpl.edma_create(name);
         return this;
     }
@@ -97,7 +97,7 @@ public class CourseTypeBuilderImpl implements CourseTypeBuilderID, CourseTypeBui
      */
     public CourseTypeBuilderPrice size(CourseSize size)
     {
-        if(size == null) throw new NullPointerException("The field size in CourseType may not be null");
+        if(size == null) throw new NullPointerException("The field size in the CourseType ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) size).edma_getValue();
         return this;
     }
@@ -109,7 +109,7 @@ public class CourseTypeBuilderImpl implements CourseTypeBuilderID, CourseTypeBui
      */
     public CourseType price(PosInt price)
     {
-        if(price == null) throw new NullPointerException("The field price in CourseType may not be null");
+        if(price == null) throw new NullPointerException("The field price in the CourseType ValueDomain may not be null");
         edma_value[3] = ((IValueInstance) price).edma_getValue();
         return new CourseTypeImpl(CourseTypeImpl.edma_create(edma_value));
     }
@@ -122,7 +122,7 @@ public class CourseTypeBuilderImpl implements CourseTypeBuilderID, CourseTypeBui
     public CourseType price(Integer price) throws InvalidValueException
     {
         if(price != null) PosIntImpl.edma_validate(price);
-        if(price == null) throw new NullPointerException();
+        if(price == null) throw new NullPointerException("The field price in the CourseType ValueDomain may not be null");
         edma_value[3] = PosIntImpl.edma_create(price);
         return new CourseTypeImpl(CourseTypeImpl.edma_create(edma_value));
     }

@@ -22,6 +22,12 @@ public interface PersonKind
     public PersonViewer getFromID(PersonID id);
 
     /**
+     * Returns an empty set of Person entities.
+     * @return  An empty set of Person entities.
+     */
+    public PersonSet getEmptyPersonSet();
+
+    /**
      * Returns the set of all Person entities.
      * @return  The set of all Person entities.
      */

@@ -32,7 +32,7 @@ public class CourseSizeBuilderImpl implements CourseSizeBuilderMax, CourseSizeBu
      */
     public CourseSizeBuilderMax min(PosInt min)
     {
-        if(min == null) throw new NullPointerException("The field min in CourseSize may not be null");
+        if(min == null) throw new NullPointerException("The field min in the CourseSize ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) min).edma_getValue();
         return this;
     }
@@ -45,7 +45,7 @@ public class CourseSizeBuilderImpl implements CourseSizeBuilderMax, CourseSizeBu
     public CourseSizeBuilderMax min(Integer min) throws InvalidValueException
     {
         if(min != null) PosIntImpl.edma_validate(min);
-        if(min == null) throw new NullPointerException();
+        if(min == null) throw new NullPointerException("The field min in the CourseSize ValueDomain may not be null");
         edma_value[0] = PosIntImpl.edma_create(min);
         return this;
     }
@@ -57,7 +57,7 @@ public class CourseSizeBuilderImpl implements CourseSizeBuilderMax, CourseSizeBu
      */
     public CourseSize max(PosInt max) throws InvalidValueException
     {
-        if(max == null) throw new NullPointerException("The field max in CourseSize may not be null");
+        if(max == null) throw new NullPointerException("The field max in the CourseSize ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) max).edma_getValue();
         CourseSizeImpl.edma_validate(edma_value);
         return new CourseSizeImpl(CourseSizeImpl.edma_create(edma_value));
@@ -71,7 +71,7 @@ public class CourseSizeBuilderImpl implements CourseSizeBuilderMax, CourseSizeBu
     public CourseSize max(Integer max) throws InvalidValueException
     {
         if(max != null) PosIntImpl.edma_validate(max);
-        if(max == null) throw new NullPointerException();
+        if(max == null) throw new NullPointerException("The field max in the CourseSize ValueDomain may not be null");
         edma_value[1] = PosIntImpl.edma_create(max);
         CourseSizeImpl.edma_validate(edma_value);
         return new CourseSizeImpl(CourseSizeImpl.edma_create(edma_value));

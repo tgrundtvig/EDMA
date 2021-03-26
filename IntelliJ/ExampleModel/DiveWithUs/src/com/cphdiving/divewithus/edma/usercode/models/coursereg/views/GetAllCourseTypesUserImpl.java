@@ -1,6 +1,7 @@
 package com.cphdiving.divewithus.edma.usercode.models.coursereg.views;
 
 import com.cphdiving.divewithus.edma.generated.coursereg.CourseRegViewer;
+import com.cphdiving.divewithus.edma.generated.coursereg.kinds.course.CourseSet;
 import com.cphdiving.divewithus.edma.generated.coursereg.views.GetAllCourseTypesResult;
 import com.cphdiving.divewithus.edma.generated.valuedomains.coursereg.CourseTypeList;
 import org.abstractica.edma.runtime.implementations.common.Result;
@@ -40,7 +41,6 @@ public class GetAllCourseTypesUserImpl extends Result implements GetAllCourseTyp
         // will be lost when re-generation occurs.
         
         // EDMA_non-generated_code_begin
-        
         out_courseTypeList = view.getCourseTypeKind().getAll().snapshot();
         return OK;
         

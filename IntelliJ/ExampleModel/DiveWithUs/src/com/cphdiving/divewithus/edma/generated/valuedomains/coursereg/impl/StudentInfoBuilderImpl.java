@@ -43,7 +43,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
      */
     public StudentInfoBuilderEmail name(Name name)
     {
-        if(name == null) throw new NullPointerException("The field name in StudentInfo may not be null");
+        if(name == null) throw new NullPointerException("The field name in the StudentInfo ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) name).edma_getValue();
         return this;
     }
@@ -56,7 +56,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
     public StudentInfoBuilderEmail name(String name) throws InvalidValueException
     {
         if(name != null) NameImpl.edma_validate(name);
-        if(name == null) throw new NullPointerException();
+        if(name == null) throw new NullPointerException("The field name in the StudentInfo ValueDomain may not be null");
         edma_value[0] = NameImpl.edma_create(name);
         return this;
     }
@@ -68,7 +68,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
      */
     public StudentInfoBuilderMobile email(Email email)
     {
-        if(email == null) throw new NullPointerException("The field email in StudentInfo may not be null");
+        if(email == null) throw new NullPointerException("The field email in the StudentInfo ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) email).edma_getValue();
         return this;
     }
@@ -81,7 +81,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
     public StudentInfoBuilderMobile email(String email) throws InvalidValueException
     {
         if(email != null) EmailImpl.edma_validate(email);
-        if(email == null) throw new NullPointerException();
+        if(email == null) throw new NullPointerException("The field email in the StudentInfo ValueDomain may not be null");
         edma_value[1] = EmailImpl.edma_create(email);
         return this;
     }
@@ -93,7 +93,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
      */
     public StudentInfoBuilderWetsuitSize mobile(Mobile mobile)
     {
-        if(mobile == null) throw new NullPointerException("The field mobile in StudentInfo may not be null");
+        if(mobile == null) throw new NullPointerException("The field mobile in the StudentInfo ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) mobile).edma_getValue();
         return this;
     }
@@ -106,7 +106,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
     public StudentInfoBuilderWetsuitSize mobile(String mobile) throws InvalidValueException
     {
         if(mobile != null) MobileImpl.edma_validate(mobile);
-        if(mobile == null) throw new NullPointerException();
+        if(mobile == null) throw new NullPointerException("The field mobile in the StudentInfo ValueDomain may not be null");
         edma_value[2] = MobileImpl.edma_create(mobile);
         return this;
     }
@@ -118,7 +118,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
      */
     public StudentInfoBuilderBootSize wetsuitSize(WetsuitSize wetsuitSize)
     {
-        if(wetsuitSize == null) throw new NullPointerException("The field wetsuitSize in StudentInfo may not be null");
+        if(wetsuitSize == null) throw new NullPointerException("The field wetsuitSize in the StudentInfo ValueDomain may not be null");
         edma_value[3] = ((IValueInstance) wetsuitSize).edma_getValue();
         return this;
     }
@@ -131,7 +131,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
     public StudentInfoBuilderBootSize wetsuitSize(String wetsuitSize) throws InvalidValueException
     {
         if(wetsuitSize != null) WetsuitSizeImpl.edma_validate(wetsuitSize);
-        if(wetsuitSize == null) throw new NullPointerException();
+        if(wetsuitSize == null) throw new NullPointerException("The field wetsuitSize in the StudentInfo ValueDomain may not be null");
         edma_value[3] = WetsuitSizeImpl.edma_create(wetsuitSize);
         return this;
     }
@@ -143,7 +143,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
      */
     public StudentInfo bootSize(BootSize bootSize)
     {
-        if(bootSize == null) throw new NullPointerException("The field bootSize in StudentInfo may not be null");
+        if(bootSize == null) throw new NullPointerException("The field bootSize in the StudentInfo ValueDomain may not be null");
         edma_value[4] = ((IValueInstance) bootSize).edma_getValue();
         return new StudentInfoImpl(StudentInfoImpl.edma_create(edma_value));
     }
@@ -156,7 +156,7 @@ public class StudentInfoBuilderImpl implements StudentInfoBuilderBootSize, Stude
     public StudentInfo bootSize(Integer bootSize) throws InvalidValueException
     {
         if(bootSize != null) BootSizeImpl.edma_validate(bootSize);
-        if(bootSize == null) throw new NullPointerException();
+        if(bootSize == null) throw new NullPointerException("The field bootSize in the StudentInfo ValueDomain may not be null");
         edma_value[4] = BootSizeImpl.edma_create(bootSize);
         return new StudentInfoImpl(StudentInfoImpl.edma_create(edma_value));
     }

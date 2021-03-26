@@ -38,7 +38,7 @@ public class AddressBuilderImpl implements AddressBuilderCity, AddressBuilderLin
      */
     public AddressBuilderLine2 line1(AddressLine line1)
     {
-        if(line1 == null) throw new NullPointerException("The field line1 in Address may not be null");
+        if(line1 == null) throw new NullPointerException("The field line1 in the Address ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) line1).edma_getValue();
         return this;
     }
@@ -51,7 +51,7 @@ public class AddressBuilderImpl implements AddressBuilderCity, AddressBuilderLin
     public AddressBuilderLine2 line1(String line1) throws InvalidValueException
     {
         if(line1 != null) AddressLineImpl.edma_validate(line1);
-        if(line1 == null) throw new NullPointerException();
+        if(line1 == null) throw new NullPointerException("The field line1 in the Address ValueDomain may not be null");
         edma_value[0] = AddressLineImpl.edma_create(line1);
         return this;
     }
@@ -96,7 +96,7 @@ public class AddressBuilderImpl implements AddressBuilderCity, AddressBuilderLin
      */
     public AddressBuilderZipCode city(City city)
     {
-        if(city == null) throw new NullPointerException("The field city in Address may not be null");
+        if(city == null) throw new NullPointerException("The field city in the Address ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) city).edma_getValue();
         return this;
     }
@@ -109,7 +109,7 @@ public class AddressBuilderImpl implements AddressBuilderCity, AddressBuilderLin
     public AddressBuilderZipCode city(String city) throws InvalidValueException
     {
         if(city != null) CityImpl.edma_validate(city);
-        if(city == null) throw new NullPointerException();
+        if(city == null) throw new NullPointerException("The field city in the Address ValueDomain may not be null");
         edma_value[2] = CityImpl.edma_create(city);
         return this;
     }
@@ -121,7 +121,7 @@ public class AddressBuilderImpl implements AddressBuilderCity, AddressBuilderLin
      */
     public Address zipCode(ZipCode zipCode)
     {
-        if(zipCode == null) throw new NullPointerException("The field zipCode in Address may not be null");
+        if(zipCode == null) throw new NullPointerException("The field zipCode in the Address ValueDomain may not be null");
         edma_value[3] = ((IValueInstance) zipCode).edma_getValue();
         return new AddressImpl(AddressImpl.edma_create(edma_value));
     }
@@ -134,7 +134,7 @@ public class AddressBuilderImpl implements AddressBuilderCity, AddressBuilderLin
     public Address zipCode(Integer zipCode) throws InvalidValueException
     {
         if(zipCode != null) ZipCodeImpl.edma_validate(zipCode);
-        if(zipCode == null) throw new NullPointerException();
+        if(zipCode == null) throw new NullPointerException("The field zipCode in the Address ValueDomain may not be null");
         edma_value[3] = ZipCodeImpl.edma_create(zipCode);
         return new AddressImpl(AddressImpl.edma_create(edma_value));
     }

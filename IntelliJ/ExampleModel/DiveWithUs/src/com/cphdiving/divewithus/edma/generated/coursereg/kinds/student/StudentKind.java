@@ -20,6 +20,12 @@ public interface StudentKind
     public StudentViewer getFromID(StudentID id);
 
     /**
+     * Returns an empty set of Student entities.
+     * @return  An empty set of Student entities.
+     */
+    public StudentSet getEmptyStudentSet();
+
+    /**
      * Returns the set of all Student entities.
      * @return  The set of all Student entities.
      */

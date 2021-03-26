@@ -33,7 +33,6 @@ DataModel CourseReg
 		wetsuitSize : WetsuitSize,
 		bootSize : BootSize,
 		Equals(wetsuitSize)
-		
 	}
 	
 	Kind CourseType
@@ -54,6 +53,7 @@ DataModel CourseReg
 	}
 
 	Relation CourseDependency CourseType >-< CourseType:required
+
 	Relation CourseTypes Course >-- CourseType
 	{
 		Compare On Course (startDate),
@@ -61,8 +61,11 @@ DataModel CourseReg
 	}
 	
 	Relation PassedCourses Student >-< CourseType:passedCourse
+
 	Relation StudentEnrollment Course >-< Student
 	
 	Relation TeachingAbility Teacher >-< CourseType
+
 	Relation TeacherEnrollment Course >-- Teacher
+
 }

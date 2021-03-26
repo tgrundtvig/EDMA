@@ -43,7 +43,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
      */
     public CourseInfoBuilderStart id(CourseID id)
     {
-        if(id == null) throw new NullPointerException("The field id in CourseInfo may not be null");
+        if(id == null) throw new NullPointerException("The field id in the CourseInfo ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) id).edma_getValue();
         return this;
     }
@@ -56,7 +56,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
     public CourseInfoBuilderStart id(Long id) throws InvalidValueException
     {
         if(id != null) CourseIDImpl.edma_validate(id);
-        if(id == null) throw new NullPointerException();
+        if(id == null) throw new NullPointerException("The field id in the CourseInfo ValueDomain may not be null");
         edma_value[0] = CourseIDImpl.edma_create(id);
         return this;
     }
@@ -68,7 +68,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
      */
     public CourseInfoBuilderType start(DateAndTime start)
     {
-        if(start == null) throw new NullPointerException("The field start in CourseInfo may not be null");
+        if(start == null) throw new NullPointerException("The field start in the CourseInfo ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) start).edma_getValue();
         return this;
     }
@@ -80,7 +80,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
      */
     public CourseInfoBuilderStatus type(CourseName type)
     {
-        if(type == null) throw new NullPointerException("The field type in CourseInfo may not be null");
+        if(type == null) throw new NullPointerException("The field type in the CourseInfo ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) type).edma_getValue();
         return this;
     }
@@ -93,7 +93,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
     public CourseInfoBuilderStatus type(String type) throws InvalidValueException
     {
         if(type != null) CourseNameImpl.edma_validate(type);
-        if(type == null) throw new NullPointerException();
+        if(type == null) throw new NullPointerException("The field type in the CourseInfo ValueDomain may not be null");
         edma_value[2] = CourseNameImpl.edma_create(type);
         return this;
     }
@@ -105,7 +105,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
      */
     public CourseInfoBuilderStudents status(CourseStatus status)
     {
-        if(status == null) throw new NullPointerException("The field status in CourseInfo may not be null");
+        if(status == null) throw new NullPointerException("The field status in the CourseInfo ValueDomain may not be null");
         edma_value[3] = ((IValueInstance) status).edma_getValue();
         return this;
     }
@@ -118,7 +118,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
     public CourseInfoBuilderStudents status(String status) throws InvalidValueException
     {
         if(status != null) CourseStatusImpl.edma_validate(status);
-        if(status == null) throw new NullPointerException();
+        if(status == null) throw new NullPointerException("The field status in the CourseInfo ValueDomain may not be null");
         edma_value[3] = CourseStatusImpl.edma_create(status);
         return this;
     }
@@ -130,7 +130,7 @@ public class CourseInfoBuilderImpl implements CourseInfoBuilderId, CourseInfoBui
      */
     public CourseInfoBuilderTeacher students(StudentInfoList students)
     {
-        if(students == null) throw new NullPointerException("The field students in CourseInfo may not be null");
+        if(students == null) throw new NullPointerException("The field students in the CourseInfo ValueDomain may not be null");
         edma_value[4] = ((IValueInstance) students).edma_getValue();
         return this;
     }

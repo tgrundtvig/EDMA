@@ -108,6 +108,13 @@ public class ModelConnection implements IDataModelUpdate
 	}
 
 	@Override
+	public int kindGetEmptySet(int kind)
+	{
+		IKindStore kindStore = modelStore.getKind(kind);
+		return newSet(kindStore, kindStore.getEmptySet(setManager), null);
+	}
+
+	@Override
 	public int setIntersect(int setA, int setB)
 	{
 		SetProxy a = sets.get(setA);

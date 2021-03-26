@@ -67,7 +67,7 @@ public class TeacherBuilderImpl implements TeacherBuilderID, TeacherBuilderSalar
      */
     public Teacher salary(PosInt salary)
     {
-        if(salary == null) throw new NullPointerException("The field salary in Teacher may not be null");
+        if(salary == null) throw new NullPointerException("The field salary in the Teacher ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) salary).edma_getValue();
         return new TeacherImpl(TeacherImpl.edma_create(edma_value));
     }
@@ -80,7 +80,7 @@ public class TeacherBuilderImpl implements TeacherBuilderID, TeacherBuilderSalar
     public Teacher salary(Integer salary) throws InvalidValueException
     {
         if(salary != null) PosIntImpl.edma_validate(salary);
-        if(salary == null) throw new NullPointerException();
+        if(salary == null) throw new NullPointerException("The field salary in the Teacher ValueDomain may not be null");
         edma_value[1] = PosIntImpl.edma_create(salary);
         return new TeacherImpl(TeacherImpl.edma_create(edma_value));
     }

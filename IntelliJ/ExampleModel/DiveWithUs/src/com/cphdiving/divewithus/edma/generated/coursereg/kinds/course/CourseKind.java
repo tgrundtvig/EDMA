@@ -21,6 +21,12 @@ public interface CourseKind
     public CourseViewer getFromID(CourseID id);
 
     /**
+     * Returns an empty set of Course entities.
+     * @return  An empty set of Course entities.
+     */
+    public CourseSet getEmptyCourseSet();
+
+    /**
      * Returns the set of all Course entities.
      * @return  The set of all Course entities.
      */

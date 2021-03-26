@@ -22,6 +22,8 @@ public interface IDataModelView
 	public IEntity kindGetFromID(int kind, Long id);
 	
 	public int kindGetAll(int kind);
+
+	public int kindGetEmptySet(int kind);
 	
 	//Indexes
 	public IIndex getKindIndex(int kind, int indexID);

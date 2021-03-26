@@ -37,7 +37,7 @@ public class DateBuilderImpl implements DateBuilderDay, DateBuilderMonth, DateBu
      */
     public DateBuilderMonth year(Year year)
     {
-        if(year == null) throw new NullPointerException("The field year in Date may not be null");
+        if(year == null) throw new NullPointerException("The field year in the Date ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) year).edma_getValue();
         return this;
     }
@@ -50,7 +50,7 @@ public class DateBuilderImpl implements DateBuilderDay, DateBuilderMonth, DateBu
     public DateBuilderMonth year(Integer year) throws InvalidValueException
     {
         if(year != null) YearImpl.edma_validate(year);
-        if(year == null) throw new NullPointerException();
+        if(year == null) throw new NullPointerException("The field year in the Date ValueDomain may not be null");
         edma_value[0] = YearImpl.edma_create(year);
         return this;
     }
@@ -62,7 +62,7 @@ public class DateBuilderImpl implements DateBuilderDay, DateBuilderMonth, DateBu
      */
     public DateBuilderDay month(Month month)
     {
-        if(month == null) throw new NullPointerException("The field month in Date may not be null");
+        if(month == null) throw new NullPointerException("The field month in the Date ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) month).edma_getValue();
         return this;
     }
@@ -75,7 +75,7 @@ public class DateBuilderImpl implements DateBuilderDay, DateBuilderMonth, DateBu
     public DateBuilderDay month(Integer month) throws InvalidValueException
     {
         if(month != null) MonthImpl.edma_validate(month);
-        if(month == null) throw new NullPointerException();
+        if(month == null) throw new NullPointerException("The field month in the Date ValueDomain may not be null");
         edma_value[1] = MonthImpl.edma_create(month);
         return this;
     }
@@ -87,7 +87,7 @@ public class DateBuilderImpl implements DateBuilderDay, DateBuilderMonth, DateBu
      */
     public Date day(DayOfMonth day) throws InvalidValueException
     {
-        if(day == null) throw new NullPointerException("The field day in Date may not be null");
+        if(day == null) throw new NullPointerException("The field day in the Date ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) day).edma_getValue();
         DateImpl.edma_validate(edma_value);
         return new DateImpl(DateImpl.edma_create(edma_value));
@@ -101,7 +101,7 @@ public class DateBuilderImpl implements DateBuilderDay, DateBuilderMonth, DateBu
     public Date day(Integer day) throws InvalidValueException
     {
         if(day != null) DayOfMonthImpl.edma_validate(day);
-        if(day == null) throw new NullPointerException();
+        if(day == null) throw new NullPointerException("The field day in the Date ValueDomain may not be null");
         edma_value[2] = DayOfMonthImpl.edma_create(day);
         DateImpl.edma_validate(edma_value);
         return new DateImpl(DateImpl.edma_create(edma_value));

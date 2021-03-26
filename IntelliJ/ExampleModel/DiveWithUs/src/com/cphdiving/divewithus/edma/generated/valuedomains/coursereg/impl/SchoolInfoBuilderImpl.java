@@ -31,7 +31,7 @@ public class SchoolInfoBuilderImpl implements SchoolInfoBuilderName
      */
     public SchoolInfo name(Name name)
     {
-        if(name == null) throw new NullPointerException("The field name in SchoolInfo may not be null");
+        if(name == null) throw new NullPointerException("The field name in the SchoolInfo ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) name).edma_getValue();
         return new SchoolInfoImpl(SchoolInfoImpl.edma_create(edma_value));
     }
@@ -44,7 +44,7 @@ public class SchoolInfoBuilderImpl implements SchoolInfoBuilderName
     public SchoolInfo name(String name) throws InvalidValueException
     {
         if(name != null) NameImpl.edma_validate(name);
-        if(name == null) throw new NullPointerException();
+        if(name == null) throw new NullPointerException("The field name in the SchoolInfo ValueDomain may not be null");
         edma_value[0] = NameImpl.edma_create(name);
         return new SchoolInfoImpl(SchoolInfoImpl.edma_create(edma_value));
     }

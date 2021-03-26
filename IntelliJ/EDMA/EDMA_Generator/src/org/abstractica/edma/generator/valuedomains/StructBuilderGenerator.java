@@ -125,7 +125,7 @@ class StructBuilderGenerator extends AGenerator
 		else
 		{
 			method.appendToBody("if(" + paramName
-					+ " == null) throw new NullPointerException(\"The field " + field.getName() + " in " + vd.getName() + " may not be null\");\n");
+					+ " == null) throw new NullPointerException(\"The field " + field.getName() + " in the " + vd.getName() + " ValueDomain may not be null\");\n");
 			method.appendToBody("edma_value[" + fieldIndex
 					+ "] = ((IValueInstance) " + paramName
 					+ ").edma_getValue();\n");
@@ -173,7 +173,7 @@ class StructBuilderGenerator extends AGenerator
 		else
 		{
 			method.appendToBody("if(" + paramName
-					+ " == null) throw new NullPointerException();\n");
+					+ " == null) throw new NullPointerException(\"The field " + field.getName() + " in the " + vd.getName() + " ValueDomain may not be null\");\n");
 			method.appendToBody("edma_value[" + fieldIndex + "] = "
 					+ getImplName(field.getValueDomain()) + ".edma_create("
 					+ paramName + ");\n");

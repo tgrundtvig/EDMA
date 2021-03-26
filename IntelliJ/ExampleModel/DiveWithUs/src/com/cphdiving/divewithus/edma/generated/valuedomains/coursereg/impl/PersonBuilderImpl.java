@@ -76,7 +76,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
      */
     public PersonBuilderEmail name(Name name)
     {
-        if(name == null) throw new NullPointerException("The field name in Person may not be null");
+        if(name == null) throw new NullPointerException("The field name in the Person ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) name).edma_getValue();
         return this;
     }
@@ -89,7 +89,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
     public PersonBuilderEmail name(String name) throws InvalidValueException
     {
         if(name != null) NameImpl.edma_validate(name);
-        if(name == null) throw new NullPointerException();
+        if(name == null) throw new NullPointerException("The field name in the Person ValueDomain may not be null");
         edma_value[1] = NameImpl.edma_create(name);
         return this;
     }
@@ -101,7 +101,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
      */
     public PersonBuilderMobile email(Email email)
     {
-        if(email == null) throw new NullPointerException("The field email in Person may not be null");
+        if(email == null) throw new NullPointerException("The field email in the Person ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) email).edma_getValue();
         return this;
     }
@@ -114,7 +114,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
     public PersonBuilderMobile email(String email) throws InvalidValueException
     {
         if(email != null) EmailImpl.edma_validate(email);
-        if(email == null) throw new NullPointerException();
+        if(email == null) throw new NullPointerException("The field email in the Person ValueDomain may not be null");
         edma_value[2] = EmailImpl.edma_create(email);
         return this;
     }
@@ -126,7 +126,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
      */
     public PersonBuilderBalance mobile(Mobile mobile)
     {
-        if(mobile == null) throw new NullPointerException("The field mobile in Person may not be null");
+        if(mobile == null) throw new NullPointerException("The field mobile in the Person ValueDomain may not be null");
         edma_value[3] = ((IValueInstance) mobile).edma_getValue();
         return this;
     }
@@ -139,7 +139,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
     public PersonBuilderBalance mobile(String mobile) throws InvalidValueException
     {
         if(mobile != null) MobileImpl.edma_validate(mobile);
-        if(mobile == null) throw new NullPointerException();
+        if(mobile == null) throw new NullPointerException("The field mobile in the Person ValueDomain may not be null");
         edma_value[3] = MobileImpl.edma_create(mobile);
         return this;
     }
@@ -151,7 +151,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
      */
     public Person balance(NotNegInt balance)
     {
-        if(balance == null) throw new NullPointerException("The field balance in Person may not be null");
+        if(balance == null) throw new NullPointerException("The field balance in the Person ValueDomain may not be null");
         edma_value[4] = ((IValueInstance) balance).edma_getValue();
         return new PersonImpl(PersonImpl.edma_create(edma_value));
     }
@@ -164,7 +164,7 @@ public class PersonBuilderImpl implements PersonBuilderBalance, PersonBuilderEma
     public Person balance(Integer balance) throws InvalidValueException
     {
         if(balance != null) NotNegIntImpl.edma_validate(balance);
-        if(balance == null) throw new NullPointerException();
+        if(balance == null) throw new NullPointerException("The field balance in the Person ValueDomain may not be null");
         edma_value[4] = NotNegIntImpl.edma_create(balance);
         return new PersonImpl(PersonImpl.edma_create(edma_value));
     }

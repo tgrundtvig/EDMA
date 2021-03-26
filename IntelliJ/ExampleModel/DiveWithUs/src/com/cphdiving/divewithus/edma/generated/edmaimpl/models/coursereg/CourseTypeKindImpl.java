@@ -46,6 +46,16 @@ public class CourseTypeKindImpl implements CourseTypeKind
     }
 
     /**
+     * Returns an empty set of CourseType entities.
+     * @return  An empty set of CourseType entities.
+     */
+    public CourseTypeSet getEmptyCourseTypeSet()
+    {
+        int newSetID = edma_dmview.kindGetEmptySet(3);
+        return new CourseTypeSetImpl(newSetID, edma_dmview);
+    }
+
+    /**
      * Returns the set of all CourseType entities.
      * @return  The set of all CourseType entities.
      */

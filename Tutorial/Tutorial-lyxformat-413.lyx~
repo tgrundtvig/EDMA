@@ -1,0 +1,4376 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+\start_of_appendix
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:EDMAtutorial"
+
+\end_inset
+
+EDMA tutorial
+\end_layout
+
+\begin_layout Standard
+This tutorial will be loosely based on the Diving School example in the
+ report.
+ If you have not already read through this example, now would be a good
+ time to at least skim through it.
+\end_layout
+
+\begin_layout Standard
+To follow this tutorial you need eclipse (or another Java Development Environmen
+t) and the EDMA.jar file.
+ In this tutorial we will take you through all the steps that are required
+ to build a working example of the Diving School Course Registration System
+ with EDMA.
+ This includes the following steps:
+\end_layout
+
+\begin_layout Itemize
+Set up a new EDMA project in eclipse.
+\end_layout
+
+\begin_layout Itemize
+Define global value domains.
+\end_layout
+
+\begin_layout Itemize
+Define the data model for the course registration system.
+\end_layout
+
+\begin_layout Itemize
+Define the actions and views for the course registration system.
+\end_layout
+
+\begin_layout Itemize
+Implement the actions and views.
+\end_layout
+
+\begin_layout Itemize
+Connect to the runtime and use the course registration system.
+\end_layout
+
+\begin_layout Subsection
+Set up a new EDMA project
+\end_layout
+
+\begin_layout Enumerate
+Create a new java project in eclipse named 
+\emph on
+DivingSchool
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+Right click the project in package explorer and choose 
+\emph on
+new
+\emph default
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+(
+\backslash
+rightarrow
+\backslash
+)
+\end_layout
+
+\end_inset
+
+ 
+\emph on
+Folder
+\emph default
+.
+ Write 
+\emph on
+lib
+\emph default
+ as the name of the folder and click 
+\emph on
+finish
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+Copy EDMA.jar to the newly created folder.
+ Right click the project in package explorer and choose 
+\emph on
+refresh
+\emph default
+.
+\end_layout
+
+\begin_layout Enumerate
+Right click the project in the package explorer and choose 
+\emph on
+properties
+\emph default
+.
+ Now click on 
+\emph on
+Java Build Path
+\emph default
+ in the left part of the window.
+ In the right part of the window click on the tab 
+\emph on
+Libraries
+\emph default
+ and then on the button 
+\emph on
+Add JARs...
+ 
+\emph default
+Navigate to the 
+\emph on
+lib
+\emph default
+ folder and choose the EDMA.jar file.
+ Click 
+\emph on
+OK
+\emph default
+ in both windows.
+\end_layout
+
+\begin_layout Enumerate
+Right click on the project in package explorer and choose 
+\emph on
+new
+\emph default
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+(
+\backslash
+rightarrow
+\backslash
+)
+\end_layout
+
+\end_inset
+
+ 
+\emph on
+Folder
+\emph default
+.
+ Write 
+\emph on
+edma
+\emph default
+ as the name of the folder and click 
+\emph on
+finish
+\emph default
+.
+ Right click on the newly created edma folder and choose 
+\emph on
+new
+\emph default
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+(
+\backslash
+rightarrow
+\backslash
+)
+\end_layout
+
+\end_inset
+
+ 
+\emph on
+File
+\emph default
+.
+ Write Common.edma as the file name and click 
+\emph on
+finish
+\emph default
+.
+ Right click the new Common.edma file and choose 
+\emph on
+Open with
+\emph default
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+(
+\backslash
+rightarrow
+\backslash
+)
+\end_layout
+
+\end_inset
+
+ 
+\emph on
+Text Editor.
+ 
+\emph default
+Now write this line exactly:
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ValueDomain Name : String[1..MAX]
+\end_layout
+
+\end_inset
+
+Make sure you write exactly the above line and then press 
+\emph on
+Ctrl-S
+\emph default
+ to save the file.
+ You have now created your first global value domain called Name.
+ The values in Name are strings that are at least 1 character long.
+ You will learn more about how to create value domains in a moment.
+\end_layout
+
+\begin_layout Enumerate
+Right click on the project in package explorer and choose 
+\emph on
+new
+\emph default
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+(
+\backslash
+rightarrow
+\backslash
+)
+\end_layout
+
+\end_inset
+
+ 
+\emph on
+Class
+\emph default
+.
+ Write Make as the name of the class and click finish.
+ Write this code into the class:
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import edma.generator.EdmaGenerator;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public class Make
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	public static void main(String[] args)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		//This will be the name of the environment
+\end_layout
+
+\begin_layout Plain Layout
+
+		String environmentName = "DivingSchool";
+\end_layout
+
+\begin_layout Plain Layout
+
+		//This is the path to the folder with your EDMA files
+\end_layout
+
+\begin_layout Plain Layout
+
+		String edmaSrcDir = "C:/Workspace/DivingSchool/edma";
+\end_layout
+
+\begin_layout Plain Layout
+
+		//This is the path to the java src folder
+\end_layout
+
+\begin_layout Plain Layout
+
+		String javaSrcDir = "C:/Workspace/DivingSchool/src";
+\end_layout
+
+\begin_layout Plain Layout
+
+		//This is the root package of the generated code
+\end_layout
+
+\begin_layout Plain Layout
+
+		String rootPackage = "tutorial";
+\end_layout
+
+\begin_layout Plain Layout
+
+		new EdmaGenerator(environmentName,
+\end_layout
+
+\begin_layout Plain Layout
+
+						  edmaSrcDir,
+\end_layout
+
+\begin_layout Plain Layout
+
+						  javaSrcDir,
+\end_layout
+
+\begin_layout Plain Layout
+
+						  rootPackage).make();
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+Make sure you replace the paths with the actual paths on your machine.
+ Now right click on this class in the package explorer and choose 
+\emph on
+Run As
+\emph default
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+(
+\backslash
+rightarrow
+\backslash
+)
+\end_layout
+
+\end_inset
+
+ 
+\emph on
+Java Application
+\emph default
+.
+ The output should look like this: 
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Gathering and compiling input files...
+\end_layout
+
+\begin_layout Plain Layout
+
+Generating environment generator...
+\end_layout
+
+\begin_layout Plain Layout
+
+Generating value domain classes...
+\end_layout
+
+\begin_layout Plain Layout
+
+Deleting generated directories...
+\end_layout
+
+\begin_layout Plain Layout
+
+Writing generated java files...
+\end_layout
+
+\begin_layout Plain Layout
+
+All done!
+\end_layout
+
+\end_inset
+
+Now right click the project in package explorer and choose 
+\emph on
+refresh
+\emph default
+.
+ You should now see some generated packages in the project.
+ Every time you make any changes to your EDMA files you must run this Make
+ class and refresh the project.
+\end_layout
+
+\begin_layout Standard
+When you run the Make class it creates a new instance of the EdmaGenerator
+ class and calls the make() method on it.
+ The compiler now looks for files in the edma folder and its sub folders
+ that has the extension 
+\begin_inset Quotes eld
+\end_inset
+
+.edma
+\begin_inset Quotes erd
+\end_inset
+
+.
+ All these files are then compiled to a meta model and the generator then
+ uses this meta model to generate all the java interfaces and classes.
+ If you look at the generated packages and java files, you should see a
+ package called 
+\emph on
+generated
+\emph default
+ as a sub package of
+\emph on
+ tutorial.divingschool 
+\emph default
+(depending on the names you gave for the project and root package)
+\emph on
+.
+
+\emph default
+ This package and everything inside it will be deleted and re-generated
+ whenever you call the make() method on the generator class, so you should
+ never put anything into this package or make changes to the files inside
+ this package or any of its sub packages.
+\end_layout
+
+\begin_layout Subsection
+Define Global Value Domains
+\end_layout
+
+\begin_layout Standard
+Now you should have a newly created EDMA project up and running with one
+ global value domain called Name.
+ Now lets define some more global value domains.
+ We need a Date value domain that contains a year, a month and a day of
+ month.
+ All values from this value domain should be valid dates.
+ First lets create the value domains Year, Month and DayOfMonth:
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+// Year, Month and DayOfMonth
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Year : Integer[0..9999]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Month : Integer[1..12]
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain DayOfMonth : Integer[1..31]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Add those value domains to the Common.edma file.
+ You can make comments in edma files just like in java files with // and
+ /* ...
+ */.
+\end_layout
+
+\begin_layout Standard
+Before we continue, we will take a quick look at how these value domains
+ work.
+ Run Make and refresh the project.
+ Now create a new Test class in the default package that looks like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import tutorial.divingschool.generated.valuedomains.Year;
+\end_layout
+
+\begin_layout Plain Layout
+
+import edma.valuedomains.exceptions.InvalidValueException;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public class Test
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	public static void main(String[] args)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		//A valid year
+\end_layout
+
+\begin_layout Plain Layout
+
+		Year foo = Year.create(1988);
+\end_layout
+
+\begin_layout Plain Layout
+
+		System.out.println(foo.toString());
+\end_layout
+
+\begin_layout Plain Layout
+
+		foo = Year.fromString("1807");
+\end_layout
+
+\begin_layout Plain Layout
+
+		Year bar = Year.create(1807);
+\end_layout
+
+\begin_layout Plain Layout
+
+		System.out.println("foo equals bar: " + foo.equals(bar));
+\end_layout
+
+\begin_layout Plain Layout
+
+		System.out.println("Is -11 a valid year: "
+\end_layout
+
+\begin_layout Plain Layout
+
+			+ Year.isValidYear(-11));
+\end_layout
+
+\begin_layout Plain Layout
+
+		System.out.println("Is 1990 a valid year: "
+\end_layout
+
+\begin_layout Plain Layout
+
+			+ Year.isValidYear(1990));
+\end_layout
+
+\begin_layout Plain Layout
+
+		//Lets try to make an invalid year:
+\end_layout
+
+\begin_layout Plain Layout
+
+		try
+\end_layout
+
+\begin_layout Plain Layout
+
+		{
+\end_layout
+
+\begin_layout Plain Layout
+
+			bar = Year.create(-54);
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+		catch(InvalidValueException e)
+\end_layout
+
+\begin_layout Plain Layout
+
+		{
+\end_layout
+
+\begin_layout Plain Layout
+
+			System.out.println(e.getMessage());
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see from this code there are a few static methods on the Year
+ class that can be used to create new values from the Year value domain.
+ There is also a method to get a value from a human user through a simple
+ text based terminal:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Year.fromTerminal(new SimpleTerminal());
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can also take a look at the generated Year.java file to see all the methods.
+ 
+\end_layout
+
+\begin_layout Standard
+Now we can create the Date value domain as a 
+\emph on
+Struct
+\emph default
+ value domain that uses the Year, Month and DayOfMonth value domains.
+ Add the following to the Common.edma file:
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//Date
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Date : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	year : Year,
+\end_layout
+
+\begin_layout Plain Layout
+
+	month : Month,
+\end_layout
+
+\begin_layout Plain Layout
+
+	day : DayOfMonth
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Notice that in a 
+\emph on
+Struct
+\emph default
+ value domain you can only refer to value domains that are defined elsewhere.
+ The order is not important, you can define Year, Month and DayOfMonth before
+ or after Date or even in a separate file if you want.
+ But you can not use the basic value domains like String, Integer etc in
+ a 
+\emph on
+Struct
+\emph default
+ value domain.
+ So this is NOT possible:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//Invalid definition of Date
+\end_layout
+
+\begin_layout Plain Layout
+
+//Will NOT compile
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Date : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	year : Integer[0..9999],
+\end_layout
+
+\begin_layout Plain Layout
+
+	month : Integer[1..12],
+\end_layout
+
+\begin_layout Plain Layout
+
+	day : Integer[1..31]
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now run Make and refresh the project.
+ The Date value domain is a 
+\emph on
+Struct
+\emph default
+ value domain that are build from other value domains.
+ Each 
+\emph on
+field
+\emph default
+ in a 
+\emph on
+Struct
+\emph default
+ value domain consist of a name and a value domain.
+ A 
+\emph on
+field
+\emph default
+ in a struct can be optional, which means that the value may be 
+\emph on
+null
+\emph default
+.
+ To make a field optional all you have to do is add a question mark after
+ the name of the field.
+ Here is an example of a Struct value domain with some optional fields:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//Value Domain with optional fields
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain FooBar : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	foo? : SomeValueDomainName,
+\end_layout
+
+\begin_layout Plain Layout
+
+	bar : SomeValueDomainName,
+\end_layout
+
+\begin_layout Plain Layout
+
+	foobar? : AnotherValueDomainName
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here foo and foobar are optional so they may be 
+\emph on
+null
+\emph default
+.
+ If a field is not optional then a NullPointerException is thrown if it
+ is set to 
+\emph on
+null
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+Struct
+\emph default
+ value domains has a natural order where the significance of the fields
+ follows their position in the 
+\emph on
+Struct
+\emph default
+, with the first field being the most significant and the last field least
+ significant.
+ So if we had put the fields in another order, then dates would not sort
+ properly when using their natural order.
+ Here is some examples of how you can create values in the Date value domain.
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import tutorial.divingschool.generated.valuedomains.Date;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+public class DateTest
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	public static void main(String[] args)
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		//Create a date with the create() method
+\end_layout
+
+\begin_layout Plain Layout
+
+		Date foo = Date.create().year(2012).month(2).day(15);
+\end_layout
+
+\begin_layout Plain Layout
+
+		System.out.println(foo.toString());
+\end_layout
+
+\begin_layout Plain Layout
+
+		//Create a date from a string representation of the date
+\end_layout
+
+\begin_layout Plain Layout
+
+		Date bar = Date.fromString("(2012, 3, 4)");
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\end_layout
+
+\begin_layout Plain Layout
+
+		//What happens if we create an invalid date like this 2012-2-30
+\end_layout
+
+\begin_layout Plain Layout
+
+		Date notValid = Date.create().year(2012).month(2).day(30);
+\end_layout
+
+\begin_layout Plain Layout
+
+		System.out.println(notValid.toString());
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Notice how the creation uses fluid interfaces to make it easier too read
+ the code.
+ This can be very useful if you create struct value domains with many fields.
+ There is a separate interface for each field you set that returns the interface
+ to set the next field, so it is not possible to leave out a field without
+ getting a compile error from the java compiler.
+ Try it out, write Date foo = Date.create().year(1988).day(15) and see that
+ the compiler will not accept it because the month is missing.
+ Also the order of the fields is fixed when creating the values, so Date.create().
+month(5).year(1788).day(7) will not compile either.
+\end_layout
+
+\begin_layout Standard
+At first this strictness in the creation can seem a little rigid, but if
+ you later on add another field to a struct value domain, then the compiler
+ makes sure that you take this new field into account everywhere you create
+ values with that value domain.
+\end_layout
+
+\begin_layout Standard
+If you want, try to create a TreeSet<Date> and put some dates into it, they
+ should be correctly sorted by their natural order when you iterate over
+ the set.
+\end_layout
+
+\begin_layout Standard
+When creating a Date value, it is automatically tested that the year, month
+ and day are within the allowed limits for their value domains, but what
+ about invalid dates as 30/2/2012? These are not caught at the moment.
+ We can add a user implemented constraint to do this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//Date
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Date : Struct
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	year : Year,
+\end_layout
+
+\begin_layout Plain Layout
+
+	month : Month,
+\end_layout
+
+\begin_layout Plain Layout
+
+	day : DayOfMonth
+\end_layout
+
+\begin_layout Plain Layout
+
+} Constraints[validDate]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is done by adding the keyword 
+\emph on
+Constraints 
+\emph default
+followed by a comma separated list of names in square brackets.
+ In this case we only added one constraint.
+ Now run Make and refresh the project.
+ Try to run the DateTest class above again and see what happens.
+ It should throw an exception saying that the validDate constraint is not
+ implemented and where you can implement it.
+ Navigate to the class mentioned in the exception.
+ It should look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+package tutorial.divingschool.usercode.valueconstraints.date;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+import tutorial.divingschool.generated.valuedomains.Date;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+/**
+\end_layout
+
+\begin_layout Plain Layout
+
+ * This class is the implementation class for the Date constraint validDate
+\end_layout
+
+\begin_layout Plain Layout
+
+ * No description given
+\end_layout
+
+\begin_layout Plain Layout
+
+ */
+\end_layout
+
+\begin_layout Plain Layout
+
+public class ValidDate
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    /**
+\end_layout
+
+\begin_layout Plain Layout
+
+     * Checks the validDate constraint for the Date value domain.
+\end_layout
+
+\begin_layout Plain Layout
+
+     * No description given
+\end_layout
+
+\begin_layout Plain Layout
+
+     * @param date  The instance value to be checked
+\end_layout
+
+\begin_layout Plain Layout
+
+     * @return      the reason the constraint is violated, or <tt>null</tt>
+ if
+\end_layout
+
+\begin_layout Plain Layout
+
+     *              the constraint is not violated
+\end_layout
+
+\begin_layout Plain Layout
+
+     */
+\end_layout
+
+\begin_layout Plain Layout
+
+    public static String checkValidDate(Date date)
+\end_layout
+
+\begin_layout Plain Layout
+
+    {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // Implementation of constraint validDate
+\end_layout
+
+\begin_layout Plain Layout
+
+        // WARNING : Any code outside the following begin and end tags
+\end_layout
+
+\begin_layout Plain Layout
+
+        // will be lost when re-generation occurs.
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        // EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        //TODO: Implement the constraint validDate here...
+\end_layout
+
+\begin_layout Plain Layout
+
+        return "Constraint not implemented.
+ Implement in tutorial.divingschool.usercode.valueconstraints.date.ValidDate";
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        // EDMA_non-generated_code_end
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The class is in a sub package of the 
+\emph on
+usercode
+\emph default
+ package.
+ All classes that you need to put code into will be placed in the usercode
+ package or its sub packages.
+ Now lets implement the validDate constraint to only allow valid dates.
+ This involves checking for leap years.
+ Be sure to only put your code between the 
+\emph on
+EDMA_non-generated_code_begin
+\emph default
+ and the 
+\emph on
+EDMA_non-generated_code_end
+\emph default
+ tags, since anything outside these tags will be re-generated when you run
+ Make (except any imports you might add, these will be preserved too).
+ Now try to add the following code between the 
+\emph on
+EDMA_non-generated_code_begin
+\emph default
+ and the 
+\emph on
+EDMA_non-generated_code_end
+\emph default
+ tags: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    // EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+    int day = date.day().value();
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(day <= 28) return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+    switch(date.month().value())
+\end_layout
+
+\begin_layout Plain Layout
+
+    {
+\end_layout
+
+\begin_layout Plain Layout
+
+      case 2:
+\end_layout
+
+\begin_layout Plain Layout
+
+        if(day > 29) return "February can not have more than 29 days";
+\end_layout
+
+\begin_layout Plain Layout
+
+        // day == 29
+\end_layout
+
+\begin_layout Plain Layout
+
+        int year = date.year().value();
+\end_layout
+
+\begin_layout Plain Layout
+
+        if(year % 4 == 0 && (!(year % 100 == 0) || year % 400 == 0)) return
+ null;
+\end_layout
+
+\begin_layout Plain Layout
+
+        return Integer.toString(year)
+\end_layout
+
+\begin_layout Plain Layout
+
+          + " is not a leap year, so February can not have 29 days";
+\end_layout
+
+\begin_layout Plain Layout
+
+      case 4:
+\end_layout
+
+\begin_layout Plain Layout
+
+      case 6:
+\end_layout
+
+\begin_layout Plain Layout
+
+      case 9:
+\end_layout
+
+\begin_layout Plain Layout
+
+      case 11:
+\end_layout
+
+\begin_layout Plain Layout
+
+        if(day <= 30) return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+        return "April, June, September and November can not have more than
+ 30 days";
+\end_layout
+
+\begin_layout Plain Layout
+
+      default:
+\end_layout
+
+\begin_layout Plain Layout
+
+        return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    // EDMA_non-generated_code_end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you see here the return value is a 
+\emph on
+String
+\emph default
+.
+ You should return 
+\emph on
+null
+\emph default
+, if the value is valid, otherwise you should return an error message that
+ says why the value is not valid.
+ After you have updated this file, try to run the DateTest again.
+ This time only the invalid dates like 30/2/2012 should fail.
+\end_layout
+
+\begin_layout Standard
+With user implemented constraints you can make value domains that are very
+ precise in which values they accept and which they do not accept.
+ You should always try to make your value domains as precise as possible,
+ because then you will catch malformed input as early as possible.
+ The value domains are your guarantee that the input to and output from
+ your 
+\emph on
+actions
+\emph default
+ and 
+\emph on
+views
+\emph default
+ are valid.
+ As an example of a very specialized value domain, we will make a value
+ domain called FunnyInt that only contains positive integers that are even,
+ but not dividable by 10:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//FunnyInt
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain FunnyInt : Integer[1..MAX] Constraints[even, notDividableBy10]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Add the above to your Common.edma file and then run Make and refresh the
+ project.
+ Now find the file ${project}.usercode.valueconstraints.funnyint.Even.java and
+ replace the code between the 
+\emph on
+EDMA_non-generated_code_begin
+\emph default
+ and the 
+\emph on
+EDMA_non-generated_code_end
+\emph default
+ tags with this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if(funnyInt.value() % 2 == 0) return null;
+\end_layout
+
+\begin_layout Plain Layout
+
+return funnyInt.value() + " is not even!";
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the same sub package find the file NotDividableBy10.java and replace the
+ code between the 
+\emph on
+EDMA_non-generated_code_begin
+\emph default
+ and the 
+\emph on
+EDMA_non-generated_code_end
+\emph default
+ tags with this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if(funnyInt.value() % 10 == 0) return funnyInt.value() + " is dividable by
+ 10!";
+\end_layout
+
+\begin_layout Plain Layout
+
+return null;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Make a test class and try out your new FunnyInt value domain.
+\end_layout
+
+\begin_layout Standard
+We actually do not need the FunnyInt value domain in the course registration
+ system after all, so feel free to delete it from the Common.edma file and
+ regenerate.
+ When you do this, you will notice that the Even.java and NotDividableBy10.java
+ files are still there, but now they do not compile because the FunnyInt
+ value domain no longer exists.
+ You will have to delete these files yourself.
+ EDMA will never delete files inside the usercode package or its sub packages.
+ Only stuff outside the 
+\emph on
+EDMA_non-generated_code_begin
+\emph default
+ and the 
+\emph on
+EDMA_non-generated_code_end
+\emph default
+ tags will be overwritten by EDMA in the 
+\emph on
+usercode
+\emph default
+ package and its sub packages.
+ But keep in mind that files you put in the 
+\emph on
+generated
+\emph default
+ package or its sub packages will be deleted by EDMA.
+\end_layout
+
+\begin_layout Standard
+Now lets make the value domains that we need to create the Person Kind.
+ The Person Kind should have a name, an email, a mobile phone number and
+ a credit balance.
+ The credit balance should be a non-negative integer, since we do not allow
+ negative credit.
+ We already have a Name value domain that is just a String of length 1 or
+ more.
+ Lets make the other value domains:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//Email
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Email : String[3..MAX]
+\end_layout
+
+\begin_layout Plain Layout
+
+//Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Mobile : String[8]
+\end_layout
+
+\begin_layout Plain Layout
+
+//Credit
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Credit : Integer[0..MAX]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As seen here the String value domains can both have a length range like
+ 3..MAX and 3..256 or it can just have a single length value like in the mobile
+ value domain.
+ This means that a value from the mobile value domain must be a string that
+ are exactly 8 characters long.
+ We could also have used the notation 8..8 which is the same.
+\end_layout
+
+\begin_layout Standard
+String value domains can also have regular expressions added to them.
+ These are added in square brackets after the length constraints.
+ The syntax for the regular expressions should be just like you would write
+ it in java as a hard coded string surrounded by double quotes.
+ Lets add a regular expression to the Email value domain and the Mobile
+ value domain:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//Email
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Email : String[3..MAX]
+\end_layout
+
+\begin_layout Plain Layout
+
+["[
+\backslash
+
+\backslash
+w-]+(
+\backslash
+
+\backslash
+.[
+\backslash
+
+\backslash
+w-]+)*@[A-Za-z0-9]+(
+\backslash
+
+\backslash
+.[A-Za-z0-9]+)*(
+\backslash
+
+\backslash
+.[A-Za-z]{2,})"]
+\end_layout
+
+\begin_layout Plain Layout
+
+//Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain Mobile : String[8]["[0-9]+"]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is not a perfect email regular expression, but it serves fine as an
+ example of how to use regular expressions on String value domains.
+ In the mobile regular expression we do not need to test that the length
+ is 8, since this is already being tested in the length constraint.
+ You should try it out now by making some valid and invalid emails and mobile
+ phone numbers in a test class.
+\end_layout
+
+\begin_layout Standard
+The last thing we will look at before we move on to the data model is how
+ to create a 
+\emph on
+List
+\emph default
+ value domain.
+ As an example we will create a value domain where the values are lists
+ of dates:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//DateList
+\end_layout
+
+\begin_layout Plain Layout
+
+ValueDomain DateList : List<Date>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Run Make and refresh the project.
+ Now here is some examples of how you can create and use values from the
+ DateList value domain:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DateList myDateList = DateList.begin()
+\end_layout
+
+\begin_layout Plain Layout
+
+								.add(Date.fromString("(2012, 2, 1)"))
+\end_layout
+
+\begin_layout Plain Layout
+
+								.add(Date.fromString("(2012, 4, 5)"))
+\end_layout
+
+\begin_layout Plain Layout
+
+								.add(Date.fromString("(2012, 6, 26)"))
+\end_layout
+
+\begin_layout Plain Layout
+
+								.end();
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(myDateList);		
+\end_layout
+
+\begin_layout Plain Layout
+
+for(Date date : myDateList)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	System.out.println(date);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+DateListBuilder builder = DateList.begin();
+\end_layout
+
+\begin_layout Plain Layout
+
+for(int i = 1; i <= 29; ++i)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Date d = Date.create().year(2012).month(2).day(i);
+\end_layout
+
+\begin_layout Plain Layout
+
+	builder.add(d);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+DateList datesInFebruary = builder.end();
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println("The dates in february 2012:");
+\end_layout
+
+\begin_layout Plain Layout
+
+for(Date date : datesInFebruary)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	System.out.println(date);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+DateList someDates = DateList.fromString("((1999,1,3),(1988,2,5),(1745,3,4))");
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(someDates);
+\end_layout
+
+\begin_layout Plain Layout
+
+DateList empty = DateList.fromString("()");
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(empty);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is important to notice that like all other values from value domains,
+ list values are also immutable.
+ The value is not created until the end() method is called on the builder
+ interface and when the value is created, it can never be changed.
+ So in the shown example the DateList datesInFebruary will always contain
+ the same dates in the same order that they where added to the builder.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+List
+\emph default
+ value domains has a natural order, where the elements are compared one
+ by one from the beginning of the lists.
+ So if we have lists of integers, then (1,3) is greater than (1,2,3), but
+ (1,2) is smaller than (1,2,3).
+ This is the same way that Strings in java is naturally ordered as lists
+ of characters.
+ 
+\end_layout
+
+\begin_layout Standard
+This is all you need to know about value domains for now.
+ 
+\end_layout
+
+\begin_layout Subsection
+Defining the Data Model
+\end_layout
+
+\begin_layout Standard
+Create a new file in the edma folder called CourseRegistration.edma.
+ This file will contain our definition of the course registration data model.
+ Write the following into the file:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DataModel CourseRegistration
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now run Make and refresh the project.
+ In the package explorer navigate to the package 
+\emph on
+generated
+\emph default
+.
+ Inside this package you will find a package called 
+\emph on
+courseregistration
+\emph default
+.
+ Inside this package you should find the following files: 
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CourseRegistration
+\emph default
+.java - This is the external API to instances of the data model.
+ Right now this interface is empty because we have no actions or views in
+ our data model definition yet.
+ Later on when we add actions and views to the data model, they will show
+ up in this interface.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CourseRegistrationInstance
+\emph default
+.java - This is the interface to a specific instance of the data model.
+ This interface has methods to start and stop the instance and to get the
+ external API from the instance.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CourseRegistrationFactory
+\emph default
+.java - This is the factory class where we can get access to the instances
+ of our data model.
+ Each instance of a data model is identified by a name.
+ The factory provides methods to create new instances, to test whether an
+ instance with a given name exists and to get access to an existing instance.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CourseRegistrationViewer
+\emph default
+.java - This is the internal interface that views on the data model has access
+ to.
+ It will get all the methods and functionality that we need to extract informati
+on from the data model instance.
+ Right now the data model definition is empty, so this interface is also
+ empty.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CourseRegistrationUpdater
+\emph default
+.java - This is the internal interface that actions on the data model has
+ access to.
+ It extends the 
+\emph on
+CourseRegistrationViewer
+\emph default
+ interface, so actions can also extract information from the data model,
+ but then it adds methods and functionality to update the state of the data
+ model instance.
+ Right now this interface is empty because the data model definition is
+ empty.
+\end_layout
+
+\begin_layout Standard
+Inside the 
+\emph on
+courseregistration 
+\emph default
+package you should also find two sub packages called 
+\emph on
+remote
+\emph default
+ and 
+\emph on
+test
+\emph default
+.
+ The 
+\emph on
+remote
+\emph default
+ package contains classes that makes it possible to set up a server that
+ handles access to a data model instance, and a proxy class that clients
+ then can use to access the data model instance on the server.
+ The 
+\emph on
+test
+\emph default
+ package contains a class that takes an API interface to a data model instance
+ and then creates an interactive console where 
+\emph on
+actions
+\emph default
+ and 
+\emph on
+views
+\emph default
+ on the data model can be called.
+\end_layout
+
+\begin_layout Standard
+Before we can try out all these things, we need to have something in our
+ data model definition.
+ To start out with we will create a very simple data model with a Person
+ Kind, an action that can create new persons and a view that can get a list
+ of all the persons.
+\end_layout
+
+\begin_layout Subsection
+Kinds
+\end_layout
+
+\begin_layout Standard
+First we define the Person Kind.
+ Update your CourseRegistration.edma file to look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DataModel CourseRegistration
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Kind Person
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+		mobile : Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Again run Make and refresh the project.
+ Now take a look inside the ...
+\emph on
+generated.courseregistration
+\emph default
+ sub package again.
+ You should now see two new sub packages that have been created: 
+\emph on
+kinds
+\emph default
+ and 
+\emph on
+valuedomains
+\emph default
+.
+ If you take a look into the 
+\emph on
+valuedomains
+\emph default
+ sub package you should find the files: 
+\emph on
+PersonID
+\emph default
+.java, 
+\emph on
+Person
+\emph default
+.java and 
+\emph on
+PersonList
+\emph default
+.java.
+ These are value domains that have been automatically created from the Person
+ Kind.
+ The 
+\emph on
+PersonID
+\emph default
+ value domain contains a long value that are used to identify a person entity
+ inside the data model instance.
+ All Kinds have an implicit id value beside the values that are defined
+ explicitly.
+ The 
+\emph on
+Person
+\emph default
+ value domain is a struct value domain that contains this id value plus
+ all the values that are defined explicitly in the Person Kind.
+ The 
+\emph on
+PersonList
+\emph default
+ value domain is a 
+\emph on
+list
+\emph default
+ value domain where the elements are values from the 
+\emph on
+Person
+\emph default
+ value domain.
+ All these auto generated value domains are local to the data model which
+ means that you can not use them in global value domains or value domains
+ that are local to other data models.
+ You can also make your own local value domains by defining them inside
+ the data model's { and }.
+ If you want the 
+\emph on
+PersonID
+\emph default
+, 
+\emph on
+Person
+\emph default
+ and 
+\emph on
+PersonList
+\emph default
+ to be global value domains, so you can use them in other global value domains
+ or in other data models you can write Publish after the kind name like
+ this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DataModel CourseRegistration
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Kind Person Publish
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+		mobile : Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can also make them global with another name to avoid name clashes with
+ other global value domains.
+ This is done with the As keyword like this:
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DataModel CourseRegistration
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Kind Person Publish As MyPerson
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+		mobile : Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now the generated value domains will be global with the names: 
+\emph on
+MyPersonID
+\emph default
+, 
+\emph on
+MyPerson
+\emph default
+ and 
+\emph on
+MyPersonList
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Before we go on you will need to know a few things about what a data model
+ instance is.
+ A data model instance should be viewed as a sealed container that contains
+ some data that might change over time.
+ It is not possible to see or update the data from outside the container.
+ But the container provides 
+\emph on
+actions
+\emph default
+ and 
+\emph on
+views
+\emph default
+ that can go inside the container and look at the data and the 
+\emph on
+actions
+\emph default
+ can also make changes to the data.
+ But they can not take any references to the data outside the container.
+ So the only way a 
+\emph on
+view
+\emph default
+ or an 
+\emph on
+action
+\emph default
+ can get information out of the container is by taking snapshots of the
+ data and then bring these snapshots to the outside.
+ A snapshot can be thought of as an immutable picture of how the data looked
+ when it was taken.
+ In EDMA we use values from value domains to capture these snapshots, since
+ these values are immutable.
+ So the generated PersonID, Person and PersonList value domains can be used
+ to bring information from inside the data model instance to the outside.
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+attributes
+\emph default
+ in a kind can also be made optional with a question mark, just like the
+ fields in a 
+\emph on
+Struct
+\emph default
+ value domain.
+\end_layout
+
+\begin_layout Standard
+Now lets look into the 
+\emph on
+kinds
+\emph default
+ sub package, there should be a sub package called 
+\emph on
+person
+\emph default
+.
+ Inside the 
+\emph on
+person
+\emph default
+ sub package you will find the internal interfaces that can be used by the
+ 
+\emph on
+views
+\emph default
+ and the 
+\emph on
+actions
+\emph default
+ when they operate inside the data model instance.
+ The sub package should contain these files:
+\end_layout
+
+\begin_layout Itemize
+PersonViewer.java - This is the view interface to a person entity inside
+ the data model instance.
+ This interface contains methods to get snapshots of all the attributes
+ in the entity.
+ If you look into this interface you will find the methods: getID().
+ getName(), getEmail() and getMobile().
+ The values returned by these methods are snapshots of the entity attributes.
+ There is also a method named snapshot() that will take a snapshot of the
+ entire entity as a value from the Person value domain described earlier.
+\end_layout
+
+\begin_layout Itemize
+PersonUpdater.java - This is the update interface to a person entity inside
+ the data model instance.
+ Right now this interface is empty because we have not allowed any of the
+ attributes in the Person Kind to be updated.
+ Lets try to make the 
+\emph on
+mobile
+\emph default
+ attribute updateable.
+ This is done by adding a + after the name of the attribute like this:
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DataModel CourseRegistration
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Kind Person
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+		mobile+ : Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+Now run Make again and refresh.
+ The PersonUpdater interface should now contains a method called beginUpdate()
+ that returns another interface where the updateable attributes can be set
+ and a save() method to end the updates to the attributes.
+ Right now it might seem a little overkill that you need to call beginUpdate().se
+tMobile(...).save() to update the mobile phone number.
+ But later on when we introduce the Unique index it will be more clear why
+ it is done in this way.
+\end_layout
+
+\begin_layout Itemize
+PersonSet.java - This interface represents a set of person entities (each
+ of them represented by the PersonViewer interface).
+ You can iterate over the set, you can order the set by any of the attributes
+ and you can suborder by any attribute.
+ You can also perform set operations like union, intersection and subtraction.
+ Sets are immutable, so every time you change something, you actually get
+ a new set.
+ The set also has a snapshot() methods that returns it as a value from the
+ PersonList value domain.
+ The interface is made so the runtime system can choose to delay all set
+ operations like union, intersection, subtraction, ordering etc until the
+ set is actual iterated over or accessed in other ways.
+ This makes it possible for the runtime system to optimize the set operations.
+\end_layout
+
+\begin_layout Itemize
+PersonFilter.java - This is a filter interface that can be used to implement
+ user defined filters to perform specialized searches in sets.
+ The interface has a single method called 
+\emph on
+accept
+\emph default
+ that takes a PersonViewer interface as parameter and returns a boolean.
+\end_layout
+
+\begin_layout Itemize
+PersonKind.java - This is the interface to the collection of all person entities
+ in the data model instance.
+ It has methods to get a specific entity by its ID and to get all the entities
+ as a set.
+ 
+\end_layout
+
+\begin_layout Subsection
+Views and Actions
+\end_layout
+
+\begin_layout Standard
+The entities in the data model instance can only be accessed through 
+\emph on
+views
+\emph default
+ or 
+\emph on
+actions.
+
+\emph default
+ 
+\emph on
+Views
+\emph default
+ can only extract data from a data model instance while 
+\emph on
+actions
+\emph default
+ can both extract data and make changes to the data inside a data model
+ instance.
+ We will start by making an action that can create a new person kind.
+\end_layout
+
+\begin_layout Standard
+Create a new file in the 
+\emph on
+edma
+\emph default
+ folder named CourseRegistrationAPI.edma that contains this:
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DataModel CourseRegistration
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Action createPerson
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+			"Creates a new person"
+\end_layout
+
+\begin_layout Plain Layout
+
+		Input: 
+\end_layout
+
+\begin_layout Plain Layout
+
+			name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+			email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+			mobile : Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+		Output:
+\end_layout
+
+\begin_layout Plain Layout
+
+			id : PersonID
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This defines an action that can create a new person.
+ It has a description, some input parameters and an output parameter.
+\end_layout
+
+\begin_layout Standard
+Now run Make and refresh the project.
+ 
+\end_layout
+
+\begin_layout Standard
+First we have to implement the action to do what we want, namely create
+ a new Person entity.
+ Locate the file: tutorial.divingschool.usercode.models.
+ courseregistration.actions.CreatePersonUserImpl.java.
+ It will intentionally have a compile error, so it should be easy to locate
+ it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+    /**
+\end_layout
+
+\begin_layout Plain Layout
+
+     * Execution of the action
+\end_layout
+
+\begin_layout Plain Layout
+
+     * @param upd  Update interface
+\end_layout
+
+\begin_layout Plain Layout
+
+     * @return     Return 0 to commit or one of the error codes to roll
+ back
+\end_layout
+
+\begin_layout Plain Layout
+
+     */
+\end_layout
+
+\begin_layout Plain Layout
+
+    public int execute(CourseRegistrationUpdater upd)
+\end_layout
+
+\begin_layout Plain Layout
+
+    {
+\end_layout
+
+\begin_layout Plain Layout
+
+        // Implementation of createPerson
+\end_layout
+
+\begin_layout Plain Layout
+
+        // Return one of the following error codes:
+\end_layout
+
+\begin_layout Plain Layout
+
+        // OK
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        // If an error needs extra explanation, use: setErrorDescription("Extra
+ info");
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        // WARNING : Any code outside the following begin and end tags
+\end_layout
+
+\begin_layout Plain Layout
+
+        // will be lost when re-generation occurs.
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        // EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        "TODO : put your implementation of createPerson here...";
+\end_layout
+
+\begin_layout Plain Layout
+
+        
+\end_layout
+
+\begin_layout Plain Layout
+
+        // EDMA_non-generated_code_end
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The implementation should go between the 
+\emph on
+EDMA_non-generated_code_begin
+\emph default
+ and 
+\emph on
+EDMA_non-generated_code_end
+\emph default
+ tags in the 
+\emph on
+execute
+\emph default
+ method.
+ The execute methods has a single parameter which is an interface to the
+ data model instance.
+ Since this is an action, the interface is an update-interface that can
+ change the state of the data model.
+ The execute method returns an int, which is a status code.
+ Since we have not yet defined any error conditions, we should simply return
+ OK (which is always defined as 0).
+ Replace the implementation of the execute method with this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+// EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+PersonUpdater person = upd.newPerson()
+\end_layout
+
+\begin_layout Plain Layout
+
+							.name(in_name)
+\end_layout
+
+\begin_layout Plain Layout
+
+							.email(in_email)
+\end_layout
+
+\begin_layout Plain Layout
+
+							.mobile(in_mobile);
+\end_layout
+
+\begin_layout Plain Layout
+
+out_id = person.getID();
+\end_layout
+
+\begin_layout Plain Layout
+
+return OK;
+\end_layout
+
+\begin_layout Plain Layout
+
+// EDMA_non-generated_code_end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As you can see the class has defined all the input parameters prepended
+ with 
+\begin_inset Quotes eld
+\end_inset
+
+in_
+\begin_inset Quotes erd
+\end_inset
+
+.
+ These parameters are automatically initialized by the EDMA system before
+ the execute method is called.
+ The output parameters are also defined prepended with 
+\begin_inset Quotes eld
+\end_inset
+
+out_
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The values of the output parameters must be set in the execute method by
+ you (unless you return a non-zero error-code, then you can ignore the output
+ parameters, but more on that later).
+\end_layout
+
+\begin_layout Standard
+Before we test the create person action, lets make a view that returns all
+ persons, so we can see if they actually gets created.
+ In CourseRegistrationAPI.edma add this view to the data model CourseRegistration
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+	View getAllPersons
+\end_layout
+
+\begin_layout Plain Layout
+
+	{
+\end_layout
+
+\begin_layout Plain Layout
+
+		Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+			"Returns a list of all persons"
+\end_layout
+
+\begin_layout Plain Layout
+
+		Output:
+\end_layout
+
+\begin_layout Plain Layout
+
+			personList : PersonList
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This view takes no input and returns a list of all persons.
+ Run Make and refresh, then locate the file: tutorial.divingschool.usercode.models.c
+ourseregistration.views.GetAllPersonsUserImpl.java and put the following implementa
+tion into the 
+\emph on
+execute
+\emph default
+ method:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+// EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+out_personList = view.getPersonKind().getAll().snapshot();
+\end_layout
+
+\begin_layout Plain Layout
+
+return OK;
+\end_layout
+
+\begin_layout Plain Layout
+
+// EDMA_non-generated_code_end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Notice that the parameter to the execute method is a 
+\emph on
+view
+\emph default
+ interface because this is a view and not an action, so it is not allowed
+ to change the state of the data model instance.
+\end_layout
+
+\begin_layout Subsection
+Try it out
+\end_layout
+
+\begin_layout Standard
+We will now go through all the steps needed to create an instance of the
+ CourseRegistration data model and manipulate it through the actions and
+ views we have created.
+ To do this create a class called TryIt in the default package with a main
+ method.
+\end_layout
+
+\begin_layout Standard
+The first thing we do is to create a runtime factory.
+ The runtime factory provides the runtime execution logic to each data model
+ instance.
+ There can be many different implementations of the runtime factory with
+ different strategies for execution and persistence.
+ The example runtime factory provided with this version of EDMA features
+ a thread-safe pipelined execution and single file persistence.
+ The argument to the constructor is the directory where the instances should
+ be persisted.
+ The runtime factory is generic code that is not generated from any specific
+ data model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+RuntimeFactory rtfactory = new RuntimeFactory("C:/tmp");
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now that we have a runtime factory, we need to create our environment and
+ connect it to the runtime factory:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DivingSchool ds = new DivingSchool(rtfactory);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The environment is an auto-generated class that provides access to instance
+ factories for each data model defined in the environment.
+ At the moment we only have one data model in our environment, the CourseRegistr
+ation data model.
+ A data model can have several independent instances, so each data model
+ has an instance factory that can create and delete instances of that particular
+ data model.
+\end_layout
+
+\begin_layout Standard
+Now lets get the instance factory for our CourseRegistration data model:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+CourseRegistrationFactory crf = ds.getCourseRegistrationFactory();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The instance factory controls the instances of the data model.
+ Each instance is identified by a name, for now we just need one instance
+ that we will call 
+\begin_inset Quotes eld
+\end_inset
+
+MyInstance
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If the instance already exists, we will reuse it, if it does not exist,
+ we will create it:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+CourseRegistrationInstance instance = null;
+\end_layout
+
+\begin_layout Plain Layout
+
+String instanceName = "MyInstance";
+\end_layout
+
+\begin_layout Plain Layout
+
+if(crf.exists(instanceName))
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	instance = crf.getInstance(instanceName);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+else
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	instance = crf.newInstance(instanceName);
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+NOTE: An instance of a data model contains data that follow the structure
+ of that particular data model.
+ This means that if you change the data model, then the instances are no
+ longer usable.
+ This means that every time you make changes to the structure of your data
+ model you should also delete any instances you have stored.
+ You may create, delete and modify the actions and views on the data model
+ and still reuse the instances, just be careful not to change any value
+ domains that are used in the kinds.
+\end_layout
+
+\begin_layout Standard
+From the instance we can get the API that lets us execute actions and views
+ on the instance.
+ With the example runtime factory that we are using, instances are thread-safe,
+ so the API can be operated from several threads simultaneously.
+ Now lets get the API from our instance:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+CourseRegistration cr = instance.getAPI();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Before we can call any action or views on the instance, it needs to be started.
+ Instances can be started and stopped.
+ When an instance is started, its internal worker-threads are created and
+ ready to execute actions and views.
+ When we are finished using an instance it should be stopped.
+\end_layout
+
+\begin_layout Standard
+Now lets fire up the instance:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+instance.start();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That's it! Now we can start executing actions and views on our data model
+ instance.
+ Lets try out the action 
+\begin_inset Quotes eld
+\end_inset
+
+CreatePerson
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+cr.createPerson(Name.create("John Doe"),
+\end_layout
+
+\begin_layout Plain Layout
+
+				Email.create("johndoe@foo.bar"),
+\end_layout
+
+\begin_layout Plain Layout
+
+				Mobile.create("12345678"));
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In order to check that we actually did create a new entity, lets try the
+ view 
+\begin_inset Quotes eld
+\end_inset
+
+GetAllPersons
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+PersonList list = cr.getAllPersons().getPersonList();
+\end_layout
+
+\begin_layout Plain Layout
+
+System.out.println(list);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since actions and views can have multiple return values and also returns
+ a status, each action or view has its own result interface on which the
+ status and the return values can be accessed.
+ So the getAllPersons() methods returns a result on which we then can access
+ the return value 
+\begin_inset Quotes eld
+\end_inset
+
+PersonList
+\begin_inset Quotes erd
+\end_inset
+
+ by calling getPersonList().
+\end_layout
+
+\begin_layout Standard
+All value classes has a default toString() method so we can just print out
+ the entire list with System.out.println(list).
+\end_layout
+
+\begin_layout Standard
+Now we just need to stop the instance to terminate the program:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+instance.stop();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+First time this is run it will create a new data model instance with the
+ name 
+\begin_inset Quotes eld
+\end_inset
+
+MyInstance
+\begin_inset Quotes erd
+\end_inset
+
+ and add a person to that instance.
+ If it is run again it will just load the existing instance and add another
+ person to that.
+ Try it out...
+\end_layout
+
+\begin_layout Standard
+If you look in the directory you gave to the runtime factory (in this example
+ it was 
+\begin_inset Quotes eld
+\end_inset
+
+C:/tmp
+\begin_inset Quotes erd
+\end_inset
+
+), you should see a file called 
+\begin_inset Quotes eld
+\end_inset
+
+myinstance.data
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph on
+.
+
+\emph default
+ This file contains the persisted data for the instance.
+\end_layout
+
+\begin_layout Standard
+Another way to test the data model is to use the auto-generated terminal
+ test program.
+ The terminal test program takes an interface to the API and an interface
+ to a terminal (a terminal here just means a simple text-in, text-out user
+ interface).
+ It lets the user call the actions and views from the terminal.
+ To use the auto-generated terminal test program, replace the lines between
+ 
+\emph on
+instance.start()
+\emph default
+ and 
+\emph on
+instance.stop()
+\emph default
+ with this line:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+new CourseRegistrationTest(cr, new SimpleTerminal()).start();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then run the program.
+ Now you can create new persons and see the list off all persons through
+ the terminal test program.
+\end_layout
+
+\begin_layout Standard
+From now on, when you create new actions or views and run Make, the terminal
+ test program will be regenerated to support the new methods.
+\end_layout
+
+\begin_layout Subsection
+Indexes
+\end_layout
+
+\begin_layout Standard
+Before we continue, you should delete the instance persistence file 
+\begin_inset Quotes eld
+\end_inset
+
+myinstance.data
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This is important because we are going to make changes to the data model.
+\end_layout
+
+\begin_layout Standard
+We will now add some indexes to our data model.
+ There are 3 types of indexes in EDMA: unique index, equal index and compare
+ index.
+ The unique index is used to force certain fields or combinations of fields
+ to be unique within a kind.
+ For example we could make the email and mobile fields unique in the person
+ kind.
+ To do this change the definition of the person kind to look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Kind Person
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+	email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+	mobile : Mobile,
+\end_layout
+
+\begin_layout Plain Layout
+
+	Unique(email),
+\end_layout
+
+\begin_layout Plain Layout
+
+	Unique(mobile)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This means that now 2 different persons can not have the same email or the
+ same mobile number.
+ If you run make and refresh the project, you will see some changes in the
+ generated files:
+\end_layout
+
+\begin_layout Enumerate
+In CourseRegistrationUpdater.java, the newPerson(...) method now declares to
+ throw an UniqueException.
+ EDMA will throw this exception if you try to create a person with an email
+ or mobile number that already exists.
+\end_layout
+
+\begin_layout Enumerate
+The PersonKind interface has got two new methods: getFromEmail(...) and getFromMobi
+le(...).
+\end_layout
+
+\begin_layout Standard
+Since it is generally considered too be bug if actions or views throws exception
+s, EDMA provides a better way of handling this.
+ In the definition of the 
+\begin_inset Quotes eld
+\end_inset
+
+CreatePerson
+\begin_inset Quotes erd
+\end_inset
+
+ action we can declare that the action may fail on certain input.
+ We do this by defining two error code:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Action createPerson
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	Description:
+\end_layout
+
+\begin_layout Plain Layout
+
+		"Creates a new person"
+\end_layout
+
+\begin_layout Plain Layout
+
+	Input: 
+\end_layout
+
+\begin_layout Plain Layout
+
+		name : Name,
+\end_layout
+
+\begin_layout Plain Layout
+
+		email : Email,
+\end_layout
+
+\begin_layout Plain Layout
+
+		mobile : Mobile
+\end_layout
+
+\begin_layout Plain Layout
+
+	Output:
+\end_layout
+
+\begin_layout Plain Layout
+
+		id : PersonID
+\end_layout
+
+\begin_layout Plain Layout
+
+	ErrorCodes:
+\end_layout
+
+\begin_layout Plain Layout
+
+		1 - "Email already exists",
+\end_layout
+
+\begin_layout Plain Layout
+
+		2 - "Mobile already exists"
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now run make and refresh the project again.
+ The CreatePersonUserImpl class now has two extra 
+\begin_inset Quotes eld
+\end_inset
+
+static final int
+\begin_inset Quotes erd
+\end_inset
+
+ that represents the added error codes.
+ You can now alter the implementation of the action 
+\begin_inset Quotes eld
+\end_inset
+
+CreatePerson
+\begin_inset Quotes erd
+\end_inset
+
+ to look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+EDMA_non-generated_code_begin
+\end_layout
+
+\begin_layout Plain Layout
+
+//Check that email is unique
+\end_layout
+
+\begin_layout Plain Layout
+
+if(upd.getPersonKind().getFromEmail(in_email) != null)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	return EMAIL_ALREADY_EXISTS;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+//Check that mobile is unique
+\end_layout
+
+\begin_layout Plain Layout
+
+if(upd.getPersonKind().getFromMobile(in_mobile) != null)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	return MOBILE_ALREADY_EXISTS;
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+PersonUpdater person = upd.newPerson()
+\end_layout
+
+\begin_layout Plain Layout
+
+							.name(in_name)
+\end_layout
+
+\begin_layout Plain Layout
+
+							.email(in_email)
+\end_layout
+
+\begin_layout Plain Layout
+
+							.mobile(in_mobile);
+\end_layout
+
+\begin_layout Plain Layout
+
+out_id = person.getID();
+\end_layout
+
+\begin_layout Plain Layout
+
+return OK;
+\end_layout
+
+\begin_layout Plain Layout
+
+// EDMA_non-generated_code_end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now the action first checks that the email and mobile number are indeed
+ unique, before it tries to create the new person.
+ The isolation property of the ACID guarantees will make sure that no other
+ actions can race in and create a person in between we checked the uniqueness
+ and we created the new person.
+\end_layout
+
+\begin_layout Standard
+Only the Unique index alters what data we can put into the data model instance.
+ The equal and compare indexes only helps making it easier and faster to
+ access certain sets of entities.
+ If you want to make it easy and fast to get the set of all entities in
+ a kind where one or more attributes are equal to certain values, then you
+ should use the equal index.
+ If you also want to make it easy and fast to get entities where certain
+ attributes are less than, greater than or in between certain values, you
+ should use a compare index.
+\end_layout
+
+\begin_layout Standard
+Equal and compare indexes are defined with the 
+\begin_inset Quotes eld
+\end_inset
+
+Equal
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Compare
+\begin_inset Quotes erd
+\end_inset
+
+ keyword just like unique indexes are defined with the 
+\begin_inset Quotes eld
+\end_inset
+
+Unique
+\begin_inset Quotes erd
+\end_inset
+
+ keyword.
+ You should try them out and take a look at the methods they add to the
+ kind interface.
+\end_layout
+
+\begin_layout Standard
+Indexes can be defined on a single attribute or on multiple attributes separated
+ by commas.
+\end_layout
+
+\begin_layout Subsection
+Relationships
+\end_layout
+
+\begin_layout Standard
+You can also define relationships between kinds.
+ There are 3 main types of relationships: 
+\begin_inset Quotes eld
+\end_inset
+
+one to one
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+many to one
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+many to many
+\begin_inset Quotes erd
+\end_inset
+
+ (
+\begin_inset Quotes eld
+\end_inset
+
+one-to-many
+\begin_inset Quotes erd
+\end_inset
+
+ is just a 
+\begin_inset Quotes eld
+\end_inset
+
+many-to-one
+\begin_inset Quotes erd
+\end_inset
+
+ where the kinds are reversed).
+ Relationships are defined using the Relation keyword in the EDMA definition
+ language.
+ A relationship keeps track of individual connections between entities from
+ the two kinds that participate in the relationship.
+ An example could be a relationship between a student and a course.
+ We could call this relationship StudentEnrollment and every connection
+ in the relationship would represent that a specific student entity is enrolled
+ on a specific course entity.
+\end_layout
+
+\begin_layout Standard
+The relationship definition would look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Relation StudentEnrollment Course >-< Student
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And it would lead to the creation of the method:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public CourseSet getCourseSet();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in the StudentViewer interface.
+ The methods returns the set of courses that the student are currently enrolled
+ on.
+ In the CourseViewer interface we would get this method:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public StudentSet getStudentSet();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+that would return the set of students that are currently enrolled on the
+ course.
+ In the CourseUpdate interface we would get these methods:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+public boolean addStudent(StudentViewer student);
+\end_layout
+
+\begin_layout Plain Layout
+
+public boolean removeStudent(StudentViewer student);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The StudentUpdate interface does not get methods to add or remove courses.
+ The add/remove methods are always added to the kind that appears first
+ in the definition.
+\end_layout
+
+\begin_layout Standard
+If each course could have one teacher that would be a many to one relation
+ and the definition could look like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Relation StudentEnrollment Course >-- Teacher
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Try for yourself to create a 
+\begin_inset Quotes eld
+\end_inset
+
+many-to-one
+\begin_inset Quotes erd
+\end_inset
+
+ and see what methods that are created on the interfaces of the involved
+ kinds.
+\end_layout
+
+\begin_layout Standard
+But what if we did not have a student kind and a teacher kind, but just
+ a person kind?
+\end_layout
+
+\begin_layout Standard
+In this case we would need to distinguish the role of the person in the
+ two relationships:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Relation StudentEnrollment Course >-< Person : student
+\end_layout
+
+\begin_layout Plain Layout
+
+Relation StudentEnrollment Course >-- Person : teacher
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The name after the colon is the role name.
+ Try it out and see how it alters the names of the created methods on the
+ involved kinds.
+ If no role name is provided, the role is asserted to be the same as the
+ name of the kind.
+ So with the example of 
+\family typewriter
+Course >-< Person
+\family default
+, if no role name is provided for the Person, it just has the role of a
+ person, which is very general.
+\end_layout
+
+\begin_layout Standard
+A 
+\begin_inset Quotes eld
+\end_inset
+
+one-to-one
+\begin_inset Quotes erd
+\end_inset
+
+ relationship is defined by 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+---
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+ as you might have guessed.
+ Try it out and see which methods you will get.
+\end_layout
+
+\begin_layout Standard
+Note that all the generated interfaces have meaningful javadoc (or at least
+ they should have, lets us know if some is missing).
+ So you can always experiment with different data model definitions and
+ see what gets generated and what it does.
+ Hopefully it will make good sense in the context of the data model.
+\end_layout
+
+\begin_layout Subsection
+Remote Access
+\end_layout
+
+\begin_layout Standard
+The generator also generates java code that let you use the data model instance
+ from a different machine through a socket connection.
+ The code consists of:
+\end_layout
+
+\begin_layout Itemize
+A simple server that uses a thread pool to handle incoming requests and
+ relate them to the data model interface
+\end_layout
+
+\begin_layout Itemize
+A proxy that implements the data model interface and relates all method
+ calls to the server
+\end_layout
+
+\begin_layout Standard
+The follow code shows how you create a server from a data model instance
+ interface:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+//Make sure the instance is running...
+\end_layout
+
+\begin_layout Plain Layout
+
+CourseRegistration intf = instance.getAPI();
+\end_layout
+
+\begin_layout Plain Layout
+
+int port = 1234;
+\end_layout
+
+\begin_layout Plain Layout
+
+Server server = new Server(port, new CourseRegistrationServerInstance(intf));
+\end_layout
+
+\begin_layout Plain Layout
+
+server.start();
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And this shows how you would access the interface on the client side:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},language=Java,tabsize=2"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+CourseRegistration intf = new CourseRegClientInstance("localhost", 1234);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(Replace 
+\begin_inset Quotes eld
+\end_inset
+
+localhost
+\begin_inset Quotes erd
+\end_inset
+
+ with the IP of the server).
+ You can now use the interface on the client side, just as if the data model
+ instance was running locally.
+ 
+\end_layout
+
+\end_body
+\end_document

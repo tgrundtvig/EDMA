@@ -44,6 +44,16 @@ public class TeacherKindImpl implements TeacherKind
     }
 
     /**
+     * Returns an empty set of Teacher entities.
+     * @return  An empty set of Teacher entities.
+     */
+    public TeacherSet getEmptyTeacherSet()
+    {
+        int newSetID = edma_dmview.kindGetEmptySet(1);
+        return new TeacherSetImpl(newSetID, edma_dmview);
+    }
+
+    /**
      * Returns the set of all Teacher entities.
      * @return  The set of all Teacher entities.
      */

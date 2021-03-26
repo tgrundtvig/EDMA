@@ -20,7 +20,7 @@ public class Server
 		super();
 		this.port = port;
 		this.inst = inst;
-		this.executor = Executors.newFixedThreadPool(100);
+		this.executor = Executors.newFixedThreadPool(64);
 	}
 
 	public void start() throws IOException

@@ -46,6 +46,16 @@ public class StudentKindImpl implements StudentKind
     }
 
     /**
+     * Returns an empty set of Student entities.
+     * @return  An empty set of Student entities.
+     */
+    public StudentSet getEmptyStudentSet()
+    {
+        int newSetID = edma_dmview.kindGetEmptySet(2);
+        return new StudentSetImpl(newSetID, edma_dmview);
+    }
+
+    /**
      * Returns the set of all Student entities.
      * @return  The set of all Student entities.
      */

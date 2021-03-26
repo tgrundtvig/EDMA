@@ -70,7 +70,7 @@ public class StudentBuilderImpl implements StudentBuilderBootSize, StudentBuilde
      */
     public StudentBuilderBootSize wetsuitSize(WetsuitSize wetsuitSize)
     {
-        if(wetsuitSize == null) throw new NullPointerException("The field wetsuitSize in Student may not be null");
+        if(wetsuitSize == null) throw new NullPointerException("The field wetsuitSize in the Student ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) wetsuitSize).edma_getValue();
         return this;
     }
@@ -83,7 +83,7 @@ public class StudentBuilderImpl implements StudentBuilderBootSize, StudentBuilde
     public StudentBuilderBootSize wetsuitSize(String wetsuitSize) throws InvalidValueException
     {
         if(wetsuitSize != null) WetsuitSizeImpl.edma_validate(wetsuitSize);
-        if(wetsuitSize == null) throw new NullPointerException();
+        if(wetsuitSize == null) throw new NullPointerException("The field wetsuitSize in the Student ValueDomain may not be null");
         edma_value[1] = WetsuitSizeImpl.edma_create(wetsuitSize);
         return this;
     }
@@ -95,7 +95,7 @@ public class StudentBuilderImpl implements StudentBuilderBootSize, StudentBuilde
      */
     public Student bootSize(BootSize bootSize)
     {
-        if(bootSize == null) throw new NullPointerException("The field bootSize in Student may not be null");
+        if(bootSize == null) throw new NullPointerException("The field bootSize in the Student ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) bootSize).edma_getValue();
         return new StudentImpl(StudentImpl.edma_create(edma_value));
     }
@@ -108,7 +108,7 @@ public class StudentBuilderImpl implements StudentBuilderBootSize, StudentBuilde
     public Student bootSize(Integer bootSize) throws InvalidValueException
     {
         if(bootSize != null) BootSizeImpl.edma_validate(bootSize);
-        if(bootSize == null) throw new NullPointerException();
+        if(bootSize == null) throw new NullPointerException("The field bootSize in the Student ValueDomain may not be null");
         edma_value[2] = BootSizeImpl.edma_create(bootSize);
         return new StudentImpl(StudentImpl.edma_create(edma_value));
     }

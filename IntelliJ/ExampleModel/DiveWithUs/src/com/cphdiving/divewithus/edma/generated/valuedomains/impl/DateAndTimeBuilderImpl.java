@@ -31,7 +31,7 @@ public class DateAndTimeBuilderImpl implements DateAndTimeBuilderDate, DateAndTi
      */
     public DateAndTimeBuilderTime date(Date date)
     {
-        if(date == null) throw new NullPointerException("The field date in DateAndTime may not be null");
+        if(date == null) throw new NullPointerException("The field date in the DateAndTime ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) date).edma_getValue();
         return this;
     }
@@ -43,7 +43,7 @@ public class DateAndTimeBuilderImpl implements DateAndTimeBuilderDate, DateAndTi
      */
     public DateAndTime time(Time time)
     {
-        if(time == null) throw new NullPointerException("The field time in DateAndTime may not be null");
+        if(time == null) throw new NullPointerException("The field time in the DateAndTime ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) time).edma_getValue();
         return new DateAndTimeImpl(DateAndTimeImpl.edma_create(edma_value));
     }

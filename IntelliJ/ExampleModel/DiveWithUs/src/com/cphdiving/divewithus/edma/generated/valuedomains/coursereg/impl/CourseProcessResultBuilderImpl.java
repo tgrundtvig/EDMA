@@ -30,7 +30,7 @@ public class CourseProcessResultBuilderImpl implements CourseProcessResultBuilde
      */
     public CourseProcessResultBuilderRunning canceled(CourseInfoList canceled)
     {
-        if(canceled == null) throw new NullPointerException("The field canceled in CourseProcessResult may not be null");
+        if(canceled == null) throw new NullPointerException("The field canceled in the CourseProcessResult ValueDomain may not be null");
         edma_value[0] = ((IValueInstance) canceled).edma_getValue();
         return this;
     }
@@ -42,7 +42,7 @@ public class CourseProcessResultBuilderImpl implements CourseProcessResultBuilde
      */
     public CourseProcessResult running(CourseInfoList running)
     {
-        if(running == null) throw new NullPointerException("The field running in CourseProcessResult may not be null");
+        if(running == null) throw new NullPointerException("The field running in the CourseProcessResult ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) running).edma_getValue();
         return new CourseProcessResultImpl(CourseProcessResultImpl.edma_create(edma_value));
     }

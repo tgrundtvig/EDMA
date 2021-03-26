@@ -71,7 +71,7 @@ public class CourseBuilderImpl implements CourseBuilderID, CourseBuilderStartDat
      */
     public CourseBuilderStartTime startDate(Date startDate)
     {
-        if(startDate == null) throw new NullPointerException("The field startDate in Course may not be null");
+        if(startDate == null) throw new NullPointerException("The field startDate in the Course ValueDomain may not be null");
         edma_value[1] = ((IValueInstance) startDate).edma_getValue();
         return this;
     }
@@ -83,7 +83,7 @@ public class CourseBuilderImpl implements CourseBuilderID, CourseBuilderStartDat
      */
     public CourseBuilderStatus startTime(Time startTime)
     {
-        if(startTime == null) throw new NullPointerException("The field startTime in Course may not be null");
+        if(startTime == null) throw new NullPointerException("The field startTime in the Course ValueDomain may not be null");
         edma_value[2] = ((IValueInstance) startTime).edma_getValue();
         return this;
     }
@@ -95,7 +95,7 @@ public class CourseBuilderImpl implements CourseBuilderID, CourseBuilderStartDat
      */
     public Course status(CourseStatus status)
     {
-        if(status == null) throw new NullPointerException("The field status in Course may not be null");
+        if(status == null) throw new NullPointerException("The field status in the Course ValueDomain may not be null");
         edma_value[3] = ((IValueInstance) status).edma_getValue();
         return new CourseImpl(CourseImpl.edma_create(edma_value));
     }
@@ -108,7 +108,7 @@ public class CourseBuilderImpl implements CourseBuilderID, CourseBuilderStartDat
     public Course status(String status) throws InvalidValueException
     {
         if(status != null) CourseStatusImpl.edma_validate(status);
-        if(status == null) throw new NullPointerException();
+        if(status == null) throw new NullPointerException("The field status in the Course ValueDomain may not be null");
         edma_value[3] = CourseStatusImpl.edma_create(status);
         return new CourseImpl(CourseImpl.edma_create(edma_value));
     }

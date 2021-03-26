@@ -5,6 +5,7 @@ import java.util.Map;
 import org.abstractica.edma.metamodel.IMetaKind;
 import org.abstractica.edma.runtime.implementations.common.transactions.IAtomicOperations;
 import org.abstractica.edma.runtime.implementations.mem.sets.ISetManager;
+import org.abstractica.edma.runtime.implementations.mem.sets.optimized.ISet;
 import org.abstractica.edma.runtime.intf.IEntity;
 import org.abstractica.edma.runtime.intf.exceptions.UniqueException;
 
@@ -18,6 +19,8 @@ public interface IKindStore
 	public IEntity get(Long ID);
 
 	public int getAllIDs(ISetManager setManager, boolean doCopy);
+
+	public int getEmptySet(ISetManager setManager);
 
 	public IKindIndex getIndex(int index);
 
